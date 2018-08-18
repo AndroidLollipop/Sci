@@ -40,16 +40,32 @@ var matchTerminalsStar = (terminals) => (type) => (wrappedString) => {
         ret += peek(wrappedString)
         wrappedString = next(wrappedString)
     }
-    return {status: "success", next: next(wrappedString), treeNode: {type: type, data: ret, children: []}}
+    return {status: "success", next: wrappedString, treeNode: {type: type, data: ret, children: []}}
 }
+var lca = "qwertyuiopasdfghjklzxcvbnm"
+var uca = "QWERTYUIOPASDFGHJKLZXCVBNM"
+var num = "123456790"
+var dm = "*/"
+var as = "+-"
 var matchWhitespace = matchTerminalsStar(" ")
 var matchOpP = matchTerminal("(")
 var matchClP = matchTerminal(")")
-var matchNum = matchTerminalsStar("123456790")
-var matchLca = matchTerminalsStar("qwertyuiopasdfghjklzxcvbnm")
-var matchUca = matchTerminalsStar("QWERTYUIOPASDFGHJKLZXCVBNM")
+var matchNum = matchTerminalsStar(num)
+var matchLca = matchTerminalsStar(lca)
+var matchUca = matchTerminalsStar(uca)
+var matchAlp = matchTerminalsStar(lca+uca)
+var matchAln = matchTerminalsStar(lca+uca+num)
+var matchDoC = matchTerminal('"')
+var matchSiC = matchTerminal("'")
 var matchIdentifier = (wrappedString) => {
-    var ret = []
+    if (matchNum()(wrappedString).status == "success") {
+        return {status: "failure"} // identifiers cannot start with a numeric character
+    }
+    var ret = matchAln("identifier")(wrappedString)
+    if (ret.status == "success") {
+        return ret
+    }
+    return {status: "failure"}
 }
 var matchProgram = (wrappedString) => {
 }
