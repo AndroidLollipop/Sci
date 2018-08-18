@@ -45,8 +45,6 @@ var matchTerminalsStar = (terminals) => (type) => (wrappedString) => {
 var lca = "qwertyuiopasdfghjklzxcvbnm"
 var uca = "QWERTYUIOPASDFGHJKLZXCVBNM"
 var num = "123456790"
-var dm = "*/"
-var as = "+-"
 var matchWhitespace = matchTerminalsStar(" ")
 var matchOpP = matchTerminal("(")
 var matchClP = matchTerminal(")")
@@ -57,6 +55,15 @@ var matchAlp = matchTerminalsStar(lca+uca)
 var matchAln = matchTerminalsStar(lca+uca+num)
 var matchDoC = matchTerminal('"')
 var matchSiC = matchTerminal("'")
+var matchEsc = matchTerminal("\\")
+var matchDm = matchTerminal("/*") // ordinarily */ would be more natural, but we're following BODMAS here
+var matchAs = matchTerminal("+-")
+var matchOpB = matchTerminal("{")
+var matchClB = matchTerminal("}")
+var matchOpA = matchTerminal("[")
+var matchClA = matchTerminal("]")
+var matchPip = matchTerminal("|")
+var matchDef = matchTerminal("=")
 var matchIdentifier = (wrappedString) => {
     if (matchNum()(wrappedString).status == "success") {
         return {status: "failure"} // identifiers cannot start with a numeric character
@@ -68,7 +75,17 @@ var matchIdentifier = (wrappedString) => {
     return {status: "failure"}
 }
 var matchStringLiteral = (wrappedString) => {
-    
+    var ret = matchDoC()(wrappedString)
+    if (ret.status == "success") {
+        
+    }
+    else {
+        ret = matchSiC()(wrappedString)
+        if (ret.status == "success") {
+
+        }
+    }
+    return {status: "failure"}
 }
 var matchExpr = (wrappedString) => {
 }
