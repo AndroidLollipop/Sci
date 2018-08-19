@@ -1,3 +1,5 @@
+// why not use regex, i hear you ask
+// well, we're trying to build an AST tree here, it's not nice to use regex to do that
 var wrapString = (string) => {
     return [0, string]
 }
@@ -80,19 +82,19 @@ var matchEscapedLiteral = (wrappedString) => { // only alphanumeric strings, for
     if (ret.status == "failure") {
         return {status: "failure"}
     }
-    var phi = [ret]
+    var phi = [ret.treeNode]
     var day = ret.treeNode.data
     wrappedString = ret.next
     ret = matchEsc("escape literal")(wrappedString)
     if (ret.status == "success") {
-        phi.push(ret)
+        phi.push(ret.treeNode)
         day += ret.treeNode.data
         wrappedString = ret.next
         ret = matchEscapedLiteral(wrappedString)
         if (ret.status == "success") {
             for (var i = 0; i < ret.treeNode.children.length; i++) { // this is quite pointless, but whatever
                 phi.push(ret.treeNode.children[i])
-                day += ret.treeNode.children[i].treeNode.data
+                day += ret.treeNode.children[i].data
             }
             wrappedString = ret.next
         }
@@ -138,7 +140,7 @@ var matchFloatLiteral = (wrappedString) => {
         if (phi.status == "success") {
             var gam = matchNum("fractional literal")(phi.next)
             if (gam.status == "success") {
-                return {status: "success", next: gam.next, treeNode: {type: "float literal", data: ret.treeNode.data + phi.treeNode.data + gam.treeNode.data, children: [ret, gam]}}
+                return {status: "success", next: gam.next, treeNode: {type: "float literal", data: ret.treeNode.data + phi.treeNode.data + gam.treeNode.data, children: [ret.treeNode, gam.treeNode]}}
             }
         } // yes, we intentionally fall through to fail if we get something like 123.
         else {
@@ -151,8 +153,10 @@ var matchExpr = (wrappedString) => {
 }
 var matchProgram = (wrappedString) => {
 }
-console.log(matchEscapedLiteral(wrapString("are\\ you autistic")))
-console.log(matchStringLiteral(wrapString("'are\\ you autistic'")))
-console.log(matchStringLiteral(wrapString('"are\\ you autistic"')))
-console.log(matchFloatLiteral(wrapString("123")))
-console.log(matchFloatLiteral(wrapString("123.456")))
+const util = require('util')
+var youClod = (x) => console.log(util.inspect(x, {showHidden: false, depth: null}))
+youClod(matchEscapedLiteral(wrapString("are\\ you autistic")))
+youClod(matchStringLiteral(wrapString("'are\\ you autistic'")))
+youClod(matchStringLiteral(wrapString('"are\\ you autistic"')))
+youClod(matchFloatLiteral(wrapString("123")))
+youClod(matchFloatLiteral(wrapString("123.456")))
