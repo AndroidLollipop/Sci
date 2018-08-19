@@ -54,7 +54,7 @@ var matchTerminalsStar = (terminals) => (type) => (wrappedString) => { // to avo
 }
 var lca = "qwertyuiopasdfghjklzxcvbnm"
 var uca = "QWERTYUIOPASDFGHJKLZXCVBNM"
-var num = "123456790"
+var num = "1234567890"
 var matchWhitespace = matchTerminalsStar(" \n")
 var matchOpP = matchTerminal("(")
 var matchClP = matchTerminal(")")
@@ -360,7 +360,7 @@ var matchExpr = (wrappedString) => {
   if (phi.status == "success") {
     tem = matchOper(phi.next)
     if (tem.status == "success") {
-      return { status: "success", next: tem.next, treeNode: { type: "expression", data: phi.treeNode.data + tem.treeNode.data, children: [phi.treeNode, tem.treeNode]}}
+      return { status: "success", next: tem.next, treeNode: { type: "expression", data: phi.treeNode.data + tem.treeNode.data, children: [phi.treeNode].concat(tem.treeNode.children)}}
     }
   }
   return phi
@@ -389,6 +389,9 @@ youClod(matchParamd(wrapString("()")))
 youClod(matchExpr(wrapString("((((((havana))))))")))
 youClod(matchExpr(wrapString("yellow")))
 youClod(matchExpr(wrapString("(havana))"))) // this by itself isn't invalid, but the next call should fail immediately
+youClod(matchExpr(wrapString("( abc * def ) + ( ghi * jkl )")))
+youClod(matchExpr(wrapString("( 123 * 456 ) + ( 789 * 012 )")))
+youClod(matchExpr(wrapString("(123*456)+(789*012)")))
 // THESE SHOULD FAIL
 youClod(matchStringLiteral(wrapString("'are\\ you autistic\"")))
 youClod(matchFloatLiteral(wrapString("123.a")))
@@ -405,6 +408,3 @@ youClod(matchExpr(wrapString("((havana)")))
 //expr' -> expr
 //hmmm...................
 //this is really 麻烦 to implement
-
-youClod(matchOper(wrapString("+asdfgh")))
-youClod(matchExpr(wrapString("( abc * def ) + ( ghi * jkl )")))
