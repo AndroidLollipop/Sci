@@ -360,7 +360,7 @@ var matchExpr = (wrappedString) => {
   if (phi.status == "success") {
     tem = matchOper(phi.next)
     if (tem.status == "success") {
-      return { status: "success", next: tem.next, treeNode: { type: "expression", data: phi.treeNode.data + tem.treeNode.data, children: [phi.treeNode].concat(tem.treeNode.children)}}
+      return { status: "success", next: tem.next, treeNode: { type: "expression", data: phi.treeNode.data + tem.treeNode.data, children: [phi.treeNode, tem.treeNode]}}
     }
   }
   return phi
@@ -407,4 +407,4 @@ youClod(matchExpr(wrapString("((havana)")))
 //this is really 麻烦 to implement
 
 youClod(matchOper(wrapString("+asdfgh")))
-youClod(matchExpr(wrapString("abc*def+ghi*jkl")))
+youClod(matchExpr(wrapString("( abc * def ) + ( ghi * jkl )")))
