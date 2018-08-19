@@ -68,5 +68,5 @@ youClod(matchExpr(wrapString("(123\*456)+(789\*012)"))) ->
 ## refactoring considerations
 tokparse.js really needs to be refactored.  
 specifically, all functions should return next even on failure. this will save about 50 lines of code.
-## why the hell did i write this?
+## why the hell did you write this?
 because i'm a masochist.
