@@ -1,4 +1,4 @@
-# sci - the sic compiler/interpretrer
+# sci - the sic compiler/interpreter
 'sic' stands for 'sci interpreter/compiler'  
 see how that kinda matches the structure of a recursive descent parser? (except that it's left recursive so it wouldn't work without conversion)
 ## example output for tokparse (ast constructor)
