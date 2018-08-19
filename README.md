@@ -2,16 +2,15 @@
 'sic' stands for 'sci interpreter/compiler'  
 see how that kinda matches the structure of a recursive descent parser? (except that it's left recursive so it wouldn't work without conversion)
 ## example output for repl (ok, more like a pseudo-repl)
-var a = require("./astEval.js")  
-var t = require("./tokParse.js")  
-var newGlo = a.emptyScope()  
-console.log(a.evaluateExpression(newGlo)(t.matchExpr(wrapString("(123\*456)+(789\*0.12)")).treeNode))  
-console.log(a.evaluateExpression(newGlo)(t.matchDefine(wrapString("num camila = 5")).treeNode))  
-console.log(newGlo\[0\]("camila"))  
-console.log(a.evaluateExpression(newGlo)(t.matchDefine(wrapString("num young = 7+3\*6")).treeNode))  
-console.log(newGlo\[0\]("young"))  
-console.log(a.evaluateExpression(newGlo)(t.matchDefine(wrapString("num havana = camila + young")).treeNode))  
-console.log(newGlo\[0\]("havana"))  
+var e = require("./simpleAndCleanInterfaceForRepl.js")  
+var repl = e.getRepl()  
+console.log(repl("(123\*456)+(789\*0.12)"))  
+console.log(repl("num camila = 5"))  
+console.log(repl("camila"))  
+console.log(repl("num young = 7+3\*6"))  
+console.log(repl("young"))  
+console.log(repl("num havana = camila + young"))  
+console.log(repl("havana"))  
   
 output:  
 { type: 'number', value: 56182.68 }  
