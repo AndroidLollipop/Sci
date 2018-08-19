@@ -296,10 +296,22 @@ var matchBrac = (wrappedString) => {
 
 }
 var matchBrae = (wrappedString) => {
-    
+
 }
 var matchExpr = (wrappedString) => {
-
+    var ret = matchLit(wrappedString)
+    var phi
+    if (ret.status == "success") {
+        phi = matchExpr(ret.next)
+    }
+    ret = matchIdentifier(wrappedString)
+    if (ret.status == "success") {
+        phi = matchExpr(ret.next)
+    }
+    ret = matchBrac(wrappedString)
+    if (ret.status == "success") {
+        phi = matchExpr(ret.next)
+    }
 }
 var matchPlus = (wrappedString) => {
 
