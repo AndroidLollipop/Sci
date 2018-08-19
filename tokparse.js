@@ -391,7 +391,7 @@ youClod(matchExpr(wrapString("yellow")))
 youClod(matchExpr(wrapString("(havana))"))) // this by itself isn't invalid, but the next call should fail immediately
 youClod(matchExpr(wrapString("( abc * def ) + ( ghi * jkl )")))
 youClod(matchExpr(wrapString("( 123 * 456 ) + ( 789 * 012 )")))
-youClod(matchExpr(wrapString("(123*456)+(789*012)")))
+youClod(matchExpr(wrapString("(123*456)+(789*0.12)")))
 // THESE SHOULD FAIL
 youClod(matchStringLiteral(wrapString("'are\\ you autistic\"")))
 youClod(matchFloatLiteral(wrapString("123.a")))

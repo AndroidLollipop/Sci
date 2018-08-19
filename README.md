@@ -17,10 +17,10 @@ youClod(matchDefine(wrapString("str autism = 'you'"))) ->
           children: [ { type: 'alphanumeric literal', data: 'you', children: [] } ] } ] } }  
 youClod(matchExpr(wrapString("(123\*456)+(789\*012)"))) ->  
 { status: 'success',  
-  next: [ 19, '(123\*456)+(789\*012)' ],  
+  next: [ 20, '(123\*456)+(789\*0.12)' ],  
   treeNode:  
    { type: 'expression',  
-     data: '(123\*456)+(789\*012)',  
+     data: '(123\*456)+(789\*0.12)',  
      children:  
       [ { type: 'parenthesized expression',  
           data: '(123\*456)',  
@@ -33,14 +33,18 @@ youClod(matchExpr(wrapString("(123\*456)+(789\*012)"))) ->
                   { type: 'integral literal', data: '456', children: [] } ] } ] },  
         { type: 'operator: as', data: '+', children: [] },  
         { type: 'parenthesized expression',  
-          data: '(789\*012)',  
+          data: '(789\*0.12)',  
           children:  
            [ { type: 'expression',  
-               data: '789\*012',  
+               data: '789\*0.12',  
                children:  
                 [ { type: 'integral literal', data: '789', children: [] },  
                   { type: 'operator: dm', data: '\*', children: [] },  
-                  { type: 'integral literal', data: '012', children: [] } ] } ] } ] } }
+                  { type: 'float literal',  
+                    data: '0.12',  
+                    children:  
+                     [ { type: 'integral literal', data: '0', children: [] },  
+                       { type: 'fractional literal', data: '12', children: [] } ] } ] } ] } ] } }
 ## refactoring considerations
 tokparse.js really needs to be refactored.  
 specifically, all functions should return next even on failure. this will save about 50 lines of code.
