@@ -155,8 +155,14 @@ var matchProgram = (wrappedString) => {
 }
 const util = require('util')
 var youClod = (x) => console.log(util.inspect(x, {showHidden: false, depth: null}))
+//THESE SHOULD SUCCEED
 youClod(matchEscapedLiteral(wrapString("are\\ you autistic")))
 youClod(matchStringLiteral(wrapString("'are\\ you autistic'")))
 youClod(matchStringLiteral(wrapString('"are\\ you autistic"')))
 youClod(matchFloatLiteral(wrapString("123")))
 youClod(matchFloatLiteral(wrapString("123.456")))
+youClod(matchIdentifier(wrapString("a1")))
+//THESE SHOULD FAIL
+youClod(matchStringLiteral(wrapString("'are\\ you autistic\"")))
+youClod(matchFloatLiteral(wrapString("123.a")))
+youClod(matchIdentifier(wrapString("1a")))
