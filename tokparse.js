@@ -4,10 +4,10 @@ var wrapString = (string) => {
     return [0, string]
 }
 var peek = (wrappedString) => {
-    if (wrappedString[1][wrappedString[0]]){
+    if (wrappedString[1][wrappedString[0]]) {
         return wrappedString[1][wrappedString[0]]
     }
-    else if (wrappedString[1].length < 0){
+    else if (wrappedString[0] < 0) {
         return "begin"
     }
     return "end"
@@ -77,7 +77,7 @@ var matchClA = matchTerminal("]")
 var matchPip = matchTerminal("|")
 var matchDef = matchTerminal("=")
 var matchIf = matchTerminalStrings(["if"])("if")
-var matchInt = matchTerminalStrings(["int"])("integer declaration")
+var matchDnu = matchTerminalStrings(["num"])("number declaration")
 var matchStr = matchTerminalStrings(["str"])("string declaration")
 var matchCes = (wrappedString) => {
     var ret = matchEsc("escape literal")(wrappedString)
@@ -183,7 +183,7 @@ var composeMatch = (matchers) => (wrappedString) => { // i should have written t
     }
     return {status: "failure"}
 }
-var matchDec = composeMatch([matchInt, matchStr])
+var matchDec = composeMatch([matchDnu, matchStr])
 var matchLit = composeMatch([matchFloatLiteral, matchStringLiteral])
 var matchDefine = (wrappedString) => {
     var ret = matchDec(wrappedString)
@@ -231,7 +231,8 @@ youClod(matchFloatLiteral(wrapString("123.456")))
 youClod(matchIdentifier(wrapString("a1")))
 youClod(matchIf(wrapString("if asdf")))
 youClod(matchDefine(wrapString("str autism = 'you'")))
-youClod(matchDefine(wrapString("int star = 1")))
+youClod(matchDefine(wrapString("num star = 1")))
+youClod(matchDefine(wrapString("num havana = 1.2")))
 // THESE SHOULD FAIL
 youClod(matchStringLiteral(wrapString("'are\\ you autistic\"")))
 youClod(matchFloatLiteral(wrapString("123.a")))
