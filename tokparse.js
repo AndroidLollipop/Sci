@@ -339,23 +339,18 @@ var matchExpr = (wrappedString) => {
   var phi = { status: "failure" }
   if (ret.status == "success") {
     phi = ret
-    tem = matchOper(ret.next)
-    if (tem.status == "success") {
-
-    }
-  }
+  } // the canonical way is to use else ifs
+  // but that's as ugly as hell and this works too so to hell with it
   ret = matchIdentifier(wrappedString)
   if (ret.status == "success") {
     phi = ret
-    tem = matchOper(ret.next)
-    if (tem.status == "success") {
-
-    }
   }
   ret = matchBrac(wrappedString)
   if (ret.status == "success") {
     phi = ret
-    tem = matchOper(ret.next)
+  }
+  if (phi.status == "success") {
+    tem = matchOper(phi.next)
     if (tem.status == "success") {
 
     }
