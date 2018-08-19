@@ -69,3 +69,5 @@ tokparse.js really needs to be refactored.
 specifically, all functions should return next even on failure. this will save about 50 lines of code.
 ## why the hell did you write this?
 because i'm a masochist.
+## that's messed up...
+yeah.
