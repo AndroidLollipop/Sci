@@ -290,11 +290,31 @@ var matchFundef = (wrappedString) => {
     if (alp.status == "failure") {
         return alp
     }
-    return {status: "success", next: alp.next, treeNode: {type: "variable declaration", data: ret.treeNode.data + " " + phi.treeNode.data + " " + gam.treeNode.data + " " + alp.treeNode.data, children: [ret.treeNode, phi.treeNode, gam.treeNode, alp.treeNode]}} // types must be checked at runtime since parser doesn't check them
+    return {status: "success", next: alp.next, treeNode: {type: "function declaration", data: ret.treeNode.data + " " + phi.treeNode.data + " " + gam.treeNode.data + " " + alp.treeNode.data, children: [ret.treeNode, phi.treeNode, gam.treeNode, alp.treeNode]}} // types must be checked at runtime since parser doesn't check them
+}
+var matchBrac = (wrappedString) => {
+
+}
+var matchBrae = (wrappedString) => {
+    
 }
 var matchExpr = (wrappedString) => {
+
+}
+var matchPlus = (wrappedString) => {
+
+}
+var matchMinu = (wrappedString) => {
+
+}
+var matchTime = (wrappedString) => {
+
+}
+var matchDivi = (wrappedString) => {
+
 }
 var matchProgram = (wrappedString) => {
+
 }
 const util = require('util')
 var youClod = (x) => console.log(util.inspect(x, {showHidden: false, depth: null}))
@@ -311,10 +331,13 @@ youClod(matchDefine(wrapString("num star= 1")))
 youClod(matchDefine(wrapString("num havana =1.2")))
 youClod(matchParamd(wrapString("( asdf, abcd, efgh)")))
 youClod(matchParamd(wrapString("( asdf, abcd, efgh,)")))
-youClod(matchParamd(wrapString("(asdf,abcd,efgh)")))
+youClod(matchParamd(wrapString("(  asdf,    abcd  , efgh  ) ")))
 youClod(matchParamd(wrapString("( asdf )")))
 youClod(matchParamd(wrapString("()")))
 // THESE SHOULD FAIL
 youClod(matchStringLiteral(wrapString("'are\\ you autistic\"")))
 youClod(matchFloatLiteral(wrapString("123.a")))
 youClod(matchIdentifier(wrapString("1a")))
+youClod(matchParamd(wrapString("(,)")))
+youClod(matchParamd(wrapString("(1a)")))
+youClod(matchParamd(wrapString(" (a)")))
