@@ -46,7 +46,7 @@ var adjoinScope = ([scopeGetter, scopeSetter, scopeDefiner]) => ([newScopeGetter
 } // i imagine this is how scope is implemented in javascript, and that explains why setting an undeclared variable makes it global
 var evaluateExpression = ([scopeGetter, scopeSetter, scopeDefiner]) => (expression) => {
     if (expression.type == "variable declaration") {
-        var expRes = evaluateExpression([scopeGetter, scopeSetter, scopeDefiner])(expression.children.filter((x) => x.type !== "identifier" && x.type !== "equals" && x.type !== "number declaration")[0])
+        var expRes = evaluateExpression([scopeGetter, scopeSetter, scopeDefiner])(expression.children.filter((x) => x.type !== "identifier" && x.type !== "equals" && x.type !== "number declaration" && x.type !== "string declaration")[0])
         scopeDefiner(expression.children.filter((x) => x.type == "identifier")[0].canonicalString, expRes)
         return expRes
     }
@@ -71,6 +71,9 @@ var evaluateExpression = ([scopeGetter, scopeSetter, scopeDefiner]) => (expressi
     }
     else if (expression.type == "integral literal") {
         return { type: "number", value: parseInt(expression.canonicalString) }
+    }
+    else if (expression.type == "string literal") {
+        return { type: "string", value: expression.canonicalString }
     }
     else if (expression.type == "identifier") {
         return scopeGetter(expression.canonicalString)
