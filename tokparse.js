@@ -68,8 +68,8 @@ var matchSls = matchTerminals(lca + uca + num + " ")
 var matchDoC = matchTerminal('"')
 var matchSiC = matchTerminal("'")
 var matchEsc = matchTerminal("\\")
-var matchDm = matchTerminal("/*") // ordinarily */ would be more natural, but we're following BODMAS here
-var matchAs = matchTerminal("+-")
+var matchDm = matchTerminals("/*") // ordinarily */ would be more natural, but we're following BODMAS here
+var matchAs = matchTerminals("+-")
 var matchOpB = matchTerminal("{")
 var matchClB = matchTerminal("}")
 var matchOpA = matchTerminal("[")
@@ -326,22 +326,30 @@ var matchOper = (wrappedString) => {
   if (tem.status == "success") {
     wrappedString = tem.next
   }
-  var ret = matchAs()(wrappedString)
-  //console.log(ret)
-  return { status: "failure" }
+  var phi = matchDm("operator: dm")(wrappedString)
+  var ret = matchAs("operator: as")(wrappedString)
+  if (ret.status == "success") {
+    phi = ret
+  }
+  if (phi.status !== "success") {
+    return phi
+  }
+  ret = matchExpr(phi.next)
+  if (ret.status !== "success") {
+    return ret
+  }
+  return { status: "success", next: ret.next, treeNode: { type: "expression", data: phi.treeNode.data + ret.treeNode.data , children: [phi.treeNode, ret.treeNode]}}
+  return phi
 }
 var matchExpr = (wrappedString) => {
   var tem = matchWhitespace()(wrappedString)
   if (tem.status == "success") {
     wrappedString = tem.next
   }
-  var ret = matchLit(wrappedString)
-  var phi = { status: "failure" }
-  if (ret.status == "success") {
-    phi = ret
-  } // the canonical way is to use else ifs
+  var phi = matchLit(wrappedString)
+  // the canonical way is to use else ifs
   // but that's as ugly as hell and this works too so to hell with it
-  ret = matchIdentifier(wrappedString)
+  var ret = matchIdentifier(wrappedString)
   if (ret.status == "success") {
     phi = ret
   }
@@ -352,7 +360,7 @@ var matchExpr = (wrappedString) => {
   if (phi.status == "success") {
     tem = matchOper(phi.next)
     if (tem.status == "success") {
-
+      return { status: "success", next: tem.next, treeNode: { type: "expression", data: phi.treeNode.data + tem.treeNode.data, children: [phi.treeNode].concat(tem.treeNode.children)}}
     }
   }
   return phi
@@ -394,5 +402,9 @@ youClod(matchExpr(wrapString("((havana)")))
 //expr -> identifier
 //expr -> literal
 //expr' -> expr op expr'
+//expr' -> expr
 //hmmm...................
 //this is really 麻烦 to implement
+
+youClod(matchOper(wrapString("+asdfgh")))
+youClod(matchExpr(wrapString("abc*def+ghi*jkl")))
