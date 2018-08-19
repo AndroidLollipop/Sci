@@ -256,7 +256,7 @@ var matchParamd = (wrappedString) => {
     if (ret.status == "failure") {
         return ret
     }
-    return {status: "success", next: ret.next, treeNode: {type: "paramater declaration", data: rea, children: reb}}
+    return {status: "success", next: ret.next, treeNode: {type: "parameter declaration", data: rea, children: reb}}
 }
 var matchFunbod = (wrappedString) => {
 
@@ -312,6 +312,8 @@ youClod(matchDefine(wrapString("num havana =1.2")))
 youClod(matchParamd(wrapString("( asdf, abcd, efgh)")))
 youClod(matchParamd(wrapString("( asdf, abcd, efgh,)")))
 youClod(matchParamd(wrapString("(asdf,abcd,efgh)")))
+youClod(matchParamd(wrapString("( asdf )")))
+youClod(matchParamd(wrapString("()")))
 // THESE SHOULD FAIL
 youClod(matchStringLiteral(wrapString("'are\\ you autistic\"")))
 youClod(matchFloatLiteral(wrapString("123.a")))
