@@ -1,5 +1,5 @@
 // why not use regex, i hear you ask
-// well, we're trying to build an AST tree here, it's not nice to use regex to do that
+// well, we're trying to build an AST here, it's not nice to use regex to do that
 var wrapString = (string) => {
     return [0, string]
 }
@@ -76,6 +76,7 @@ var matchOpA = matchTerminal("[")
 var matchClA = matchTerminal("]")
 var matchPip = matchTerminal("|")
 var matchDef = matchTerminal("=")
+var matchCom = matchTerminal(",")
 var matchIf = matchTerminalStrings(["if"])("if")
 var matchDnu = matchTerminalStrings(["num"])("number declaration")
 var matchStr = matchTerminalStrings(["str"])("string declaration")
@@ -216,6 +217,81 @@ var matchDefine = (wrappedString) => {
     }
     return {status: "success", next: alp.next, treeNode: {type: "variable declaration", data: ret.treeNode.data + " " + phi.treeNode.data + " " + gam.treeNode.data + " " + alp.treeNode.data, children: [ret.treeNode, phi.treeNode, gam.treeNode, alp.treeNode]}} // types must be checked at runtime since parser doesn't check them
 }
+var matchParamd = (wrappedString) => {
+    var ret = matchOpP()(wrappedString)
+    if (ret.status == "failure") {
+        return ret
+    }
+    var tem = matchWhitespace()(ret.next)
+    if (tem.status == "success") {
+        ret.next = tem.next
+    }
+    var rea = ""
+    var reb = []
+    var iet = ret
+    while (true) {
+        ret = matchIdentifier(ret.next)
+        if (ret.status !== "success") { // i know ret.status == "failure" is shorter but it risks infinite looping for invalid ret.status
+            break
+        }
+        tem = matchWhitespace()(ret.next)
+        if (tem.status == "success") {
+            ret.next = tem.next
+        }
+        iet = ret
+        rea += ret.treeNode.data
+        reb.push(ret.treeNode)
+        ret = matchCom()(ret.next)
+        if (ret.status !== "success") {
+            break
+        }
+        tem = matchWhitespace()(ret.next)
+        if (tem.status == "success") {
+            ret.next = tem.next
+        }
+        iet = ret
+        rea += ", "
+    }
+    ret = matchClP()(iet.next)
+    if (ret.status == "failure") {
+        return ret
+    }
+    return {status: "success", next: ret.next, treeNode: {type: "paramater declaration", data: rea, children: reb}}
+}
+var matchFunbod = (wrappedString) => {
+
+}
+var matchFundef = (wrappedString) => {
+    var ret = matchDec(wrappedString)
+    if (ret.status == "failure") {
+        return ret
+    }
+    var tem = matchWhitespace()(ret.next)
+    if (tem.status == "failure") {
+        return tem
+    }
+    var phi = matchIdentifier(tem.next)
+    if (phi.status == "failure") {
+        return ret
+    }
+    tem = matchWhitespace()(phi.next)
+    if (tem.status == "success") {
+        phi.next = tem.next
+    }
+    var gam = matchParamd(phi.next)
+    if (gam.status == "failure") { // yes, i am aware that maybe i should add an undefined checker to the start of every function to avoid doing this
+        return gam
+    }
+    tem = matchWhitespace()(gam.next)
+    if (tem.status == "success") {
+        gam.next = tem.next
+    }
+    var alp = matchLit(gam.next)
+    if (alp.status == "failure") {
+        return alp
+    }
+    return {status: "success", next: alp.next, treeNode: {type: "variable declaration", data: ret.treeNode.data + " " + phi.treeNode.data + " " + gam.treeNode.data + " " + alp.treeNode.data, children: [ret.treeNode, phi.treeNode, gam.treeNode, alp.treeNode]}} // types must be checked at runtime since parser doesn't check them
+}
 var matchExpr = (wrappedString) => {
 }
 var matchProgram = (wrappedString) => {
@@ -231,8 +307,11 @@ youClod(matchFloatLiteral(wrapString("123.456")))
 youClod(matchIdentifier(wrapString("a1")))
 youClod(matchIf(wrapString("if asdf")))
 youClod(matchDefine(wrapString("str autism = 'you'")))
-youClod(matchDefine(wrapString("num star = 1")))
-youClod(matchDefine(wrapString("num havana = 1.2")))
+youClod(matchDefine(wrapString("num star= 1")))
+youClod(matchDefine(wrapString("num havana =1.2")))
+youClod(matchParamd(wrapString("( asdf, abcd, efgh)")))
+youClod(matchParamd(wrapString("( asdf, abcd, efgh,)")))
+youClod(matchParamd(wrapString("(asdf,abcd,efgh)")))
 // THESE SHOULD FAIL
 youClod(matchStringLiteral(wrapString("'are\\ you autistic\"")))
 youClod(matchFloatLiteral(wrapString("123.a")))
