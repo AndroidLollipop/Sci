@@ -368,39 +368,6 @@ var matchExpr = (wrappedString) => {
 var matchProgram = (wrappedString) => {
 
 }
-const util = require('util')
-var youClod = (x) => console.log(util.inspect(x, { showHidden: false, depth: null }))
-// THESE SHOULD SUCCEED
-youClod(matchEscapedLiteral(wrapString("are\\ you autistic")))
-youClod(matchStringLiteral(wrapString("'are\\ you autistic'")))
-youClod(matchStringLiteral(wrapString('"are\\ you autistic"')))
-youClod(matchFloatLiteral(wrapString("123")))
-youClod(matchFloatLiteral(wrapString("123.456")))
-youClod(matchIdentifier(wrapString("a1")))
-youClod(matchIf(wrapString("if asdf")))
-youClod(matchDefine(wrapString("str autism = 'you'")))
-youClod(matchDefine(wrapString("num star= 1")))
-youClod(matchDefine(wrapString("num havana =1.2")))
-youClod(matchParamd(wrapString("( asdf, abcd, efgh)")))
-youClod(matchParamd(wrapString("( asdf, abcd, efgh,)")))
-youClod(matchParamd(wrapString("(  asdf,    abcd  , efgh  ) ")))
-youClod(matchParamd(wrapString("( asdf )")))
-youClod(matchParamd(wrapString("()")))
-youClod(matchExpr(wrapString("((((((havana))))))")))
-youClod(matchExpr(wrapString("yellow")))
-youClod(matchExpr(wrapString("(havana))"))) // this by itself isn't invalid, but the next call should fail immediately
-youClod(matchExpr(wrapString("( abc * def ) + ( ghi * jkl )")))
-youClod(matchExpr(wrapString("( 123 * 456 ) + ( 789 * 012 )")))
-youClod(matchExpr(wrapString("(123*456)+(789*0.12)")))
-youClod(matchDefine(wrapString("num havana = camila + young")))
-// THESE SHOULD FAIL
-youClod(matchStringLiteral(wrapString("'are\\ you autistic\"")))
-youClod(matchFloatLiteral(wrapString("123.a")))
-youClod(matchIdentifier(wrapString("1a")))
-youClod(matchParamd(wrapString("(,)")))
-youClod(matchParamd(wrapString("(1a)")))
-youClod(matchParamd(wrapString(" (a)")))
-youClod(matchExpr(wrapString("((havana)")))
 //formal definition of operators
 //expr -> (expr)
 //expr -> identifier
@@ -409,3 +376,13 @@ youClod(matchExpr(wrapString("((havana)")))
 //expr' -> expr
 //hmmm...................
 //this is really 麻烦 to implement
+module.exports = {
+  matchExpr: matchExpr,
+  matchStringLiteral: matchStringLiteral,
+  matchEscapedLiteral: matchEscapedLiteral,
+  matchFloatLiteral: matchFloatLiteral,
+  matchIdentifier: matchIdentifier,
+  matchIf: matchIf,
+  matchParamd: matchParamd,
+  matchDefine: matchDefine
+}
