@@ -55,7 +55,7 @@ var matchTerminalsStar = (terminals) => (type) => (wrappedString) => { // to avo
 var lca = "qwertyuiopasdfghjklzxcvbnm"
 var uca = "QWERTYUIOPASDFGHJKLZXCVBNM"
 var num = "123456790"
-var matchWhitespace = matchTerminalsStar(" ")
+var matchWhitespace = matchTerminalsStar(" \n")
 var matchOpP = matchTerminal("(")
 var matchClP = matchTerminal(")")
 var matchNum = matchTerminalsStar(num)
@@ -77,10 +77,12 @@ var matchClA = matchTerminal("]")
 var matchPip = matchTerminal("|")
 var matchDef = matchTerminal("=")
 var matchIf = matchTerminalStrings(["if"])("if")
+var matchInt = matchTerminalStrings(["int"])("integer declaration")
+var matchStr = matchTerminalStrings(["str"])("string declaration")
 var matchCes = (wrappedString) => {
     var ret = matchEsc("escape literal")(wrappedString)
     if (ret.status == "failure") {
-        return {status: "failure"}
+        return ret
     }
     ret = matchSls("escape literal")(ret.next)
     if (ret.status == "success") {
@@ -101,7 +103,7 @@ var matchIdentifier = (wrappedString) => {
 var matchEscapedLiteral = (wrappedString) => { // only alphanumeric strings, for now... it's trivial to extend it anyway
     var ret = matchAls("alphanumeric literal")(wrappedString)
     if (ret.status == "failure") {
-        return {status: "failure"}
+        return ret
     }
     var phi = [ret.treeNode]
     var day = ret.treeNode.data
@@ -133,6 +135,7 @@ var matchStringLiteral = (wrappedString) => {
             if (ret.status == "success") {
                 phi.next = ret.next
                 phi.treeNode.type = "string literal"
+                phi.treeNode.data = '"' + phi.treeNode.data + '"'
                 return phi
             }
         }
@@ -147,6 +150,7 @@ var matchStringLiteral = (wrappedString) => {
                 if (ret.status == "success") {
                     phi.next = ret.next
                     phi.treeNode.type = "string literal"
+                    phi.treeNode.data = "'" + phi.treeNode.data + "'"
                     return phi // actually i should write a combinator, that would be a better option
                 }
             }
@@ -170,6 +174,48 @@ var matchFloatLiteral = (wrappedString) => {
     }
     return {status: "failure"}
 }
+var composeMatch = (matchers) => (wrappedString) => { // i should have written this from the start, damn
+    for (var i = 0; i < matchers.length; i++) {
+        let ret = matchers[i](wrappedString)
+        if (ret.status == "success") {
+            return ret
+        }
+    }
+    return {status: "failure"}
+}
+var matchDec = composeMatch([matchInt, matchStr])
+var matchLit = composeMatch([matchFloatLiteral, matchStringLiteral])
+var matchDefine = (wrappedString) => {
+    var ret = matchDec(wrappedString)
+    if (ret.status == "failure") {
+        return ret
+    }
+    var tem = matchWhitespace()(ret.next)
+    if (tem.status == "failure") {
+        return tem
+    }
+    var phi = matchIdentifier(tem.next)
+    if (phi.status == "failure") {
+        return ret
+    }
+    tem = matchWhitespace()(phi.next)
+    if (tem.status == "success") {
+        phi.next = tem.next
+    }
+    var gam = matchDef("equals")(phi.next)
+    if (gam.status == "failure") { // yes, i am aware that maybe i should add an undefined checker to the start of every function to avoid doing this
+        return gam
+    }
+    tem = matchWhitespace()(gam.next)
+    if (tem.status == "success") {
+        gam.next = tem.next
+    }
+    var alp = matchLit(gam.next)
+    if (alp.status == "failure") {
+        return alp
+    }
+    return {status: "success", next: gam.next, treeNode: {type: "variable declaration", data: ret.treeNode.data + " " + phi.treeNode.data + " " + gam.treeNode.data + " " + alp.treeNode.data, children: [ret.treeNode, phi.treeNode, gam.treeNode, alp.treeNode]}} // types must be checked at runtime since parser doesn't check them
+}
 var matchExpr = (wrappedString) => {
 }
 var matchProgram = (wrappedString) => {
@@ -184,6 +230,8 @@ youClod(matchFloatLiteral(wrapString("123")))
 youClod(matchFloatLiteral(wrapString("123.456")))
 youClod(matchIdentifier(wrapString("a1")))
 youClod(matchIf(wrapString("if asdf")))
+youClod(matchDefine(wrapString("str autism = 'you'")))
+youClod(matchDefine(wrapString("int star = 1")))
 // THESE SHOULD FAIL
 youClod(matchStringLiteral(wrapString("'are\\ you autistic\"")))
 youClod(matchFloatLiteral(wrapString("123.a")))
