@@ -389,3 +389,10 @@ youClod(matchParamd(wrapString("(,)")))
 youClod(matchParamd(wrapString("(1a)")))
 youClod(matchParamd(wrapString(" (a)")))
 youClod(matchExpr(wrapString("((havana)")))
+//formal definition of operators
+//expr -> (expr)
+//expr -> identifier
+//expr -> literal
+//expr' -> expr op expr'
+//hmmm...................
+//this is really 麻烦 to implement
