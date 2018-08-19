@@ -64,6 +64,7 @@ var matchUca = matchTerminalsStar(uca)
 var matchAlp = matchTerminalsStar(lca+uca)
 var matchAln = matchTerminalsStar(lca+uca+num)
 var matchAls = matchTerminalsStar(lca+uca+num+" ")
+var matchSls = matchTerminals(lca+uca+num+" ")
 var matchDoC = matchTerminal('"')
 var matchSiC = matchTerminal("'")
 var matchEsc = matchTerminal("\\")
@@ -76,6 +77,17 @@ var matchClA = matchTerminal("]")
 var matchPip = matchTerminal("|")
 var matchDef = matchTerminal("=")
 var matchIf = matchTerminalStrings(["if"])("if")
+var matchCes = (wrappedString) => {
+    var ret = matchEsc("escape literal")(wrappedString)
+    if (ret.status == "failure") {
+        return {status: "failure"}
+    }
+    ret = matchSls("escape literal")(ret.next)
+    if (ret.status == "success") {
+        ret.treeNode.data = "\\" + ret.treeNode.data
+    }
+    return ret
+}
 var matchIdentifier = (wrappedString) => {
     if (matchNum()(wrappedString).status == "success") {
         return {status: "failure"} // identifiers cannot start with a numeric character
@@ -94,7 +106,7 @@ var matchEscapedLiteral = (wrappedString) => { // only alphanumeric strings, for
     var phi = [ret.treeNode]
     var day = ret.treeNode.data
     wrappedString = ret.next
-    ret = matchEsc("escape literal")(wrappedString)
+    ret = matchCes(wrappedString)
     if (ret.status == "success") {
         phi.push(ret.treeNode)
         day += ret.treeNode.data
@@ -164,7 +176,7 @@ var matchProgram = (wrappedString) => {
 }
 const util = require('util')
 var youClod = (x) => console.log(util.inspect(x, {showHidden: false, depth: null}))
-//THESE SHOULD SUCCEED
+// THESE SHOULD SUCCEED
 youClod(matchEscapedLiteral(wrapString("are\\ you autistic")))
 youClod(matchStringLiteral(wrapString("'are\\ you autistic'")))
 youClod(matchStringLiteral(wrapString('"are\\ you autistic"')))
@@ -172,7 +184,7 @@ youClod(matchFloatLiteral(wrapString("123")))
 youClod(matchFloatLiteral(wrapString("123.456")))
 youClod(matchIdentifier(wrapString("a1")))
 youClod(matchIf(wrapString("if asdf")))
-//THESE SHOULD FAIL
+// THESE SHOULD FAIL
 youClod(matchStringLiteral(wrapString("'are\\ you autistic\"")))
 youClod(matchFloatLiteral(wrapString("123.a")))
 youClod(matchIdentifier(wrapString("1a")))
