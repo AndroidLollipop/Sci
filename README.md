@@ -7,44 +7,44 @@ youClod(matchDefine(wrapString("str autism = 'you'"))) ->
   next: [ 18, 'str autism = \'you\'' ],  
   treeNode:  
    { type: 'variable declaration',  
-     data: 'str autism = \'you\'',  
+     canonicalString: 'str autism = \'you\'',  
      children:  
-      [ { type: 'string declaration', data: 'str', children: [] },  
-        { type: 'identifier', data: 'autism', children: [] },  
-        { type: 'equals', data: '=', children: [] },  
+      [ { type: 'string declaration', canonicalString: 'str', children: [] },  
+        { type: 'identifier', canonicalString: 'autism', children: [] },  
+        { type: 'equals', canonicalString: '=', children: [] },  
         { type: 'string literal',  
-          data: '\'you\'',  
-          children: [ { type: 'alphanumeric literal', data: 'you', children: [] } ] } ] } }  
+          canonicalString: '\'you\'',  
+          children: [ { type: 'alphanumeric literal', canonicalString: 'you', children: [] } ] } ] } }  
 youClod(matchExpr(wrapString("(123\*456)+(789\*012)"))) ->  
 { status: 'success',  
   next: [ 20, '(123\*456)+(789\*0.12)' ],  
   treeNode:  
    { type: 'expression',  
-     data: '(123\*456)+(789\*0.12)',  
+     canonicalString: '(123\*456)+(789\*0.12)',  
      children:  
       [ { type: 'parenthesized expression',  
-          data: '(123\*456)',  
+          canonicalString: '(123\*456)',  
           children:  
            [ { type: 'expression',  
-               data: '123\*456',  
+               canonicalString: '123\*456',  
                children:  
-                [ { type: 'integral literal', data: '123', children: [] },  
-                  { type: 'operator: dm', data: '\*', children: [] },  
-                  { type: 'integral literal', data: '456', children: [] } ] } ] },  
-        { type: 'operator: as', data: '+', children: [] },  
+                [ { type: 'integral literal', canonicalString: '123', children: [] },  
+                  { type: 'operator: dm', canonicalString: '\*', children: [] },  
+                  { type: 'integral literal', canonicalString: '456', children: [] } ] } ] },  
+        { type: 'operator: as', canonicalString: '+', children: [] },  
         { type: 'parenthesized expression',  
-          data: '(789\*0.12)',  
+          canonicalString: '(789\*0.12)',  
           children:  
            [ { type: 'expression',  
-               data: '789\*0.12',  
+               canonicalString: '789\*0.12',  
                children:  
-                [ { type: 'integral literal', data: '789', children: [] },  
-                  { type: 'operator: dm', data: '\*', children: [] },  
+                [ { type: 'integral literal', canonicalString: '789', children: [] },  
+                  { type: 'operator: dm', canonicalString: '\*', children: [] },  
                   { type: 'float literal',  
-                    data: '0.12',  
+                    canonicalString: '0.12',  
                     children:  
-                     [ { type: 'integral literal', data: '0', children: [] },  
-                       { type: 'fractional literal', data: '12', children: [] } ] } ] } ] } ] } }
+                     [ { type: 'integral literal', canonicalString: '0', children: [] },  
+                       { type: 'fractional literal', canonicalString: '12', children: [] } ] } ] } ] } ] } }
 ## refactoring considerations
 tokparse.js really needs to be refactored.  
 specifically, all functions should return next even on failure. this will save about 50 lines of code.

@@ -17,7 +17,7 @@ var prev = (wrappedString) => wrappedString[0] > -1 ? [wrappedString[0] - 1, wra
 // next and prev must not mutate their parameters
 var matchTerminal = (terminal) => (type) => (wrappedString) => {
   if (peek(wrappedString) == terminal) {
-    return { status: "success", next: next(wrappedString), treeNode: { "type": type, "data": terminal, "children": [] } }
+    return { status: "success", next: next(wrappedString), treeNode: { type: type, canonicalString: terminal, children: [] } }
   }
   else {
     return { status: "failure" }
@@ -25,7 +25,7 @@ var matchTerminal = (terminal) => (type) => (wrappedString) => {
 }
 var matchTerminals = (terminals) => (type) => (wrappedString) => {
   if (terminals.includes(peek(wrappedString))) {
-    return { status: "success", next: next(wrappedString), treeNode: { type: type, data: peek(wrappedString), children: [] } }
+    return { status: "success", next: next(wrappedString), treeNode: { type: type, canonicalString: peek(wrappedString), children: [] } }
   }
   else {
     return { status: "failure" }
@@ -34,7 +34,7 @@ var matchTerminals = (terminals) => (type) => (wrappedString) => {
 var matchTerminalStrings = (terminalStrings) => (type) => (wrappedString) => {
   for (var i = 0; i < terminalStrings.length; i++) {
     if (wrappedString[1].startsWith(terminalStrings[i], wrappedString[0])) {
-      return { status: "success", next: [wrappedString[0] + terminalStrings[i].length, wrappedString[1]], treeNode: { type: type, data: terminalStrings[i], children: [] } }
+      return { status: "success", next: [wrappedString[0] + terminalStrings[i].length, wrappedString[1]], treeNode: { type: type, canonicalString: terminalStrings[i], children: [] } }
     }
   }
   return { status: "failure" }
@@ -50,7 +50,7 @@ var matchTerminalsStar = (terminals) => (type) => (wrappedString) => { // to avo
     ret += peek(wrappedString)
     wrappedString = next(wrappedString)
   }
-  return { status: "success", next: wrappedString, treeNode: { type: type, data: ret, children: [] } }
+  return { status: "success", next: wrappedString, treeNode: { type: type, canonicalString: ret, children: [] } }
 }
 var lca = "qwertyuiopasdfghjklzxcvbnm"
 var uca = "QWERTYUIOPASDFGHJKLZXCVBNM"
@@ -87,7 +87,7 @@ var matchCes = (wrappedString) => {
   }
   ret = matchSls("escape literal")(ret.next)
   if (ret.status == "success") {
-    ret.treeNode.data = "\\" + ret.treeNode.data
+    ret.treeNode.canonicalString = "\\" + ret.treeNode.canonicalString
   }
   return ret
 }
@@ -107,23 +107,23 @@ var matchEscapedLiteral = (wrappedString) => { // only alphanumeric strings, for
     return ret
   }
   var phi = [ret.treeNode]
-  var day = ret.treeNode.data
+  var day = ret.treeNode.canonicalString
   wrappedString = ret.next
   ret = matchCes(wrappedString)
   if (ret.status == "success") {
     phi.push(ret.treeNode)
-    day += ret.treeNode.data
+    day += ret.treeNode.canonicalString
     wrappedString = ret.next
     ret = matchEscapedLiteral(wrappedString)
     if (ret.status == "success") {
       for (var i = 0; i < ret.treeNode.children.length; i++) { // this is quite pointless, but whatever
         phi.push(ret.treeNode.children[i])
-        day += ret.treeNode.children[i].data
+        day += ret.treeNode.children[i].canonicalString
       }
       wrappedString = ret.next
     }
   }
-  return { status: "success", next: wrappedString, treeNode: { type: "escaped literal", data: day, children: phi } }
+  return { status: "success", next: wrappedString, treeNode: { type: "escaped literal", canonicalString: day, children: phi } }
 }
 var matchStringLiteral = (wrappedString) => {
   var phi
@@ -136,7 +136,7 @@ var matchStringLiteral = (wrappedString) => {
       if (ret.status == "success") {
         phi.next = ret.next
         phi.treeNode.type = "string literal"
-        phi.treeNode.data = '"' + phi.treeNode.data + '"'
+        phi.treeNode.canonicalString = '"' + phi.treeNode.canonicalString + '"'
         return phi
       }
     }
@@ -151,7 +151,7 @@ var matchStringLiteral = (wrappedString) => {
         if (ret.status == "success") {
           phi.next = ret.next
           phi.treeNode.type = "string literal"
-          phi.treeNode.data = "'" + phi.treeNode.data + "'"
+          phi.treeNode.canonicalString = "'" + phi.treeNode.canonicalString + "'"
           return phi // actually i should write a combinator, that would be a better option
         }
       }
@@ -166,7 +166,7 @@ var matchFloatLiteral = (wrappedString) => {
     if (phi.status == "success") {
       var gam = matchNum("fractional literal")(phi.next)
       if (gam.status == "success") {
-        return { status: "success", next: gam.next, treeNode: { type: "float literal", data: ret.treeNode.data + phi.treeNode.data + gam.treeNode.data, children: [ret.treeNode, gam.treeNode] } }
+        return { status: "success", next: gam.next, treeNode: { type: "float literal", canonicalString: ret.treeNode.canonicalString + phi.treeNode.canonicalString + gam.treeNode.canonicalString, children: [ret.treeNode, gam.treeNode] } }
       }
     } // yes, we intentionally fall through to fail if we get something like 123.
     else {
@@ -211,11 +211,11 @@ var matchDefine = (wrappedString) => {
   if (tem.status == "success") {
     gam.next = tem.next
   }
-  var alp = matchLit(gam.next)
+  var alp = matchExpr(gam.next)
   if (alp.status !== "success") {
     return alp
   }
-  return { status: "success", next: alp.next, treeNode: { type: "variable declaration", data: ret.treeNode.data + " " + phi.treeNode.data + " " + gam.treeNode.data + " " + alp.treeNode.data, children: [ret.treeNode, phi.treeNode, gam.treeNode, alp.treeNode] } } // types must be checked at runtime since parser doesn't check them
+  return { status: "success", next: alp.next, treeNode: { type: "variable declaration", canonicalString: ret.treeNode.canonicalString + " " + phi.treeNode.canonicalString + " " + gam.treeNode.canonicalString + " " + alp.treeNode.canonicalString, children: [ret.treeNode, phi.treeNode, gam.treeNode, alp.treeNode] } } // types must be checked at runtime since parser doesn't check them
 }
 var matchParamd = (wrappedString) => {
   var ret = matchOpP()(wrappedString)
@@ -239,7 +239,7 @@ var matchParamd = (wrappedString) => {
       ret.next = tem.next
     }
     iet = ret
-    rea += ret.treeNode.data
+    rea += ret.treeNode.canonicalString
     reb.push(ret.treeNode)
     ret = matchCom()(ret.next)
     if (ret.status !== "success") {
@@ -256,7 +256,7 @@ var matchParamd = (wrappedString) => {
   if (ret.status !== "success") {
     return ret
   }
-  return { status: "success", next: ret.next, treeNode: { type: "parameter declaration", data: rea, children: reb } }
+  return { status: "success", next: ret.next, treeNode: { type: "parameter declaration", canonicalString: rea, children: reb } }
 }
 var matchFunbod = (wrappedString) => {
 
@@ -290,7 +290,7 @@ var matchFundef = (wrappedString) => {
   if (alp.status !== "success") {
     return alp
   }
-  return { status: "success", next: alp.next, treeNode: { type: "function declaration", data: ret.treeNode.data + " " + phi.treeNode.data + " " + gam.treeNode.data + " " + alp.treeNode.data, children: [ret.treeNode, phi.treeNode, gam.treeNode, alp.treeNode] } } // types must be checked at runtime since parser doesn't check them
+  return { status: "success", next: alp.next, treeNode: { type: "function declaration", canonicalString: ret.treeNode.canonicalString + " " + phi.treeNode.canonicalString + " " + gam.treeNode.canonicalString + " " + alp.treeNode.canonicalString, children: [ret.treeNode, phi.treeNode, gam.treeNode, alp.treeNode] } } // types must be checked at runtime since parser doesn't check them
 }
 var matchBrac = (wrappedString) => {
   var ret = matchOpP()(wrappedString)
@@ -316,7 +316,7 @@ var matchBrac = (wrappedString) => {
   if (alp.status !== "success") {
     return alp
   }
-  return { status: "success", "next": alp.next, treeNode: { type: "parenthesized expression", data: "(" + phi.treeNode.data + ")", children: [phi.treeNode] } }
+  return { status: "success", "next": alp.next, treeNode: { type: "parenthesized expression", canonicalString: "(" + phi.treeNode.canonicalString + ")", children: [phi.treeNode] } }
 }
 var matchBrae = (wrappedString) => {
 
@@ -338,7 +338,7 @@ var matchOper = (wrappedString) => {
   if (ret.status !== "success") {
     return ret
   }
-  return { status: "success", next: ret.next, treeNode: { type: "expression", data: phi.treeNode.data + ret.treeNode.data , children: [phi.treeNode, ret.treeNode]}}
+  return { status: "success", next: ret.next, treeNode: { type: "expression", canonicalString: phi.treeNode.canonicalString + ret.treeNode.canonicalString , children: [phi.treeNode, ret.treeNode]}}
   return phi
 }
 var matchExpr = (wrappedString) => {
@@ -360,7 +360,7 @@ var matchExpr = (wrappedString) => {
   if (phi.status == "success") {
     tem = matchOper(phi.next)
     if (tem.status == "success") {
-      return { status: "success", next: tem.next, treeNode: { type: "expression", data: phi.treeNode.data + tem.treeNode.data, children: [phi.treeNode].concat(tem.treeNode.children)}}
+      return { status: "success", next: tem.next, treeNode: { type: "expression", canonicalString: phi.treeNode.canonicalString + tem.treeNode.canonicalString, children: [phi.treeNode].concat(tem.treeNode.children)}}
     }
   }
   return phi
@@ -392,6 +392,7 @@ youClod(matchExpr(wrapString("(havana))"))) // this by itself isn't invalid, but
 youClod(matchExpr(wrapString("( abc * def ) + ( ghi * jkl )")))
 youClod(matchExpr(wrapString("( 123 * 456 ) + ( 789 * 012 )")))
 youClod(matchExpr(wrapString("(123*456)+(789*0.12)")))
+youClod(matchDefine(wrapString("num havana = camila + young")))
 // THESE SHOULD FAIL
 youClod(matchStringLiteral(wrapString("'are\\ you autistic\"")))
 youClod(matchFloatLiteral(wrapString("123.a")))
