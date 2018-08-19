@@ -7,6 +7,11 @@ var wrapString = (string) => {
 }
 var ex1 = t.matchDefine(wrapString("num havana = camila + young")).treeNode
 var se1 = (name) => name == "camila" ? { type: "number", value: 500 } : { type: "number", value: 100 }
-var newGlo = a.emptyScope
+var newGlo = a.emptyScope()
 console.log(a.evaluateExpression(newGlo)(t.matchExpr(wrapString("(123*456)+(789*0.12)")).treeNode))
-console.log(a.evaluateExpression(newGlo)(t.matchDefine(wrapString("")).treeNode))
+console.log(a.evaluateExpression(newGlo)(t.matchDefine(wrapString("num camila = 5")).treeNode))
+console.log(newGlo[0]("camila"))
+console.log(a.evaluateExpression(newGlo)(t.matchDefine(wrapString("num young = 7+3*6")).treeNode))
+console.log(newGlo[0]("young"))
+console.log(a.evaluateExpression(newGlo)(t.matchDefine(wrapString("num havana = camila + young")).treeNode))
+console.log(newGlo[0]("havana"))
