@@ -31,6 +31,14 @@ var matchTerminals = (terminals) => (type) => (wrappedString) => {
         return {status: "failure"}
     }
 }
+var matchTerminalStrings = (terminalStrings) => (type) => (wrappedString) => {
+    for (var i = 0; i < terminalStrings.length; i++) {
+        if (wrappedString[1].startsWith(terminalStrings[i], wrappedString[0])) {
+            return {status: "success", next: [wrappedString[0] + terminalStrings[i].length, wrappedString[1]], treeNode: {type: type, data: terminalStrings[i], children: []}}
+        }
+    }
+    return {status: "failure"}
+}
 var matchTerminalsStar = (terminals) => (type) => (wrappedString) => { // to avoid having a horrifically convoluted tree structure
     if (!terminals.includes(peek(wrappedString))) {
         return {status: "failure"}
@@ -67,6 +75,7 @@ var matchOpA = matchTerminal("[")
 var matchClA = matchTerminal("]")
 var matchPip = matchTerminal("|")
 var matchDef = matchTerminal("=")
+var matchIf = matchTerminalStrings(["if"])("if")
 var matchIdentifier = (wrappedString) => {
     if (matchNum()(wrappedString).status == "success") {
         return {status: "failure"} // identifiers cannot start with a numeric character
@@ -162,6 +171,7 @@ youClod(matchStringLiteral(wrapString('"are\\ you autistic"')))
 youClod(matchFloatLiteral(wrapString("123")))
 youClod(matchFloatLiteral(wrapString("123.456")))
 youClod(matchIdentifier(wrapString("a1")))
+youClod(matchIf(wrapString("if asdf")))
 //THESE SHOULD FAIL
 youClod(matchStringLiteral(wrapString("'are\\ you autistic\"")))
 youClod(matchFloatLiteral(wrapString("123.a")))
