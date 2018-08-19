@@ -4,7 +4,7 @@ see how that kinda matches the structure of a recursive descent parser?
 ## example output for tokparse (ast constructor)
 youClod(matchDefine(wrapString("str autism = 'you'"))) ->  
 { status: 'success',  
-  next: [ 13, 'str autism = \'you\'' ],  
+  next: [ 18, 'str autism = \'you\'' ],  
   treeNode:  
    { type: 'variable declaration',  
      data: 'str autism = \'you\'',  
@@ -14,4 +14,4 @@ youClod(matchDefine(wrapString("str autism = 'you'"))) ->
         { type: 'equals', data: '=', children: [] },  
         { type: 'string literal',  
           data: '\'you\'',  
-          children: [ { type: 'alphanumeric literal', data: 'you', children: [] } ] } ] } }  
+          children: [ { type: 'alphanumeric literal', data: 'you', children: [] } ] } ] } }

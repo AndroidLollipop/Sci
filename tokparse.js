@@ -214,7 +214,7 @@ var matchDefine = (wrappedString) => {
     if (alp.status == "failure") {
         return alp
     }
-    return {status: "success", next: gam.next, treeNode: {type: "variable declaration", data: ret.treeNode.data + " " + phi.treeNode.data + " " + gam.treeNode.data + " " + alp.treeNode.data, children: [ret.treeNode, phi.treeNode, gam.treeNode, alp.treeNode]}} // types must be checked at runtime since parser doesn't check them
+    return {status: "success", next: alp.next, treeNode: {type: "variable declaration", data: ret.treeNode.data + " " + phi.treeNode.data + " " + gam.treeNode.data + " " + alp.treeNode.data, children: [ret.treeNode, phi.treeNode, gam.treeNode, alp.treeNode]}} // types must be checked at runtime since parser doesn't check them
 }
 var matchExpr = (wrappedString) => {
 }
