@@ -322,6 +322,12 @@ var matchBrae = (wrappedString) => {
 
 }
 var matchOper = (wrappedString) => {
+  var tem = matchWhitespace()(wrappedString)
+  if (tem.status == "success") {
+    wrappedString = tem.next
+  }
+  var ret = matchAs()(wrappedString)
+  //console.log(ret)
   return { status: "failure" }
 }
 var matchExpr = (wrappedString) => {
@@ -355,18 +361,6 @@ var matchExpr = (wrappedString) => {
     }
   }
   return phi
-}
-var matchPlus = (wrappedString) => {
-
-}
-var matchMinu = (wrappedString) => {
-
-}
-var matchTime = (wrappedString) => {
-
-}
-var matchDivi = (wrappedString) => {
-
 }
 var matchProgram = (wrappedString) => {
 

@@ -15,3 +15,6 @@ youClod(matchDefine(wrapString("str autism = 'you'"))) ->
         { type: 'string literal',  
           data: '\'you\'',  
           children: [ { type: 'alphanumeric literal', data: 'you', children: [] } ] } ] } }
+## refactoring considerations
+tokparse.js really needs to be refactored.  
+specifically, all functions should return next even on failure. this will save about 50 lines of code.
