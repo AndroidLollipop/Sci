@@ -371,7 +371,7 @@ var matchReturn = (wrappedString) => {
     if (rex.status !== "success") {
         return rex
     }
-    return { status: "success", next: rex.next, treeNode: { type: "return statement", canonicalString: "return" + rex.treeNode.canonicalString, children: [rex.treeNode]}}
+    return { status: "success", next: rex.next, treeNode: { type: "return statement", canonicalString: "return " + rex.treeNode.canonicalString, children: [rex.treeNode]}}
 }
 var matchBrae = (wrappedString) => {
     var phi = []

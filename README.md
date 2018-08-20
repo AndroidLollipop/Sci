@@ -84,7 +84,7 @@ youClod(t.matchFundef(wrapString("num potato(p1, p2, p3){num skye = 1;num scotla
      'num potato(p1, p2, p3){num skye = 1;num scotland = 2; return p1+p2+p3+skye+scotland}' \],  
   treeNode:  
    { type: 'function declaration',  
-     canonicalString: 'num potato (p1, p2, p3) {num skye = 1;num scotland = 2;returnp1+p2+p3+skye+scotland;}',  
+     canonicalString: 'num potato (p1, p2, p3) {num skye = 1;num scotland = 2;return p1+p2+p3+skye+scotland;}',  
      children:  
       \[ { type: 'number declaration',  
           canonicalString: 'num',  
@@ -97,7 +97,7 @@ youClod(t.matchFundef(wrapString("num potato(p1, p2, p3){num skye = 1;num scotla
              { type: 'identifier', canonicalString: 'p2', children: \[\] },  
              { type: 'identifier', canonicalString: 'p3', children: \[\] } ] },  
         { type: 'function body',  
-          canonicalString: '{num skye = 1;num scotland = 2;returnp1+p2+p3+skye+scotland;}',  
+          canonicalString: '{num skye = 1;num scotland = 2;return p1+p2+p3+skye+scotland;}',  
           children:  
            \[ { type: 'variable declaration',  
                canonicalString: 'num skye = 1',  
@@ -118,7 +118,7 @@ youClod(t.matchFundef(wrapString("num potato(p1, p2, p3){num skye = 1;num scotla
                   { type: 'equals', canonicalString: '=', children: \[\] },  
                   { type: 'integral literal', canonicalString: '2', children: \[\] } ] },  
              { type: 'return statement',  
-               canonicalString: 'returnp1+p2+p3+skye+scotland',  
+               canonicalString: 'return p1+p2+p3+skye+scotland',  
                children:  
                 \[ { type: 'expression',  
                     canonicalString: 'p1+p2+p3+skye+scotland',  

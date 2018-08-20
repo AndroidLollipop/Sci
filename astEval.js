@@ -50,7 +50,11 @@ var collapseString = (nodeChildren) => {
     return ret
 }
 var evaluateExpression = ([scopeGetter, scopeSetter, scopeDefiner]) => (expression) => {
-    if (expression.type == "variable declaration") {
+    if (expression.type == "function declaration") {
+        scopeDefiner(expression.children.filter((x) => x.type == "identifier")[0].canonicalString, { type: "function", parentScope: [scopeGetter, scopeSetter, scopeDefiner], parameters: expression.children.filter((x) => x.type == "parameter declaration")[0], body: expression.children.filter((x) => x.type == "function body")[0]})
+        return scopeGetter(expression.children.filter((x) => x.type == "identifier")[0].canonicalString)
+    }
+    else if (expression.type == "variable declaration") {
         var expRes = evaluateExpression([scopeGetter, scopeSetter, scopeDefiner])(expression.children.filter((x) => x.type !== "identifier" && x.type !== "equals" && x.type !== "number declaration" && x.type !== "string declaration")[0])
         scopeDefiner(expression.children.filter((x) => x.type == "identifier")[0].canonicalString, expRes)
         return expRes
