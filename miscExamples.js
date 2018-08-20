@@ -42,3 +42,4 @@ var ex2 = t.matchExpr(wrapString("(123*456)+(789*0.12)")).treeNode
 var se1 = (name) => name == "camila" ? { type: "number", value: 500 } : { type: "number", value: 100 }
 console.log(a.evaluateExpression(a.emptyScope())(ex2))
 youClod(t.matchExpr(wrapString("7+3*6*7*9")))
+youClod(t.matchExpr(wrapString("7*3+6*7*9")))
