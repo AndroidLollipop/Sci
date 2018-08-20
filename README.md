@@ -70,4 +70,4 @@ specifically, all functions should return next even on failure. this will save a
 ## this doesn't really do anything new...
 that's not the point. this is meant to be a learning experience.
 ## important note on hacky code
-because i used an extremely hacky method to implement DMAS from BODMAS, you must remember to save mulPrecedence before and restore it after the appropriate calls when editing the code
+because i used an extremely hacky method to implement DMAS from BODMAS, you must remember to save and reset mulPrecedence before and restore it after the appropriate calls when editing the code
