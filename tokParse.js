@@ -280,7 +280,7 @@ var matchParamd = (wrappedString) => {
     if (ret.status !== "success") {
         return ret
     }
-    return { status: "success", next: ret.next, treeNode: { type: "parameter declaration", canonicalString: rea, children: reb } }
+    return { status: "success", next: ret.next, treeNode: { type: "parameter declaration", canonicalString: "(" + rea + ")", children: reb } }
 }
 var matchFunbod = (wrappedString) => {
     var ret = matchOpB()(wrappedString)
@@ -356,7 +356,22 @@ var matchBrac = (wrappedString) => {
     if (alp.status !== "success") {
         return alp
     }
-    return { status: "success", "next": alp.next, treeNode: { type: "parenthesized expression", canonicalString: "(" + phi.treeNode.canonicalString + ")", children: [phi.treeNode] } }
+    return { status: "success", next: alp.next, treeNode: { type: "parenthesized expression", canonicalString: "(" + phi.treeNode.canonicalString + ")", children: [phi.treeNode] } }
+}
+var matchReturn = (wrappedString) => {
+    var ret = matchTerminalStrings(["return"])()(wrappedString)
+    if (ret.status !== "success") {
+        return ret
+    }
+    var tem = matchWhitespace()(ret.next)
+    if (tem.status !== "success") {
+        return tem
+    }
+    var rex = matchExpr(tem.next)
+    if (rex.status !== "success") {
+        return rex
+    }
+    return { status: "success", next: rex.next, treeNode: { type: "return statement", canonicalString: "return" + rex.treeNode.canonicalString, children: [rex.treeNode]}}
 }
 var matchBrae = (wrappedString) => {
     var phi = []
@@ -368,7 +383,10 @@ var matchBrae = (wrappedString) => {
         if (tem.status == "success") {
             ret.next = tem.next
         }
-        tem = matchDefine(ret.next)
+        tem = matchReturn(ret.next)
+        if (tem.status !== "success") {
+            tem = matchDefine(ret.next)
+        }
         if (tem.status !== "success") {
             tem = matchSetvar(ret.next)
         }
@@ -386,7 +404,7 @@ var matchBrae = (wrappedString) => {
             ret.next = tem.next
         } // we don't need to handle fail, since this will fail the next iteration anyway (which also removes any trailing whitespace)
     }
-    return { status: "success", "next": ret.next, treeNode: { type: "braced expressions", canonicalString: rst, children: phi}}
+    return { status: "success", next: ret.next, treeNode: { type: "braced expressions", canonicalString: rst, children: phi}}
 }
 var matchOper = (wrappedString) => {
     var tem = matchWhitespace()(wrappedString)
