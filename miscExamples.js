@@ -43,3 +43,4 @@ var se1 = (name) => name == "camila" ? { type: "number", value: 500 } : { type: 
 console.log(a.evaluateExpression(a.emptyScope())(ex2))
 youClod(t.matchExpr(wrapString("7+3*6*7*9")))
 youClod(t.matchExpr(wrapString("7*3+6*7*9")))
+youClod(t.matchExpr(wrapString("((1+2)*(3+(4*5)))+havana")))
