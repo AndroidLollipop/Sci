@@ -343,6 +343,43 @@ var matchOper = (wrappedString) => {
     }
     return { status: "success", next: ret.next, treeNode: { type: "expression", canonicalString: phi.treeNode.canonicalString + ret.treeNode.canonicalString , children: [phi.treeNode, ret.treeNode]}}
 }
+var matchAper = (wrappedString) => {
+    var tem = matchWhitespace()(wrappedString)
+    if (tem.status == "success") {
+        wrappedString = tem.next
+    }
+    var phi = matchAs("operator: as")(wrappedString)
+    if (phi.status !== "success") {
+        return phi
+    }
+    ret = matchExpr(phi.next)
+    if (ret.status !== "success") {
+        return ret
+    }
+    if (ret.treeNode.type == "expression") {
+        return { status: "success", next: ret.next, treeNode: { type: "expression", canonicalString: phi.treeNode.canonicalString + ret.treeNode.canonicalString , children: [phi.treeNode].concat(ret.treeNode.children)}}    
+    }
+    return { status: "success", next: ret.next, treeNode: { type: "expression", canonicalString: phi.treeNode.canonicalString + ret.treeNode.canonicalString , children: [phi.treeNode, ret.treeNode]}}
+}
+var matchMper = (wrappedString) => {
+    var tem = matchWhitespace()(wrappedString)
+    if (tem.status == "success") {
+        wrappedString = tem.next
+    }
+    var phi = matchDm("operator: dm")(wrappedString)
+    if (phi.status !== "success") {
+        return phi
+    }
+    var ret = matchExpr(phi.next)
+    if (ret.status !== "success") {
+        return ret
+    }
+    if (ret.treeNode.type == "expression") {
+        return { status: "success", next: ret.next, treeNode: { type: "expression", canonicalString: phi.treeNode.canonicalString + ret.treeNode.canonicalString , children: [phi.treeNode].concat(ret.treeNode.children)}}    
+    }
+    return { status: "success", next: ret.next, treeNode: { type: "expression", canonicalString: phi.treeNode.canonicalString + ret.treeNode.canonicalString , children: [phi.treeNode, ret.treeNode]}}
+}
+var mulPrecedence = 0
 var matchExpr = (wrappedString) => {
     var tem = matchWhitespace()(wrappedString)
     if (tem.status == "success") {
@@ -360,7 +397,19 @@ var matchExpr = (wrappedString) => {
         phi = ret
     }
     if (phi.status == "success") {
-        tem = matchOper(phi.next)
+        var saved = mulPrecedence
+        mulPrecedence = 1
+        tem = matchMper(phi.next)
+        mulPrecedence = 0
+        if (tem.status == "success") {
+            if (saved == 0) {
+                return { status: "success", next: tem.next, treeNode: {type: "parenthesized expression", canonicalString: "("+ phi.treeNode.canonicalString + tem.treeNode.canonicalString + ")" , children: [{ type: "expression", canonicalString: phi.treeNode.canonicalString + tem.treeNode.canonicalString, children: [phi.treeNode].concat(tem.treeNode.children)}]}}
+            }
+            return { status: "success", next: tem.next, treeNode: { type: "expression", canonicalString: phi.treeNode.canonicalString + tem.treeNode.canonicalString, children: [phi.treeNode].concat(tem.treeNode.children)}}
+        }
+    }
+    if (phi.status == "success") {
+        tem = matchAper(phi.next)
         if (tem.status == "success") {
             return { status: "success", next: tem.next, treeNode: { type: "expression", canonicalString: phi.treeNode.canonicalString + tem.treeNode.canonicalString, children: [phi.treeNode].concat(tem.treeNode.children)}}
         }
