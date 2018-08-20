@@ -338,8 +338,10 @@ var matchOper = (wrappedString) => {
     if (ret.status !== "success") {
         return ret
     }
+    if (ret.treeNode.type == "expression") {
+        return { status: "success", next: ret.next, treeNode: { type: "expression", canonicalString: phi.treeNode.canonicalString + ret.treeNode.canonicalString , children: [phi.treeNode].concat(ret.treeNode.children)}}    
+    }
     return { status: "success", next: ret.next, treeNode: { type: "expression", canonicalString: phi.treeNode.canonicalString + ret.treeNode.canonicalString , children: [phi.treeNode, ret.treeNode]}}
-    return phi
 }
 var matchExpr = (wrappedString) => {
     var tem = matchWhitespace()(wrappedString)
