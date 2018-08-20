@@ -31,6 +31,7 @@ output:
 { type: 'number', value: 1141 }  
 { type: 'number', value: 399 }
 ## example output for tokparse (ast constructor)
+### string declaration
 youClod(matchDefine(wrapString("str autism = 'you'"))) ->  
 { status: 'success',  
   next: \[ 18, 'str autism = \'you\'' \],  
@@ -43,7 +44,8 @@ youClod(matchDefine(wrapString("str autism = 'you'"))) ->
         { type: 'equals', canonicalString: '=', children: \[\] },  
         { type: 'string literal',  
           canonicalString: '\'you\'',  
-          children: \[ { type: 'alphanumeric literal', canonicalString: 'you', children: \[\] } \] } \] } }  
+          children: \[ { type: 'alphanumeric literal', canonicalString: 'you', children: \[\] } \] } \] } }
+### expression
 youClod(matchExpr(wrapString("(123\*456)+(789\*012)"))) ->  
 { status: 'success',  
   next: \[ 20, '(123\*456)+(789\*0.12)' \],  
@@ -74,6 +76,62 @@ youClod(matchExpr(wrapString("(123\*456)+(789\*012)"))) ->
                     children:  
                      \[ { type: 'integral literal', canonicalString: '0', children: \[\] },  
                        { type: 'fractional literal', canonicalString: '12', children: \[\] } \] } \] } \] } \] } }
+### function
+youClod(t.matchFundef(wrapString("num potato(p1, p2, p3){num skye = 1;num scotland = 2; return p1+p2+p3+skye+scotland}"))) ->  
+{ status: 'success',  
+  next:  
+   \[ 84,  
+     'num potato(p1, p2, p3){num skye = 1;num scotland = 2; return p1+p2+p3+skye+scotland}' \],  
+  treeNode:  
+   { type: 'function declaration',  
+     canonicalString: 'num potato (p1, p2, p3) {num skye = 1;num scotland = 2;returnp1+p2+p3+skye+scotland;}',  
+     children:  
+      \[ { type: 'number declaration',  
+          canonicalString: 'num',  
+          children: \[\] },  
+        { type: 'identifier', canonicalString: 'potato', children: \[\] },  
+        { type: 'parameter declaration',  
+          canonicalString: '(p1, p2, p3)',  
+          children:  
+           \[ { type: 'identifier', canonicalString: 'p1', children: \[\] },  
+             { type: 'identifier', canonicalString: 'p2', children: \[\] },  
+             { type: 'identifier', canonicalString: 'p3', children: \[\] } ] },  
+        { type: 'function body',  
+          canonicalString: '{num skye = 1;num scotland = 2;returnp1+p2+p3+skye+scotland;}',  
+          children:  
+           \[ { type: 'variable declaration',  
+               canonicalString: 'num skye = 1',  
+               children:  
+                \[ { type: 'number declaration',  
+                    canonicalString: 'num',  
+                    children: \[\] },  
+                  { type: 'identifier', canonicalString: 'skye', children: \[\] },  
+                  { type: 'equals', canonicalString: '=', children: \[\] },  
+                  { type: 'integral literal', canonicalString: '1', children: \[\] } ] },  
+             { type: 'variable declaration',  
+               canonicalString: 'num scotland = 2',  
+               children:  
+                \[ { type: 'number declaration',  
+                    canonicalString: 'num',  
+                    children: \[\] },  
+                  { type: 'identifier', canonicalString: 'scotland', children: \[\] },  
+                  { type: 'equals', canonicalString: '=', children: \[\] },  
+                  { type: 'integral literal', canonicalString: '2', children: \[\] } ] },  
+             { type: 'return statement',  
+               canonicalString: 'returnp1+p2+p3+skye+scotland',  
+               children:  
+                \[ { type: 'expression',  
+                    canonicalString: 'p1+p2+p3+skye+scotland',  
+                    children:  
+                     \[ { type: 'identifier', canonicalString: 'p1', children: \[\] },  
+                       { type: 'operator: as', canonicalString: '+', children: \[\] },  
+                       { type: 'identifier', canonicalString: 'p2', children: \[\] },  
+                       { type: 'operator: as', canonicalString: '+', children: \[\] },  
+                       { type: 'identifier', canonicalString: 'p3', children: \[\] },  
+                       { type: 'operator: as', canonicalString: '+', children: \[\] },  
+                       { type: 'identifier', canonicalString: 'skye', children: \[\] },  
+                       { type: 'operator: as', canonicalString: '+', children: \[\] },  
+                       { type: 'identifier', canonicalString: 'scotland', children: \[\] } \] } \] } \] } \] } }
 ## refactoring considerations
 tokparse.js really needs to be refactored.  
 specifically, all functions should return next even on failure. this will save about 50 lines of code.
