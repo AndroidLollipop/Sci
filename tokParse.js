@@ -259,7 +259,19 @@ var matchParamd = (wrappedString) => {
     return { status: "success", next: ret.next, treeNode: { type: "parameter declaration", canonicalString: rea, children: reb } }
 }
 var matchFunbod = (wrappedString) => {
-
+    var ret = matchOpB()(wrappedString)
+    if (ret.status !== "success") {
+        return ret
+    }
+    var tem = matchWhitespace()(ret.next)
+    if (tem.status == "success") {
+        ret.next = tem.next
+    }
+    var phi = matchClB()(ret.next)
+    if (phi.status !== "success") {
+        return phi
+    }
+    return {status: "success", next: phi.next, treeNode: {type: "function body", canonicalString: "{}", children: []}}
 }
 var matchFundef = (wrappedString) => {
     var ret = matchDec(wrappedString)
@@ -286,7 +298,7 @@ var matchFundef = (wrappedString) => {
     if (tem.status == "success") {
         gam.next = tem.next
     }
-    var alp = matchLit(gam.next)
+    var alp = matchFunbod(gam.next)
     if (alp.status !== "success") {
         return alp
     }
@@ -408,7 +420,7 @@ var matchExpr = (wrappedString) => {
         mulPrecedence = saved
         if (tem.status == "success") {
             if (saved == 0) {
-                rea = 1
+                rea = 1 // i don't want to make this part even more heavily nested
                 reb = { status: "success", next: tem.next, treeNode: {type: "parenthesized expression", canonicalString: "("+ phi.treeNode.canonicalString + tem.treeNode.canonicalString + ")" , children: [{ type: "expression", canonicalString: phi.treeNode.canonicalString + tem.treeNode.canonicalString, children: [phi.treeNode].concat(tem.treeNode.children)}]}}
             }
             else {
@@ -423,9 +435,9 @@ var matchExpr = (wrappedString) => {
         }
     }
     if (rea == 1) {
-        var yem = matchAper(reb.next)
-        if (yem.status == "success") {
-            return { status: "success", next: yem.next, treeNode: { type: "expression", canonicalString: reb.treeNode.canonicalString + yem.treeNode.canonicalString, children: [reb.treeNode].concat(yem.treeNode.children)}}
+        tem = matchAper(reb.next)
+        if (tem.status == "success") {
+            return { status: "success", next: tem.next, treeNode: { type: "expression", canonicalString: reb.treeNode.canonicalString + tem.treeNode.canonicalString, children: [reb.treeNode].concat(tem.treeNode.children)}}
         }
         else {
             return reb
@@ -452,5 +464,7 @@ module.exports = {
     matchIdentifier: matchIdentifier,
     matchIf: matchIf,
     matchParamd: matchParamd,
-    matchDefine: matchDefine
+    matchDefine: matchDefine,
+    matchFundef: matchFundef,
+    matchFunbod: matchFunbod
 }
