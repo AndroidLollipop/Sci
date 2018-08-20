@@ -80,6 +80,7 @@ var matchCom = matchTerminal(",")
 var matchIf = matchTerminalStrings(["if"])("if")
 var matchDnu = matchTerminalStrings(["num"])("number declaration")
 var matchStr = matchTerminalStrings(["str"])("string declaration")
+var matchSep = matchTerminal(";")
 var matchCes = (wrappedString) => {
     var ret = matchEsc("escape literal")(wrappedString)
     if (ret.status !== "success") {
@@ -267,11 +268,15 @@ var matchFunbod = (wrappedString) => {
     if (tem.status == "success") {
         ret.next = tem.next
     }
+    ret = matchBrae(ret.next)
+    if (ret.status !== "success") {
+        return ret
+    }
     var phi = matchClB()(ret.next)
     if (phi.status !== "success") {
         return phi
     }
-    return {status: "success", next: phi.next, treeNode: {type: "function body", canonicalString: "{}", children: []}}
+    return { status: "success", next: phi.next, treeNode: {type: "function body", canonicalString: "{" + ret.treeNode.canonicalString + "}", children: ret.treeNode.children}}
 }
 var matchFundef = (wrappedString) => {
     var ret = matchDec(wrappedString)
@@ -331,7 +336,31 @@ var matchBrac = (wrappedString) => {
     return { status: "success", "next": alp.next, treeNode: { type: "parenthesized expression", canonicalString: "(" + phi.treeNode.canonicalString + ")", children: [phi.treeNode] } }
 }
 var matchBrae = (wrappedString) => {
-
+    var phi = []
+    var ret = { next: wrappedString }
+    var tem
+    var rst = ""
+    while (true) {
+        tem = matchWhitespace()(ret.next)
+        if (tem.status == "success") {
+            ret.next = tem.next
+        }
+        tem = matchDefine(ret.next)
+        if (tem.status !== "success") {
+            tem = matchExpr(ret.next)
+        }
+        if (tem.status !== "success") {
+            break
+        }
+        ret = tem
+        phi.push(tem.treeNode)
+        rst += tem.treeNode.canonicalString + ";"
+        tem = matchSep()(ret.next)
+        if (tem.status == "success") {
+            ret.next = tem.next
+        } // we don't need to handle fail, since this will fail the next iteration anyway (which also removes any trailing whitespace)
+    }
+    return { status: "success", "next": ret.next, treeNode: { type: "braced expressions", canonicalString: rst, children: phi}}
 }
 var matchOper = (wrappedString) => {
     var tem = matchWhitespace()(wrappedString)
