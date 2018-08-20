@@ -198,7 +198,7 @@ var matchDefine = (wrappedString) => {
     }
     var phi = matchIdentifier(tem.next)
     if (phi.status !== "success") {
-        return ret
+        return phi
     }
     tem = matchWhitespace()(phi.next)
     if (tem.status == "success") {
@@ -217,6 +217,29 @@ var matchDefine = (wrappedString) => {
         return alp
     }
     return { status: "success", next: alp.next, treeNode: { type: "variable declaration", canonicalString: ret.treeNode.canonicalString + " " + phi.treeNode.canonicalString + " " + gam.treeNode.canonicalString + " " + alp.treeNode.canonicalString, children: [ret.treeNode, phi.treeNode, gam.treeNode, alp.treeNode] } } // types must be checked at runtime since parser doesn't check them
+}
+var matchSetvar = (wrappedString) => {
+    var phi = matchIdentifier(wrappedString)
+    if (phi.status !== "success") {
+        return phi
+    }
+    tem = matchWhitespace()(phi.next)
+    if (tem.status == "success") {
+        phi.next = tem.next
+    }
+    var gam = matchDef("equals")(phi.next)
+    if (gam.status !== "success") { // yes, i am aware that maybe i should add an undefined checker to the start of every function to avoid doing this
+        return gam
+    }
+    tem = matchWhitespace()(gam.next)
+    if (tem.status == "success") {
+        gam.next = tem.next
+    }
+    var alp = matchExpr(gam.next)
+    if (alp.status !== "success") {
+        return alp
+    }
+    return { status: "success", next: alp.next, treeNode: { type: "variable set", canonicalString: phi.treeNode.canonicalString + " " + gam.treeNode.canonicalString + " " + alp.treeNode.canonicalString, children: [phi.treeNode, gam.treeNode, alp.treeNode] } } // types must be checked at runtime since parser doesn't check them
 }
 var matchParamd = (wrappedString) => {
     var ret = matchOpP()(wrappedString)
@@ -346,6 +369,9 @@ var matchBrae = (wrappedString) => {
             ret.next = tem.next
         }
         tem = matchDefine(ret.next)
+        if (tem.status !== "success") {
+            tem = matchSetvar(ret.next)
+        }
         if (tem.status !== "success") {
             tem = matchExpr(ret.next)
         }
