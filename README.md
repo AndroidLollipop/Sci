@@ -11,6 +11,11 @@ console.log(repl("num young = 7+3\*6"))
 console.log(repl("young"))  
 console.log(repl("num havana = camila + young"))  
 console.log(repl("havana"))  
+console.log(repl("str youAre = 'autistic'"))  
+console.log(repl("((1+2)\*(3+(4\*5)))+havana"))  
+console.log(repl("1+2-3+4-5"))  
+console.log(repl("7+3\*6\*7\*9"))  
+console.log(repl("7\*3+6\*7\*9"))  
   
 output:  
 { type: 'number', value: 56182.68 }  
@@ -19,7 +24,12 @@ output:
 { type: 'number', value: 25 }  
 { type: 'number', value: 25 }  
 { type: 'number', value: 30 }  
-{ type: 'number', value: 30 }
+{ type: 'number', value: 30 }  
+{ type: 'string', value: 'autistic' }  
+{ type: 'number', value: 99 }  
+{ type: 'number', value: -1 }  
+{ type: 'number', value: 1141 }  
+{ type: 'number', value: 399 }
 ## example output for tokparse (ast constructor)
 youClod(matchDefine(wrapString("str autism = 'you'"))) ->  
 { status: 'success',  
