@@ -176,6 +176,17 @@ var matchFloatLiteral = (wrappedString) => {
     }
     return { status: "failure" }
 }
+var matchNegatedLiteral = (wrappedString) => {
+    var ret = matchTerminal("-")()(wrappedString)
+    if (ret.status !== "success") {
+        return ret
+    }
+    ret = matchFloatLiteral(ret.next)
+    if (ret.status !== "success") {
+        return ret
+    }
+    return { status: "success", next: ret.next, treeNode: { type: "negated literal", canonicalString: "-" + ret.treeNode.canonicalString, children: [ret.treeNode]}}
+}
 var composeMatch = (matchers) => (wrappedString) => { // i should have written this from the start, damn
     for (var i = 0; i < matchers.length; i++) {
         let ret = matchers[i](wrappedString)
@@ -186,7 +197,7 @@ var composeMatch = (matchers) => (wrappedString) => { // i should have written t
     return { status: "failure" }
 }
 var matchDec = composeMatch([matchDnu, matchStr])
-var matchLit = composeMatch([matchFloatLiteral, matchStringLiteral])
+var matchLit = composeMatch([matchNegatedLiteral, matchFloatLiteral, matchStringLiteral])
 var matchDefine = (wrappedString) => {
     var ret = matchDec(wrappedString)
     if (ret.status !== "success") {

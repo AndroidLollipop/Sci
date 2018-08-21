@@ -75,6 +75,16 @@ var evaluateExpression = ([scopeGetter, scopeSetter, scopeDefiner]) => (expressi
         }
         return acc
     }
+    else if (expression.type == "negated literal") {
+        if (expression.children[0] == undefined) {
+            return undefined
+        }
+        var expRes = evaluateExpression([scopeGetter, scopeSetter, scopeDefiner])(expression.children[0])
+        if (expRes.type !== "number") {
+            return undefined
+        }
+        return { type: "number", value: -expRes.value }
+    }
     else if (expression.type == "float literal") {
         return { type: "number", value: parseFloat(expression.canonicalString) } // technically i'm not supposed to do this
     }
