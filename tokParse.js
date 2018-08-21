@@ -102,6 +102,9 @@ var matchIdentifier = (wrappedString) => {
     }
     return { status: "failure" }
 }
+var matchFunctionCall = (wrappedString) => {
+    
+}
 var matchEscapedLiteral = (wrappedString) => { // only alphanumeric strings, for now... it's trivial to extend it anyway
     var ret = matchAls("alphanumeric literal")(wrappedString)
     if (ret.status !== "success") {
