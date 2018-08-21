@@ -139,3 +139,5 @@ specifically, all functions should return next even on failure. this will save a
 that's not the point. this is meant to be a learning experience.
 ## important note on hacky code
 because i used an extremely hacky method to implement DMAS from BODMAS, you must remember to save and reset mulPrecedence before and restore it after the appropriate calls when editing the code
+## note on save restore calling conventions
+all parse functions take care of whitespace and global variable saving/restoring for their callees.
