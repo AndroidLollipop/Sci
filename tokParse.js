@@ -181,11 +181,17 @@ var matchNegatedLiteral = (wrappedString) => {
     if (ret.status !== "success") {
         return ret
     }
-    ret = matchFloatLiteral(ret.next)
-    if (ret.status !== "success") {
-        return ret
+    var saved = mulPrecedence
+    mulPrecedence = 0
+    var phi = matchBrac(ret.next)
+    mulPrecedence = saved
+    if (phi.status !== "success") {
+        phi = matchFloatLiteral(ret.next)
     }
-    return { status: "success", next: ret.next, treeNode: { type: "negated literal", canonicalString: "-" + ret.treeNode.canonicalString, children: [ret.treeNode]}}
+    if (phi.status !== "success") {
+        return phi
+    }
+    return { status: "success", next: phi.next, treeNode: { type: "negated literal", canonicalString: "-" + phi.treeNode.canonicalString, children: [phi.treeNode]}}
 }
 var composeMatch = (matchers) => (wrappedString) => { // i should have written this from the start, damn
     for (var i = 0; i < matchers.length; i++) {

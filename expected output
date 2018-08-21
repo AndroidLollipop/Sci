@@ -1,0 +1,64 @@
+{ type: 'number', value: 56182.68 }
+{ type: 'number', value: 5 }
+{ type: 'number', value: 5 }
+{ type: 'number', value: 25 }
+{ type: 'number', value: 25 }
+{ type: 'number', value: 30 }
+{ type: 'number', value: 30 }
+{ type: 'string', value: 'autistic' }
+{ type: 'number', value: 99 }
+{ type: 'number', value: -1 }
+{ type: 'number', value: 1141 }
+{ type: 'number', value: 399 }
+{ type: 'number', value: 56 }
+{ type: 'number', value: 54 }
+{ type: 'number', value: 18 }
+{ type: 'number', value: -3 }
+{ type: 'number', value: -10 }
+{ type: 'number', value: 12 }
+{ type: 'function',
+  parentScope: [ [Function], [Function], [Function] ],
+  parameters:
+   { type: 'parameter declaration',
+     canonicalString: '(p1, p2, p3)',
+     children:
+      [ { type: 'identifier', canonicalString: 'p1', children: [] },
+        { type: 'identifier', canonicalString: 'p2', children: [] },
+        { type: 'identifier', canonicalString: 'p3', children: [] } ] },
+  body:
+   { type: 'function body',
+     canonicalString: '{num skye = 1;num scotland = 2;return p1+p2+p3+skye+scotland;}',
+     children:
+      [ { type: 'variable declaration',
+          canonicalString: 'num skye = 1',
+          children:
+           [ { type: 'number declaration',
+               canonicalString: 'num',
+               children: [] },
+             { type: 'identifier', canonicalString: 'skye', children: [] },
+             { type: 'equals', canonicalString: '=', children: [] },
+             { type: 'integral literal', canonicalString: '1', children: [] } ] },
+        { type: 'variable declaration',
+          canonicalString: 'num scotland = 2',
+          children:
+           [ { type: 'number declaration',
+               canonicalString: 'num',
+               children: [] },
+             { type: 'identifier', canonicalString: 'scotland', children: [] },
+             { type: 'equals', canonicalString: '=', children: [] },
+             { type: 'integral literal', canonicalString: '2', children: [] } ] },
+        { type: 'return statement',
+          canonicalString: 'return p1+p2+p3+skye+scotland',
+          children:
+           [ { type: 'expression',
+               canonicalString: 'p1+p2+p3+skye+scotland',
+               children:
+                [ { type: 'identifier', canonicalString: 'p1', children: [] },
+                  { type: 'operator: as', canonicalString: '+', children: [] },
+                  { type: 'identifier', canonicalString: 'p2', children: [] },
+                  { type: 'operator: as', canonicalString: '+', children: [] },
+                  { type: 'identifier', canonicalString: 'p3', children: [] },
+                  { type: 'operator: as', canonicalString: '+', children: [] },
+                  { type: 'identifier', canonicalString: 'skye', children: [] },
+                  { type: 'operator: as', canonicalString: '+', children: [] },
+                  { type: 'identifier', canonicalString: 'scotland', children: [] } ] } ] } ] } }
