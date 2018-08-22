@@ -1,6 +1,24 @@
 # sci - the sic compiler/interpreter
 'sic' stands for 'sci interpreter/compiler'  
-see how that kinda matches the structure of a recursive descent parser? (except that it's left recursive so it wouldn't work without conversion)
+see how that kinda matches the structure of a recursive descent parser? (except that it's left recursive so it wouldn't work without conversion)  
+the name of this repository is outdated. this language is too dynamic, it'll never compile to performant native code without a ton of effort. i guess this is the scam/interpreter now.
+## the most legit thing that this can do right now
+### closures!
+var e = require("./simpleAndCleanInterfaceForRepl.js")  
+var repl = e.getRepl()  
+console.log(repl("num closure(){num add(){skye = skye + 1; return skye}; num skye = 1; return add}"))  
+console.log(repl("num clo = closure()"))  
+console.log(repl("clo()"))  
+console.log(repl("clo()"))  
+console.log(repl("clo()"))  
+//skye is trapped  
+console.log(repl("skye"))  
+  
+output:  
+{ type: 'number', value: 2 }  
+{ type: 'number', value: 3 }  
+{ type: 'number', value: 4 }  
+undefined <- this is expected! this shows that skye is not in the global scope
 ## example output for repl (ok, more like a pseudo-repl)
 var e = require("./simpleAndCleanInterfaceForRepl.js")  
 var repl = e.getRepl()  

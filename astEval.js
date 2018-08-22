@@ -31,19 +31,26 @@ var emptyScope = () => {
     return ([(name) => scopeDict[name], (name, value) => scopeDict[name] = value, (name, value) => scopeDict[name] = value])
 }
 var adjoinScope = ([scopeGetter, scopeSetter, scopeDefiner]) => ([newScopeGetter, newScopeSetter, newScopeDefiner]) => {
-    return ((name) => {
-        if (newScopeGetter[name] == undefined) {
-            return scopeGetter[name]
+    return ([(name) => {
+        if (newScopeGetter(name) == undefined) {
+            return scopeGetter(name)
         }
+        return newScopeGetter(name)
     }, (name, value) => {
-        if (newScopeGetter[name] == undefined) {
-            scopeSetter(name, value)
+        if (newScopeGetter(name) == undefined) {
+            return scopeSetter(name, value)
         }
-        else {
-            newScopeSetter(name, value)
-        }
-    }, newScopeDefiner)
+        return newScopeSetter(name, value)
+    }, newScopeDefiner])
 } // i imagine this is how scope is implemented in javascript, and that explains why setting an undeclared variable makes it global
+var defineInScope = ([parentScopeGetter, parentScopeSetter, parentScopeDefiner]) => (identifiers) => ([scopeGetter, scopeSetter, scopeDefiner]) => (expressions) => {
+    for (var i = 0; i < identifiers.children.length; i++) {
+        if (expressions.children[i] == undefined) {
+            return undefined
+        }
+        scopeDefiner(identifiers.children[i].canonicalString, evaluateExpression([parentScopeGetter, parentScopeSetter, parentScopeDefiner])(expressions.children[i]))
+    }
+}
 var collapseString = (nodeChildren) => {
     var ret = ""
     nodeChildren.map(x => x.type == "alphanumeric literal" ? ret += x.canonicalString: x.canonicalString == "\\" ? ret += "\\" : x.canonicalString == "n" ? ret += "\n" : ret += x.canonicalString)
@@ -54,9 +61,38 @@ var evaluateExpression = ([scopeGetter, scopeSetter, scopeDefiner]) => (expressi
         scopeDefiner(expression.children.filter((x) => x.type == "identifier")[0].canonicalString, { type: "function", parentScope: [scopeGetter, scopeSetter, scopeDefiner], parameters: expression.children.filter((x) => x.type == "parameter declaration")[0], body: expression.children.filter((x) => x.type == "function body")[0]})
         return scopeGetter(expression.children.filter((x) => x.type == "identifier")[0].canonicalString)
     }
+    else if (expression.type == "function call") {
+        var target = scopeGetter(expression.children.filter((x) => x.type == "identifier")[0].canonicalString)
+        var targetScope = adjoinScope(target.parentScope)(emptyScope())
+        defineInScope(target.parentScope)(target.parameters)(targetScope)(expression.children.filter((x) => x.type == "function call bindings")[0])
+        var expRes = evaluateExpression(targetScope)(target.body)
+        if (expRes.type !== "!!!INTERNAL INTERPRETER CONTROL" || expRes.control !== "return") { // someone is trying to trick us
+            return undefined
+        }
+        return expRes.value
+    }
+    else if (expression.type == "function body") {
+        var expRes
+        for (var i = 0; i < expression.children.length; i++) {
+            expRes = evaluateExpression([scopeGetter, scopeSetter, scopeDefiner])(expression.children[i])
+            if (expRes.type == "!!!INTERNAL INTERPRETER CONTROL") {
+                return expRes
+            }
+        }
+        return { type: "!!!INTERNAL INTERPRETER CONTROL", control: "return", value: expRes } // functions implicitly return, only {} returns undefined
+    }
+    else if (expression.type == "return statement") {
+        var expRes = evaluateExpression([scopeGetter, scopeSetter, scopeDefiner])(expression.children[0])
+        return { type: "!!!INTERNAL INTERPRETER CONTROL", control: "return", value: expRes } // this could be a source of vulnerabilities, damn
+    }
     else if (expression.type == "variable declaration") {
         var expRes = evaluateExpression([scopeGetter, scopeSetter, scopeDefiner])(expression.children.filter((x) => x.type !== "identifier" && x.type !== "equals" && x.type !== "number declaration" && x.type !== "string declaration")[0])
         scopeDefiner(expression.children.filter((x) => x.type == "identifier")[0].canonicalString, expRes)
+        return expRes
+    }
+    else if (expression.type == "variable set") {
+        var expRes = evaluateExpression([scopeGetter, scopeSetter, scopeDefiner])(expression.children.filter((x) => x.type !== "identifier" && x.type !== "equals" && x.type !== "number declaration" && x.type !== "string declaration")[0])
+        scopeSetter(expression.children.filter((x) => x.type == "identifier")[0].canonicalString, expRes)
         return expRes
     }
     else if (expression.type == "parenthesized expression") {
