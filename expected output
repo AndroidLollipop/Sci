@@ -82,7 +82,7 @@
      children: [] },
   body:
    { type: 'function body',
-     canonicalString: '{num skye = 1;num add () {skye = skye+1;return skye;};return add;}',
+     canonicalString: '{num add () {skye = skye+1;return skye;};num skye = 1;return add;}',
      children: [ [Object], [Object], [Object] ] } }
 { type: 'function',
   parentScope: [ [Function], [Function], [Function] ],
@@ -94,7 +94,20 @@
    { type: 'function body',
      canonicalString: '{skye = skye+1;return skye;}',
      children: [ [Object], [Object] ] } }
+{ type: 'function',
+  parentScope: [ [Function], [Function], [Function] ],
+  parameters:
+   { type: 'parameter declaration',
+     canonicalString: '()',
+     children: [] },
+  body:
+   { type: 'function body',
+     canonicalString: '{skye = skye+1;return skye;}',
+     children: [ [Object], [Object] ] } }
+{ type: 'number', value: 2 }
 { type: 'number', value: 2 }
 { type: 'number', value: 3 }
+{ type: 'number', value: 3 }
+{ type: 'number', value: 4 }
 { type: 'number', value: 4 }
 undefined

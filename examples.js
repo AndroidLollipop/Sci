@@ -25,8 +25,12 @@ console.log(repl("num famine(p1, p2, p3){num skye = 1;num scotland = 2; num add(
 console.log(repl("famine(1,2,3)"))
 console.log(repl("num closure(){num add(){skye = skye + 1; return skye}; num skye = 1; return add}"))
 console.log(repl("num clo = closure()"))
+console.log(repl("num ver = closure()"))
 console.log(repl("clo()"))
+console.log(repl("ver()"))
 console.log(repl("clo()"))
+console.log(repl("ver()"))
 console.log(repl("clo()"))
+console.log(repl("ver()"))
 //skye is trapped
 console.log(repl("skye"))
