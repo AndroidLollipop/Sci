@@ -1,7 +1,6 @@
 // see tokparse.js for ast definition
 // i haven't defined the ast properly yet so i can't write asteval yet
 var operate = (p1, op, p2) => {
-    console.log(p1)
     if (op.canonicalString == "+") {
         if (p1.type == p2.type) {
             return { type: p1.type, value: p1.value + p2.value }
@@ -33,8 +32,6 @@ var emptyScope = () => {
 }
 var adjoinScope = ([scopeGetter, scopeSetter, scopeDefiner]) => ([newScopeGetter, newScopeSetter, newScopeDefiner]) => {
     return ([(name) => {
-        console.log(newScopeGetter(name))
-        console.log("u")
         if (newScopeGetter(name) == undefined) {
             return scopeGetter(name)
         }
@@ -47,19 +44,11 @@ var adjoinScope = ([scopeGetter, scopeSetter, scopeDefiner]) => ([newScopeGetter
     }, newScopeDefiner])
 } // i imagine this is how scope is implemented in javascript, and that explains why setting an undeclared variable makes it global
 var defineInScope = ([parentScopeGetter, parentScopeSetter, parentScopeDefiner]) => (identifiers) => ([scopeGetter, scopeSetter, scopeDefiner]) => (expressions) => {
-    console.log("IDENTIFIERS")
-    console.log(identifiers)
-    console.log("EXPRESSIONS")
-    console.log(expressions)
     for (var i = 0; i < identifiers.children.length; i++) {
-        console.log(expressions.children[i])
         if (expressions.children[i] == undefined) {
             return undefined
         }
-        console.log(identifiers.children[i].canonicalString)
-        console.log(evaluateExpression([parentScopeGetter, parentScopeSetter, parentScopeDefiner])(expressions.children[i]))
         scopeDefiner(identifiers.children[i].canonicalString, evaluateExpression([parentScopeGetter, parentScopeSetter, parentScopeDefiner])(expressions.children[i]))
-        console.log(scopeGetter(identifiers.children[i].canonicalString))
     }
 }
 var collapseString = (nodeChildren) => {
@@ -80,16 +69,12 @@ var evaluateExpression = ([scopeGetter, scopeSetter, scopeDefiner]) => (expressi
         if (expRes.type !== "!!!INTERNAL INTERPRETER CONTROL" || expRes.control !== "return") { // someone is trying to trick us
             return undefined
         }
-        console.log("F")
-        console.log(expRes.value)
         return expRes.value
     }
     else if (expression.type == "function body") {
         var expRes
         for (var i = 0; i < expression.children.length; i++) {
             expRes = evaluateExpression([scopeGetter, scopeSetter, scopeDefiner])(expression.children[i])
-            console.log("EXPRES")
-            console.log(expRes)
             if (expRes.type == "!!!INTERNAL INTERPRETER CONTROL") {
                 return expRes
             }
@@ -97,7 +82,6 @@ var evaluateExpression = ([scopeGetter, scopeSetter, scopeDefiner]) => (expressi
         return { type: "!!!INTERNAL INTERPRETER CONTROL", control: "return", value: expRes } // functions implicitly return, only {} returns undefined
     }
     else if (expression.type == "return statement") {
-        console.log(expression.children[0])
         var expRes = evaluateExpression([scopeGetter, scopeSetter, scopeDefiner])(expression.children[0])
         return { type: "!!!INTERNAL INTERPRETER CONTROL", control: "return", value: expRes } // this could be a source of vulnerabilities, damn
     }
