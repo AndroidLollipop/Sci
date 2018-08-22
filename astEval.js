@@ -50,7 +50,11 @@ var collapseString = (nodeChildren) => {
     return ret
 }
 var evaluateExpression = ([scopeGetter, scopeSetter, scopeDefiner]) => (expression) => {
-    if (expression.type == "variable declaration") {
+    if (expression.type == "function declaration") {
+        scopeDefiner(expression.children.filter((x) => x.type == "identifier")[0].canonicalString, { type: "function", parentScope: [scopeGetter, scopeSetter, scopeDefiner], parameters: expression.children.filter((x) => x.type == "parameter declaration")[0], body: expression.children.filter((x) => x.type == "function body")[0]})
+        return scopeGetter(expression.children.filter((x) => x.type == "identifier")[0].canonicalString)
+    }
+    else if (expression.type == "variable declaration") {
         var expRes = evaluateExpression([scopeGetter, scopeSetter, scopeDefiner])(expression.children.filter((x) => x.type !== "identifier" && x.type !== "equals" && x.type !== "number declaration" && x.type !== "string declaration")[0])
         scopeDefiner(expression.children.filter((x) => x.type == "identifier")[0].canonicalString, expRes)
         return expRes
@@ -70,6 +74,16 @@ var evaluateExpression = ([scopeGetter, scopeSetter, scopeDefiner]) => (expressi
             acc = operate(acc, expression.children[i], evaluateExpression([scopeGetter, scopeSetter, scopeDefiner])(expression.children[i+1]))
         }
         return acc
+    }
+    else if (expression.type == "negated literal") {
+        if (expression.children[0] == undefined) {
+            return undefined
+        }
+        var expRes = evaluateExpression([scopeGetter, scopeSetter, scopeDefiner])(expression.children[0])
+        if (expRes.type !== "number") {
+            return undefined
+        }
+        return { type: "number", value: -expRes.value }
     }
     else if (expression.type == "float literal") {
         return { type: "number", value: parseFloat(expression.canonicalString) } // technically i'm not supposed to do this
