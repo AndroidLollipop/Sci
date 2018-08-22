@@ -23,9 +23,9 @@ youClod(repl("num potato(p1, p2, p3){num skye = 1;num scotland = 2; return p1+p2
 console.log(repl("potato(1,2,3)"))
 console.log(repl("num famine(p1, p2, p3){num skye = 1;num scotland = 2; num add(p1, p2, p3, p4, p5){return p1+p2+p3+p4+p5}; return add(p1,p2,p3,skye,scotland)}"))
 console.log(repl("famine(1,2,3)"))
-console.log(repl("num closure(){num add(){skye = skye + 1; return skye}; num skye = 1; return add}"))
-console.log(repl("num clo = closure()"))
-console.log(repl("num ver = closure()"))
+console.log(repl("num closure(multiplier, start){num add(){skye = skye + 1; return skye*multiplier}; num skye = start/multiplier-1; return add}")) // no ++ or += yet, unfortunately
+console.log(repl("num clo = closure(1, 10)"))
+console.log(repl("num ver = closure(2, 20)"))
 console.log(repl("clo()"))
 console.log(repl("ver()"))
 console.log(repl("clo()"))

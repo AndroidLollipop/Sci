@@ -86,12 +86,12 @@ var evaluateExpression = ([scopeGetter, scopeSetter, scopeDefiner]) => (expressi
         return { type: "!!!INTERNAL INTERPRETER CONTROL", control: "return", value: expRes } // this could be a source of vulnerabilities, damn
     }
     else if (expression.type == "variable declaration") {
-        var expRes = evaluateExpression([scopeGetter, scopeSetter, scopeDefiner])(expression.children.filter((x) => x.type !== "identifier" && x.type !== "equals" && x.type !== "number declaration" && x.type !== "string declaration")[0])
+        var expRes = evaluateExpression([scopeGetter, scopeSetter, scopeDefiner])(expression.children[3])
         scopeDefiner(expression.children.filter((x) => x.type == "identifier")[0].canonicalString, expRes)
         return expRes
     }
     else if (expression.type == "variable set") {
-        var expRes = evaluateExpression([scopeGetter, scopeSetter, scopeDefiner])(expression.children.filter((x) => x.type !== "identifier" && x.type !== "equals" && x.type !== "number declaration" && x.type !== "string declaration")[0])
+        var expRes = evaluateExpression([scopeGetter, scopeSetter, scopeDefiner])(expression.children[2])
         scopeSetter(expression.children.filter((x) => x.type == "identifier")[0].canonicalString, expRes)
         return expRes
     }
