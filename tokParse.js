@@ -107,7 +107,7 @@ var matchFunctionCall = (wrappedString) => {
     if (ret.status !== "success") {
         return ret
     }
-    var tem = matchWhitespace(ret.next)
+    var tem = matchWhitespace()(ret.next)
     if (tem.status == "success") {
         ret.next = tem.next
     }
@@ -475,6 +475,10 @@ var matchBrae = (wrappedString) => {
         ret = tem
         phi.push(tem.treeNode)
         rst += tem.treeNode.canonicalString + ";"
+        tem = matchWhitespace()(ret.next)
+        if (tem.status == "success") {
+            ret.next = tem.next
+        }
         tem = matchSep()(ret.next)
         if (tem.status == "success") {
             ret.next = tem.next
