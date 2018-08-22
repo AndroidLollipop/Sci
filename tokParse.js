@@ -103,7 +103,60 @@ var matchIdentifier = (wrappedString) => {
     return { status: "failure" }
 }
 var matchFunctionCall = (wrappedString) => {
-    
+    var ret = matchIdentifier(wrappedString)
+    if (ret.status !== "success") {
+        return ret
+    }
+    var tem = matchWhitespace(ret.next)
+    if (tem.status == "success") {
+        ret.next = tem.next
+    }
+    var phi = matchFuncallParams(ret.next)
+    if (phi.status !== "success") {
+        return phi
+    }
+    return { status: "success", next: phi.next, treeNode: { type: "function call", canonicalString: ret.treeNode.canonicalString + phi.treeNode.canonicalString, children: [ret.treeNode, phi.treeNode]}}
+}
+var matchFuncallParams = (wrappedString) => {
+    var ret = matchOpP()(wrappedString)
+    if (ret.status !== "success") {
+        return ret
+    }
+    var tem = matchWhitespace()(ret.next)
+    if (tem.status == "success") {
+        ret.next = tem.next
+    }
+    var rea = ""
+    var reb = []
+    var iet = ret
+    while (true) {
+        ret = matchExpr(ret.next)
+        if (ret.status !== "success") {
+            break
+        }
+        tem = matchWhitespace()(ret.next)
+        if (tem.status == "success") {
+            ret.next = tem.next
+        }
+        iet = ret
+        rea += ret.treeNode.canonicalString
+        reb.push(ret.treeNode)
+        ret = matchCom()(ret.next)
+        if (ret.status !== "success") {
+            break
+        }
+        tem = matchWhitespace()(ret.next)
+        if (tem.status !== "success") {
+            ret.next = tem.next
+        }
+        iet = ret
+        rea += ", "
+    }
+    ret = matchClP()(iet.next)
+    if (ret.status !== "success") {
+        return ret
+    }
+    return { status: "success", next: ret.next, treeNode: { type: "function call bindings", canonicalString: "(" + rea + ")", children: reb}}
 }
 var matchEscapedLiteral = (wrappedString) => { // only alphanumeric strings, for now... it's trivial to extend it anyway
     var ret = matchAls("alphanumeric literal")(wrappedString)
@@ -493,11 +546,18 @@ var matchExpr = (wrappedString) => {
     var phi = matchLit(wrappedString)
     // the canonical way is to use else ifs
     // but that's as ugly as hell and this works too so to hell with it
-    var ret = matchIdentifier(wrappedString)
+    var saved = mulPrecedence
+    mulPrecedence = 0
+    var ret = matchFunctionCall(wrappedString)
+    mulPrecedence = saved
     if (ret.status == "success") {
         phi = ret
     }
-    var saved = mulPrecedence
+    ret = matchIdentifier(wrappedString)
+    if (ret.status == "success" && phi.status !== "success") {
+        phi = ret
+    }
+    saved = mulPrecedence
     mulPrecedence = 0
     ret = matchBrac(wrappedString)
     mulPrecedence = saved
@@ -559,5 +619,6 @@ module.exports = {
     matchParamd: matchParamd,
     matchDefine: matchDefine,
     matchFundef: matchFundef,
-    matchFunbod: matchFunbod
+    matchFunbod: matchFunbod,
+    matchFunctionCall: matchFunctionCall
 }
