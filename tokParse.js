@@ -458,6 +458,9 @@ var matchBrae = (wrappedString) => {
         }
         tem = matchReturn(ret.next)
         if (tem.status !== "success") {
+            tem = matchFundef(ret.next)
+        }
+        if (tem.status !== "success") {
             tem = matchDefine(ret.next)
         }
         if (tem.status !== "success") {
