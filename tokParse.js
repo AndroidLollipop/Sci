@@ -110,10 +110,7 @@ var matchFunctionCall = (wrappedString) => {
     if (ret.status !== "success") {
         return ret
     }
-    var tem = matchWhitespace()(ret.next)
-    if (tem.status == "success") {
-        ret.next = tem.next
-    }
+    ret.next = matchWhitespace()(ret.next).next
     var phi = matchFuncallParams(ret.next)
     if (phi.status !== "success") {
         return { status: "failure", next: wrappedString }
@@ -125,10 +122,7 @@ var matchFuncallParams = (wrappedString) => {
     if (ret.status !== "success") {
         return ret
     }
-    var tem = matchWhitespace()(ret.next)
-    if (tem.status == "success") {
-        ret.next = tem.next
-    }
+    ret.next = matchWhitespace()(ret.next).next
     var rea = ""
     var reb = []
     var iet = ret
@@ -137,10 +131,7 @@ var matchFuncallParams = (wrappedString) => {
         if (ret.status !== "success") {
             break
         }
-        tem = matchWhitespace()(ret.next)
-        if (tem.status == "success") {
-            ret.next = tem.next
-        }
+        ret.next = matchWhitespace()(ret.next).next
         iet = ret
         rea += ret.treeNode.canonicalString
         reb.push(ret.treeNode)
@@ -148,10 +139,7 @@ var matchFuncallParams = (wrappedString) => {
         if (ret.status !== "success") {
             break
         }
-        tem = matchWhitespace()(ret.next)
-        if (tem.status == "success") {
-            ret.next = tem.next
-        }
+        ret.next = matchWhitespace()(ret.next).next
         iet = ret
         rea += ", "
     }
@@ -276,18 +264,12 @@ var matchDefine = (wrappedString) => {
     if (phi.status !== "success") {
         return { status: "failure", next: wrappedString }
     }
-    tem = matchWhitespace()(phi.next)
-    if (tem.status == "success") {
-        phi.next = tem.next
-    }
+    phi.next = matchWhitespace()(phi.next).next
     var gam = matchDef("equals")(phi.next)
     if (gam.status !== "success") { // yes, i am aware that maybe i should add an undefined checker to the start of every function to avoid doing this
         return { status: "failure", next: wrappedString }
     }
-    tem = matchWhitespace()(gam.next)
-    if (tem.status == "success") {
-        gam.next = tem.next
-    }
+    gam.next = matchWhitespace()(gam.next).next
     var alp = matchExpr(gam.next)
     if (alp.status !== "success") {
         return { status: "failure", next: wrappedString }
@@ -299,18 +281,12 @@ var matchSetvar = (wrappedString) => {
     if (phi.status !== "success") {
         return phi
     }
-    tem = matchWhitespace()(phi.next)
-    if (tem.status == "success") {
-        phi.next = tem.next
-    }
+    phi.next = matchWhitespace()(phi.next).next
     var gam = matchDef("equals")(phi.next)
     if (gam.status !== "success") { // yes, i am aware that maybe i should add an undefined checker to the start of every function to avoid doing this
         return { status: "failure", next: wrappedString }
     }
-    tem = matchWhitespace()(gam.next)
-    if (tem.status == "success") {
-        gam.next = tem.next
-    }
+    gam.next = matchWhitespace()(gam.next).next
     var alp = matchExpr(gam.next)
     if (alp.status !== "success") {
         return { status: "failure", next: wrappedString }
@@ -322,10 +298,7 @@ var matchParamd = (wrappedString) => {
     if (ret.status !== "success") {
         return ret
     }
-    var tem = matchWhitespace()(ret.next)
-    if (tem.status == "success") {
-        ret.next = tem.next
-    }
+    ret.next = matchWhitespace()(ret.next).next
     var rea = ""
     var reb = []
     var iet = ret
@@ -334,10 +307,7 @@ var matchParamd = (wrappedString) => {
         if (ret.status !== "success") { // i know ret.status == "failure" is shorter but it risks infinite looping for invalid ret.status
             break
         }
-        tem = matchWhitespace()(ret.next)
-        if (tem.status == "success") {
-            ret.next = tem.next
-        }
+        ret.next = matchWhitespace()(ret.next).next
         iet = ret
         rea += ret.treeNode.canonicalString
         reb.push(ret.treeNode)
@@ -345,10 +315,7 @@ var matchParamd = (wrappedString) => {
         if (ret.status !== "success") {
             break
         }
-        tem = matchWhitespace()(ret.next)
-        if (tem.status == "success") {
-            ret.next = tem.next
-        }
+        ret.next = matchWhitespace()(ret.next).next
         iet = ret
         rea += ", "
     }
@@ -363,10 +330,7 @@ var matchFunbod = (wrappedString) => {
     if (ret.status !== "success") {
         return ret
     }
-    var tem = matchWhitespace()(ret.next)
-    if (tem.status == "success") {
-        ret.next = tem.next
-    }
+    ret.next = matchWhitespace()(ret.next).next
     ret = matchBrae(ret.next)
     if (ret.status !== "success") {
         return { status: "failure", next: wrappedString }
@@ -390,18 +354,12 @@ var matchFundef = (wrappedString) => {
     if (phi.status !== "success") {
         return { status: "failure", next: wrappedString }
     }
-    tem = matchWhitespace()(phi.next)
-    if (tem.status == "success") {
-        phi.next = tem.next
-    }
+    phi.next = matchWhitespace()(phi.next).next
     var gam = matchParamd(phi.next)
     if (gam.status !== "success") { // yes, i am aware that maybe i should add an undefined checker to the start of every function to avoid doing this
         return { status: "failure", next: wrappedString }
     }
-    tem = matchWhitespace()(gam.next)
-    if (tem.status == "success") {
-        gam.next = tem.next
-    }
+    gam.next = matchWhitespace()(gam.next).next
     var alp = matchFunbod(gam.next)
     if (alp.status !== "success") {
         return { status: "failure", next: wrappedString }
