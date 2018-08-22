@@ -63,7 +63,7 @@ var evaluateExpression = ([scopeGetter, scopeSetter, scopeDefiner]) => (expressi
     }
     else if (expression.type == "function call") {
         var target = scopeGetter(expression.children.filter((x) => x.type == "identifier")[0].canonicalString)
-        var targetScope = adjoinScope([scopeGetter, scopeSetter, scopeDefiner])(emptyScope())
+        var targetScope = adjoinScope(target.parentScope)(emptyScope())
         defineInScope(target.parentScope)(target.parameters)(targetScope)(expression.children.filter((x) => x.type == "function call bindings")[0])
         var expRes = evaluateExpression(targetScope)(target.body)
         if (expRes.type !== "!!!INTERNAL INTERPRETER CONTROL" || expRes.control !== "return") { // someone is trying to trick us
@@ -88,6 +88,11 @@ var evaluateExpression = ([scopeGetter, scopeSetter, scopeDefiner]) => (expressi
     else if (expression.type == "variable declaration") {
         var expRes = evaluateExpression([scopeGetter, scopeSetter, scopeDefiner])(expression.children.filter((x) => x.type !== "identifier" && x.type !== "equals" && x.type !== "number declaration" && x.type !== "string declaration")[0])
         scopeDefiner(expression.children.filter((x) => x.type == "identifier")[0].canonicalString, expRes)
+        return expRes
+    }
+    else if (expression.type == "variable set") {
+        var expRes = evaluateExpression([scopeGetter, scopeSetter, scopeDefiner])(expression.children.filter((x) => x.type !== "identifier" && x.type !== "equals" && x.type !== "number declaration" && x.type !== "string declaration")[0])
+        scopeSetter(expression.children.filter((x) => x.type == "identifier")[0].canonicalString, expRes)
         return expRes
     }
     else if (expression.type == "parenthesized expression") {
