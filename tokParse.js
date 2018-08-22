@@ -20,7 +20,7 @@ var matchTerminal = (terminal) => (type) => (wrappedString) => {
         return { status: "success", next: next(wrappedString), treeNode: { type: type, canonicalString: terminal, children: [] } }
     }
     else {
-        return { status: "failure" }
+        return { status: "failure", next: wrappedString}
     }
 }
 var matchTerminals = (terminals) => (type) => (wrappedString) => {
@@ -28,7 +28,7 @@ var matchTerminals = (terminals) => (type) => (wrappedString) => {
         return { status: "success", next: next(wrappedString), treeNode: { type: type, canonicalString: peek(wrappedString), children: [] } }
     }
     else {
-        return { status: "failure" }
+        return { status: "failure", next: wrappedString }
     }
 }
 var matchTerminalStrings = (terminalStrings) => (type) => (wrappedString) => {
@@ -37,11 +37,11 @@ var matchTerminalStrings = (terminalStrings) => (type) => (wrappedString) => {
             return { status: "success", next: [wrappedString[0] + terminalStrings[i].length, wrappedString[1]], treeNode: { type: type, canonicalString: terminalStrings[i], children: [] } }
         }
     }
-    return { status: "failure" }
+    return { status: "failure", next: wrappedString }
 }
 var matchTerminalsStar = (terminals) => (type) => (wrappedString) => { // to avoid having a horrifically convoluted tree structure
     if (!terminals.includes(peek(wrappedString))) {
-        return { status: "failure" }
+        return { status: "failure", next: wrappedString }
     }
     var ret = peek(wrappedString)
     wrappedString = next(wrappedString)
@@ -90,17 +90,20 @@ var matchCes = (wrappedString) => {
     if (ret.status == "success") {
         ret.treeNode.canonicalString = "\\" + ret.treeNode.canonicalString
     }
+    else {
+        return { status: "failure", next: wrappedString }
+    }
     return ret
 }
 var matchIdentifier = (wrappedString) => {
     if (matchNum()(wrappedString).status == "success") {
-        return { status: "failure" } // identifiers cannot start with a numeric character
+        return { status: "failure", next: wrappedString } // identifiers cannot start with a numeric character
     }
     var ret = matchAln("identifier")(wrappedString)
     if (ret.status == "success") {
         return ret
     }
-    return { status: "failure" }
+    return { status: "failure", next: wrappedString }
 }
 var matchFunctionCall = (wrappedString) => {
     var ret = matchIdentifier(wrappedString)
@@ -113,7 +116,7 @@ var matchFunctionCall = (wrappedString) => {
     }
     var phi = matchFuncallParams(ret.next)
     if (phi.status !== "success") {
-        return phi
+        return { status: "failure", next: wrappedString }
     }
     return { status: "success", next: phi.next, treeNode: { type: "function call", canonicalString: ret.treeNode.canonicalString + phi.treeNode.canonicalString, children: [ret.treeNode, phi.treeNode]}}
 }
@@ -154,7 +157,7 @@ var matchFuncallParams = (wrappedString) => {
     }
     ret = matchClP()(iet.next)
     if (ret.status !== "success") {
-        return ret
+        return { status: "failure", next: wrappedString }
     }
     return { status: "success", next: ret.next, treeNode: { type: "function call bindings", canonicalString: "(" + rea + ")", children: reb}}
 }
@@ -214,7 +217,7 @@ var matchStringLiteral = (wrappedString) => {
             }
         }
     }
-    return { status: "failure" }
+    return { status: "failure", next: wrappedString }
 }
 var matchFloatLiteral = (wrappedString) => {
     var ret = matchNum("integral literal")(wrappedString)
@@ -226,11 +229,11 @@ var matchFloatLiteral = (wrappedString) => {
                 return { status: "success", next: gam.next, treeNode: { type: "float literal", canonicalString: ret.treeNode.canonicalString + phi.treeNode.canonicalString + gam.treeNode.canonicalString, children: [ret.treeNode, gam.treeNode] } }
             }
         } // yes, we intentionally fall through to fail if we get something like 123.
-        else {
+        else if (ret.status == "success") {
             return ret
         }
     }
-    return { status: "failure" }
+    return { status: "failure", wrappedString }
 }
 var matchNegatedLiteral = (wrappedString) => {
     var ret = matchTerminal("-")()(wrappedString)
@@ -245,7 +248,7 @@ var matchNegatedLiteral = (wrappedString) => {
         phi = matchFloatLiteral(ret.next)
     }
     if (phi.status !== "success") {
-        return phi
+        return { status: "failure", next: wrappedString }
     }
     return { status: "success", next: phi.next, treeNode: { type: "negated literal", canonicalString: "-" + phi.treeNode.canonicalString, children: [phi.treeNode]}}
 }
@@ -256,7 +259,7 @@ var composeMatch = (matchers) => (wrappedString) => { // i should have written t
             return ret
         }
     }
-    return { status: "failure" }
+    return { status: "failure", next: wrappedString }
 }
 var matchDec = composeMatch([matchDnu, matchStr])
 var matchLit = composeMatch([matchNegatedLiteral, matchFloatLiteral, matchStringLiteral])
@@ -267,11 +270,11 @@ var matchDefine = (wrappedString) => {
     }
     var tem = matchWhitespace()(ret.next)
     if (tem.status !== "success") {
-        return tem
+        return { status: "failure", next: wrappedString }
     }
     var phi = matchIdentifier(tem.next)
     if (phi.status !== "success") {
-        return phi
+        return { status: "failure", next: wrappedString }
     }
     tem = matchWhitespace()(phi.next)
     if (tem.status == "success") {
@@ -279,7 +282,7 @@ var matchDefine = (wrappedString) => {
     }
     var gam = matchDef("equals")(phi.next)
     if (gam.status !== "success") { // yes, i am aware that maybe i should add an undefined checker to the start of every function to avoid doing this
-        return gam
+        return { status: "failure", next: wrappedString }
     }
     tem = matchWhitespace()(gam.next)
     if (tem.status == "success") {
@@ -287,7 +290,7 @@ var matchDefine = (wrappedString) => {
     }
     var alp = matchExpr(gam.next)
     if (alp.status !== "success") {
-        return alp
+        return { status: "failure", next: wrappedString }
     }
     return { status: "success", next: alp.next, treeNode: { type: "variable declaration", canonicalString: ret.treeNode.canonicalString + " " + phi.treeNode.canonicalString + " " + gam.treeNode.canonicalString + " " + alp.treeNode.canonicalString, children: [ret.treeNode, phi.treeNode, gam.treeNode, alp.treeNode] } } // types must be checked at runtime since parser doesn't check them
 }
@@ -302,7 +305,7 @@ var matchSetvar = (wrappedString) => {
     }
     var gam = matchDef("equals")(phi.next)
     if (gam.status !== "success") { // yes, i am aware that maybe i should add an undefined checker to the start of every function to avoid doing this
-        return gam
+        return { status: "failure", next: wrappedString }
     }
     tem = matchWhitespace()(gam.next)
     if (tem.status == "success") {
@@ -310,7 +313,7 @@ var matchSetvar = (wrappedString) => {
     }
     var alp = matchExpr(gam.next)
     if (alp.status !== "success") {
-        return alp
+        return { status: "failure", next: wrappedString }
     }
     return { status: "success", next: alp.next, treeNode: { type: "variable set", canonicalString: phi.treeNode.canonicalString + " " + gam.treeNode.canonicalString + " " + alp.treeNode.canonicalString, children: [phi.treeNode, gam.treeNode, alp.treeNode] } } // types must be checked at runtime since parser doesn't check them
 }
@@ -351,7 +354,7 @@ var matchParamd = (wrappedString) => {
     }
     ret = matchClP()(iet.next)
     if (ret.status !== "success") {
-        return ret
+        return { status: "failure", next: wrappedString }
     }
     return { status: "success", next: ret.next, treeNode: { type: "parameter declaration", canonicalString: "(" + rea + ")", children: reb } }
 }
@@ -366,11 +369,11 @@ var matchFunbod = (wrappedString) => {
     }
     ret = matchBrae(ret.next)
     if (ret.status !== "success") {
-        return ret
+        return { status: "failure", next: wrappedString }
     }
     var phi = matchClB()(ret.next)
     if (phi.status !== "success") {
-        return phi
+        return { status: "failure", next: wrappedString }
     }
     return { status: "success", next: phi.next, treeNode: {type: "function body", canonicalString: "{" + ret.treeNode.canonicalString + "}", children: ret.treeNode.children}}
 }
@@ -381,11 +384,11 @@ var matchFundef = (wrappedString) => {
     }
     var tem = matchWhitespace()(ret.next)
     if (tem.status !== "success") {
-        return tem
+        return { status: "failure", next: wrappedString }
     }
     var phi = matchIdentifier(tem.next)
     if (phi.status !== "success") {
-        return ret
+        return { status: "failure", next: wrappedString }
     }
     tem = matchWhitespace()(phi.next)
     if (tem.status == "success") {
@@ -393,7 +396,7 @@ var matchFundef = (wrappedString) => {
     }
     var gam = matchParamd(phi.next)
     if (gam.status !== "success") { // yes, i am aware that maybe i should add an undefined checker to the start of every function to avoid doing this
-        return gam
+        return { status: "failure", next: wrappedString }
     }
     tem = matchWhitespace()(gam.next)
     if (tem.status == "success") {
@@ -401,7 +404,7 @@ var matchFundef = (wrappedString) => {
     }
     var alp = matchFunbod(gam.next)
     if (alp.status !== "success") {
-        return alp
+        return { status: "failure", next: wrappedString }
     }
     return { status: "success", next: alp.next, treeNode: { type: "function declaration", canonicalString: ret.treeNode.canonicalString + " " + phi.treeNode.canonicalString + " " + gam.treeNode.canonicalString + " " + alp.treeNode.canonicalString, children: [ret.treeNode, phi.treeNode, gam.treeNode, alp.treeNode] } } // types must be checked at runtime since parser doesn't check them
 }
@@ -415,11 +418,11 @@ var matchBrac = (wrappedString) => {
         ret.next = tem.next
     }
     if (ret.status !== "success") {
-        return ret
+        return { status: "failure", next: wrappedString }
     }
     var phi = matchExpr(ret.next)
     if (phi.status !== "success") {
-        return phi
+        return { status: "failure", next: wrappedString }
     }
     tem = matchWhitespace()(phi.next)
     if (tem.status == "success") {
@@ -427,7 +430,7 @@ var matchBrac = (wrappedString) => {
     }
     var alp = matchClP()(phi.next)
     if (alp.status !== "success") {
-        return alp
+        return { status: "failure", next: wrappedString }
     }
     return { status: "success", next: alp.next, treeNode: { type: "parenthesized expression", canonicalString: "(" + phi.treeNode.canonicalString + ")", children: [phi.treeNode] } }
 }
@@ -438,11 +441,11 @@ var matchReturn = (wrappedString) => {
     }
     var tem = matchWhitespace()(ret.next)
     if (tem.status !== "success") {
-        return tem
+        return { status: "failure", next: wrappedString }
     }
     var rex = matchExpr(tem.next)
     if (rex.status !== "success") {
-        return rex
+        return { status: "failure", next: wrappedString }
     }
     return { status: "success", next: rex.next, treeNode: { type: "return statement", canonicalString: "return " + rex.treeNode.canonicalString, children: [rex.treeNode]}}
 }
@@ -486,7 +489,8 @@ var matchBrae = (wrappedString) => {
     }
     return { status: "success", next: ret.next, treeNode: { type: "braced expressions", canonicalString: rst, children: phi}}
 }
-var matchOper = (wrappedString) => {
+var matchOper = (wrappedString) => { // DEPRECATED, replaced with matchAper and matchMper
+    var failureWrappedString = wrappedString
     var tem = matchWhitespace()(wrappedString)
     if (tem.status == "success") {
         wrappedString = tem.next
@@ -497,11 +501,11 @@ var matchOper = (wrappedString) => {
         phi = ret
     }
     if (phi.status !== "success") {
-        return phi
+        return { status: "failure", next: failureWrappedString }
     }
     ret = matchExpr(phi.next)
     if (ret.status !== "success") {
-        return ret
+        return { status: "failure", next: failureWrappedString}
     }
     if (ret.treeNode.type == "expression") {
         return { status: "success", next: ret.next, treeNode: { type: "expression", canonicalString: phi.treeNode.canonicalString + ret.treeNode.canonicalString , children: [phi.treeNode].concat(ret.treeNode.children)}}    
@@ -509,17 +513,18 @@ var matchOper = (wrappedString) => {
     return { status: "success", next: ret.next, treeNode: { type: "expression", canonicalString: phi.treeNode.canonicalString + ret.treeNode.canonicalString , children: [phi.treeNode, ret.treeNode]}}
 }
 var matchAper = (wrappedString) => {
+    var failureWrappedString = wrappedString
     var tem = matchWhitespace()(wrappedString)
     if (tem.status == "success") {
         wrappedString = tem.next
     }
     var phi = matchAs("operator: as")(wrappedString)
     if (phi.status !== "success") {
-        return phi
+        return { status: "failure", next: failureWrappedString }
     }
     ret = matchExpr(phi.next)
     if (ret.status !== "success") {
-        return ret
+        return { status: "failure", next: failureWrappedString }
     }
     if (ret.treeNode.type == "expression") {
         return { status: "success", next: ret.next, treeNode: { type: "expression", canonicalString: phi.treeNode.canonicalString + ret.treeNode.canonicalString , children: [phi.treeNode].concat(ret.treeNode.children)}}    
@@ -527,17 +532,18 @@ var matchAper = (wrappedString) => {
     return { status: "success", next: ret.next, treeNode: { type: "expression", canonicalString: phi.treeNode.canonicalString + ret.treeNode.canonicalString , children: [phi.treeNode, ret.treeNode]}}
 }
 var matchMper = (wrappedString) => {
+    var failureWrappedString = wrappedString
     var tem = matchWhitespace()(wrappedString)
     if (tem.status == "success") {
         wrappedString = tem.next
     }
     var phi = matchDm("operator: dm")(wrappedString)
     if (phi.status !== "success") {
-        return phi
+        return { status: "failure", next: failureWrappedString }
     }
     var ret = matchExpr(phi.next)
     if (ret.status !== "success") {
-        return ret
+        return { status: "failure", next: failureWrappedString }
     }
     if (ret.treeNode.type == "expression") {
         return { status: "success", next: ret.next, treeNode: { type: "expression", canonicalString: phi.treeNode.canonicalString + ret.treeNode.canonicalString , children: [phi.treeNode].concat(ret.treeNode.children)}}    
@@ -546,6 +552,7 @@ var matchMper = (wrappedString) => {
 }
 var mulPrecedence = 0
 var matchExpr = (wrappedString) => {
+    var failureWrappedString = wrappedString
     var tem = matchWhitespace()(wrappedString)
     if (tem.status == "success") {
         wrappedString = tem.next
@@ -602,6 +609,9 @@ var matchExpr = (wrappedString) => {
         else {
             return reb
         }
+    }
+    if (phi.status !== "success") {
+        return { status: "failure", next: failureWrappedString }
     }
     return phi
 }
