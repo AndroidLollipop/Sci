@@ -371,10 +371,7 @@ var matchBrac = (wrappedString) => {
     if (ret.status !== "success") {
         return ret
     }
-    var tem = matchWhitespace()(ret.next)
-    if (tem.status == "success") { // i should really have everything return next on failure to avoid doing this
-        ret.next = tem.next
-    }
+    ret.next = matchWhitespace()(ret.next).next
     if (ret.status !== "success") {
         return { status: "failure", next: wrappedString }
     }
@@ -382,10 +379,7 @@ var matchBrac = (wrappedString) => {
     if (phi.status !== "success") {
         return { status: "failure", next: wrappedString }
     }
-    tem = matchWhitespace()(phi.next)
-    if (tem.status == "success") {
-        phi.next = tem.next
-    }
+    phi.next = matchWhitespace()(phi.next).next
     var alp = matchClP()(phi.next)
     if (alp.status !== "success") {
         return { status: "failure", next: wrappedString }
@@ -413,10 +407,7 @@ var matchBrae = (wrappedString) => {
     var tem
     var rst = ""
     while (true) {
-        tem = matchWhitespace()(ret.next)
-        if (tem.status == "success") {
-            ret.next = tem.next
-        }
+        ret.next = matchWhitespace()(ret.next).next
         tem = matchReturn(ret.next)
         if (tem.status !== "success") {
             tem = matchFundef(ret.next)
@@ -436,10 +427,7 @@ var matchBrae = (wrappedString) => {
         ret = tem
         phi.push(tem.treeNode)
         rst += tem.treeNode.canonicalString + ";"
-        tem = matchWhitespace()(ret.next)
-        if (tem.status == "success") {
-            ret.next = tem.next
-        }
+        ret.next = matchWhitespace()(ret.next).next
         tem = matchSep()(ret.next)
         if (tem.status == "success") {
             ret.next = tem.next
@@ -449,10 +437,7 @@ var matchBrae = (wrappedString) => {
 }
 var matchOper = (wrappedString) => { // DEPRECATED, replaced with matchAper and matchMper
     var failureWrappedString = wrappedString
-    var tem = matchWhitespace()(wrappedString)
-    if (tem.status == "success") {
-        wrappedString = tem.next
-    }
+    wrappedString = matchWhitespace()(wrappedString).next
     var phi = matchDm("operator: dm")(wrappedString)
     var ret = matchAs("operator: as")(wrappedString)
     if (ret.status == "success") {
@@ -463,7 +448,7 @@ var matchOper = (wrappedString) => { // DEPRECATED, replaced with matchAper and 
     }
     ret = matchExpr(phi.next)
     if (ret.status !== "success") {
-        return { status: "failure", next: failureWrappedString}
+        return { status: "failure", next: failureWrappedString }
     }
     if (ret.treeNode.type == "expression") {
         return { status: "success", next: ret.next, treeNode: { type: "expression", canonicalString: phi.treeNode.canonicalString + ret.treeNode.canonicalString , children: [phi.treeNode].concat(ret.treeNode.children)}}    
@@ -472,10 +457,7 @@ var matchOper = (wrappedString) => { // DEPRECATED, replaced with matchAper and 
 }
 var matchAper = (wrappedString) => {
     var failureWrappedString = wrappedString
-    var tem = matchWhitespace()(wrappedString)
-    if (tem.status == "success") {
-        wrappedString = tem.next
-    }
+    wrappedString = matchWhitespace()(wrappedString).next
     var phi = matchAs("operator: as")(wrappedString)
     if (phi.status !== "success") {
         return { status: "failure", next: failureWrappedString }
@@ -491,10 +473,7 @@ var matchAper = (wrappedString) => {
 }
 var matchMper = (wrappedString) => {
     var failureWrappedString = wrappedString
-    var tem = matchWhitespace()(wrappedString)
-    if (tem.status == "success") {
-        wrappedString = tem.next
-    }
+    wrappedString = matchWhitespace()(wrappedString).next
     var phi = matchDm("operator: dm")(wrappedString)
     if (phi.status !== "success") {
         return { status: "failure", next: failureWrappedString }
@@ -511,10 +490,7 @@ var matchMper = (wrappedString) => {
 var mulPrecedence = 0
 var matchExpr = (wrappedString) => {
     var failureWrappedString = wrappedString
-    var tem = matchWhitespace()(wrappedString)
-    if (tem.status == "success") {
-        wrappedString = tem.next
-    }
+    wrappedString = matchWhitespace()(wrappedString).next
     var phi = matchLit(wrappedString)
     // the canonical way is to use else ifs
     // but that's as ugly as hell and this works too so to hell with it
@@ -538,6 +514,7 @@ var matchExpr = (wrappedString) => {
     }
     var rea = 0
     var reb
+    var tem
     if (phi.status == "success") {
         saved = mulPrecedence
         mulPrecedence = 1
