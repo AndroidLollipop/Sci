@@ -1,7 +1,7 @@
 # sci - the sic compiler/interpreter
 'sic' stands for 'sci interpreter/compiler'  
 see how that kinda matches the structure of a recursive descent parser? (except that it's left recursive so it wouldn't work without conversion)  
-the name of this repository is outdated. this language is too dynamic, it'll never compile to performant native code. i guess this is the scam/interpreter now (oh wait, that's what they said about javascript, and look at it now.)
+the name of this repository is outdated. this language is too dynamic, it'll never compile to performant native code without a ton of effort. i guess this is the scam/interpreter now.
 ## the most legit thing that this can do right now
 ### closures!
 var e = require("./simpleAndCleanInterfaceForRepl.js")  
