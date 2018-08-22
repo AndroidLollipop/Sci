@@ -146,7 +146,7 @@ var matchFuncallParams = (wrappedString) => {
             break
         }
         tem = matchWhitespace()(ret.next)
-        if (tem.status !== "success") {
+        if (tem.status == "success") {
             ret.next = tem.next
         }
         iet = ret
