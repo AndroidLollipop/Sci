@@ -38,3 +38,5 @@ console.log(repl("rte()"))
 console.log(repl("rte()"))
 //skye is trapped
 console.log(repl("skye"))
+console.log(repl("num slowFibonacci(n){if(n < 3){return 1};return slowFibonacci(n-1)+slowFibonacci(n-2)}"))
+console.log(repl("slowFibonacci(10)"))

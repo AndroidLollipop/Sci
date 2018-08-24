@@ -501,8 +501,6 @@ var matchExpr = (wrappedString) => {
     var saved = mulPrecedence
     mulPrecedence = 0
     var ret = matchIfExpression(wrappedString)
-    console.log(ret)
-    console.log("x"+peek(ret.next))
     mulPrecedence = saved
     if (ret.status == "success") {
         phi = ret
