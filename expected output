@@ -145,9 +145,7 @@
      children: [ [Object], [Object] ] } }
 { type: 'number', value: 55 }
 { type: 'number', value: 2 }
-{ type: '!!!INTERNAL INTERPRETER CONTROL',
-  control: 'return',
-  value: { type: 'number', value: 1 } }
+{ type: 'number', value: 1 }
 { type: 'number', value: 1 }
 { type: 'function',
   parentScope: [ [Function], [Function], [Function] ],
@@ -160,7 +158,16 @@
      canonicalString: '{if (n<3){1;} else {s(n-1)+s(n-2);};}',
      children: [ [Object] ] } }
 { type: 'number', value: 55 }
-{ type: '!!!INTERNAL INTERPRETER CONTROL',
-  control: 'return',
-  value: { type: 'number', value: 1 } }
+{ type: 'number', value: 1 }
 { type: 'number', value: 2 }
+{ type: 'function',
+  parentScope: [ [Function], [Function], [Function] ],
+  parameters:
+   { type: 'parameter declaration',
+     canonicalString: '(n)',
+     children: [ [Object] ] },
+  body:
+   { type: 'function body',
+     canonicalString: '{num a = 0;num b = 1;num c = 1;while (n>2){c = a+b;a = b;b = c;n = n-1;};return c;}',
+     children: [ [Object], [Object], [Object], [Object], [Object] ] } }
+{ type: 'number', value: 4.346655768693743e+208 }
