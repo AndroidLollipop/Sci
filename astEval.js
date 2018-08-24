@@ -98,10 +98,10 @@ var evaluateExpression = ([scopeGetter, scopeSetter, scopeDefiner]) => (expressi
         var ret = { type: "void" }
         while (res == 1) {
             ret = evaluateExpression([scopeGetter, scopeSetter, scopeDefiner])(expression.children[1])
-            res = evaluateCondition([scopeGetter, scopeSetter, scopeDefiner])(expression.children[0].children)
             if (ret.type == "!!!INTERNAL INTERPRETER CONTROL") {
                 return ret
             }
+            res = evaluateCondition([scopeGetter, scopeSetter, scopeDefiner])(expression.children[0].children)
         }
         return ret
     }
