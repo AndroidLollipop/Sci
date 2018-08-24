@@ -76,6 +76,9 @@ var matchOpA = matchTerminal("[")
 var matchClA = matchTerminal("]")
 var matchPip = matchTerminal("|")
 var matchDef = matchTerminal("=")
+var matchDeq = matchTerminalStrings(["=="])
+var matchLat = matchTerminal(">")
+var matchSmt = matchTerminal("<")
 var matchCom = matchTerminal(",")
 var matchIf = matchTerminalStrings(["if"])("if")
 var matchDnu = matchTerminalStrings(["num"])("number declaration")
@@ -551,13 +554,45 @@ var matchExpr = (wrappedString) => {
     return phi
 }
 var matchConditionalExpression = (wrappedString) => {
-    
+    var ret = matchOpP()(wrappedString)
+    if (ret.status !== "success") {
+        return ret
+    }
+    ret.next = matchWhitespace()(ret.next).next
+    ret = matchExpr(ret.next)
+    if (ret.status !== "success") {
+        return { status: "failure", next: wrappedString }
+    }
+    ret.next = matchWhitespace()(ret.next).next
+    var phi = matchDeq()(ret.next)
+    if (phi.status !== "success") {
+        phi = matchLat()(ret.next)
+    }
+    if (phi.status !== "success") {
+        phi = matchSmt()(ret.next)
+    }
+    if (phi.status !== "success") {
+        return { status: "failure", next: wrappedString }
+    }
+    phi.next = matchWhitespace(phi.next).next
+    var rea = matchExpr(phi.next)
+    if (rea.status !== "success") {
+        return { status: "failure", next: wrappedString }
+    }
+    rea.next = matchWhitespace(rea.next).next
+    var tem = matchClP()(rea.next)
+    if (tem.status !== "success") {
+        return { status: "failure", next: wrappedString }
+    }
+    return { status: "success", next: tem.next, treeNode: { type: "conditional expression", canonicalString: "(" + ret.treeNode.canonicalString + phi.treeNode.canonicalString + rea.treeNode.canonicalString + ")", children: [ret.treeNode, phi.treeNode, rea.treeNode]}}
 }
 var matchIfExpression = (wrappedString) => {
     var ret = matchIf(wrappedString)
     if (ret.status !== success) {
         return ret
     }
+    ret.next = matchWhitespace()(ret.next).next
+
 }
 var matchProgram = (wrappedString) => {
 
