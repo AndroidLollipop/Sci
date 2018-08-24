@@ -160,3 +160,7 @@
      canonicalString: '{if (n<3){1;} else {s(n-1)+s(n-2);};}',
      children: [ [Object] ] } }
 { type: 'number', value: 55 }
+{ type: '!!!INTERNAL INTERPRETER CONTROL',
+  control: 'return',
+  value: { type: 'number', value: 1 } }
+{ type: 'number', value: 2 }

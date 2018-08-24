@@ -9,19 +9,16 @@ var operate = (p1, op, p2) => {
         if (p1.type == p2.type) {
             return { type: p1.type, value: p1.value - p2.value }
         }
-        
     }
     else if (op.canonicalString == "*") {
         if (p1.type == p2.type) {
             return { type: p1.type, value: p1.value * p2.value }
         }
-
     }
     else if (op.canonicalString == "/") {
         if (p1.type == p2.type) {
             return { type: p1.type, value: p1.value / p2.value }
         }
-
     }
     return { type: "void" }
 }

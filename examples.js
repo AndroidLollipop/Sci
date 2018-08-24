@@ -47,5 +47,7 @@ console.log(repl("if (slowFibonacci(10)==55){1}else{2}"))
 console.log(repl("(if (slowFibonacci(10)==55){1}else{2})"))
 // with brackets, if expressions are treated as expressions and have their return values captured
 console.log(repl("num s(n){if(n<3){1}else{s(n-1)+s(n-2)}}"))
-console.log(repl("s(10)"))
+console.log(repl("num res = s(10)"))
+console.log(repl("if(res==55){1}else{2}"))
+console.log(repl("if(res==55){1}else{2}+1"))
 // you can see the benefits of this terse syntax above
