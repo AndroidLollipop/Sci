@@ -94,11 +94,11 @@ var evaluateExpression = ([scopeGetter, scopeSetter, scopeDefiner]) => (expressi
         return { type: "void "}
     }
     else if (expression.type == "while expression") {
-        var res = 1
+        var res = evaluateCondition([scopeGetter, scopeSetter, scopeDefiner])(expression.children[0].children)
         var ret = { type: "void" }
         while (res == 1) {
-            res = evaluateCondition([scopeGetter, scopeSetter, scopeDefiner])(expression.children[0].children)
             ret = evaluateExpression([scopeGetter, scopeSetter, scopeDefiner])(expression.children[1])
+            res = evaluateCondition([scopeGetter, scopeSetter, scopeDefiner])(expression.children[0].children)
             if (ret.type == "!!!INTERNAL INTERPRETER CONTROL") {
                 return ret
             }
@@ -116,7 +116,7 @@ var evaluateExpression = ([scopeGetter, scopeSetter, scopeDefiner]) => (expressi
         return expRes.value
     }
     else if (expression.type == "function body") {
-        var expRes
+        var expRes = { type: "void" }
         for (var i = 0; i < expression.children.length; i++) {
             expRes = evaluateExpression([scopeGetter, scopeSetter, scopeDefiner])(expression.children[i])
             if (expRes.type == "!!!INTERNAL INTERPRETER CONTROL") {
@@ -126,7 +126,7 @@ var evaluateExpression = ([scopeGetter, scopeSetter, scopeDefiner]) => (expressi
         return { type: "!!!INTERNAL INTERPRETER CONTROL", control: "return", value: expRes } // functions implicitly return, only {} returns void
     }
     else if (expression.type == "block body") {
-        var expRes
+        var expRes = { type: "void" }
         for (var i = 0; i < expression.children.length; i++) {
             expRes = evaluateExpression([scopeGetter, scopeSetter, scopeDefiner])(expression.children[i])
             if (expRes.type == "!!!INTERNAL INTERPRETER CONTROL") {
