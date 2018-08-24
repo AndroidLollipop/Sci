@@ -574,12 +574,12 @@ var matchConditionalExpression = (wrappedString) => {
     if (phi.status !== "success") {
         return { status: "failure", next: wrappedString }
     }
-    phi.next = matchWhitespace(phi.next).next
+    phi.next = matchWhitespace()(phi.next).next
     var rea = matchExpr(phi.next)
     if (rea.status !== "success") {
         return { status: "failure", next: wrappedString }
     }
-    rea.next = matchWhitespace(rea.next).next
+    rea.next = matchWhitespace()(rea.next).next
     var tem = matchClP()(rea.next)
     if (tem.status !== "success") {
         return { status: "failure", next: wrappedString }
@@ -588,11 +588,15 @@ var matchConditionalExpression = (wrappedString) => {
 }
 var matchIfExpression = (wrappedString) => {
     var ret = matchIf(wrappedString)
-    if (ret.status !== success) {
+    if (ret.status !== "success") {
         return ret
     }
     ret.next = matchWhitespace()(ret.next).next
-
+    ret = matchConditionalExpression(ret.next)
+    if (ret.status !== "success") {
+        return { status: "failure", next: wrappedString }
+    }
+    return { status: "success", next: ret.next, treeNode: { type: "if expression", canonicalString: "if " + ret.treeNode.canonicalString, children: [ret.treeNode]}}
 }
 var matchProgram = (wrappedString) => {
 
@@ -616,5 +620,6 @@ module.exports = {
     matchDefine: matchDefine,
     matchFundef: matchFundef,
     matchFunbod: matchFunbod,
-    matchFunctionCall: matchFunctionCall
+    matchFunctionCall: matchFunctionCall,
+    matchIfExpression: matchIfExpression
 }

@@ -52,3 +52,4 @@ console.log(a.evaluateExpression(a.emptyScope())(t.matchFundef(wrapString("num p
 youClod(t.matchExpr(wrapString("-7*fun(5, havana+3*0-1)")))
 youClod(t.matchExpr(wrapString("fun(5,1)*7")))
 youClod(t.matchFundef(wrapString("num potato(p1, p2, p3){num skye = 1;num scotland = 2; num add(p1, p2, p3, p4, p5){return p1+p2+p3+p4+p5}; return add(p1,p2,p3,skye,scotland)}")))
+youClod(t.matchIfExpression(wrapString("if (5 == 2)")))
