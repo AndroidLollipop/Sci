@@ -168,7 +168,7 @@
      children: [ [Object] ] },
   body:
    { type: 'function body',
-     canonicalString: '{num a = 0;num b = 1;num c = 1;while (n>2){c = a+b;a = b;b = c;n = n-1;};return c;}',
+     canonicalString: '{num a = 1;num b = 1;num c = 1;while (n>2){c = a+b;a = b;b = c;n = n-1;};return c;}',
      children: [ [Object], [Object], [Object], [Object], [Object] ] } }
 { type: 'number', value: 4.346655768693743e+208 }
 { type: 'function',
