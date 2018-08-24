@@ -82,6 +82,7 @@ var matchLat = matchTerminal(">")
 var matchSmt = matchTerminal("<")
 var matchCom = matchTerminal(",")
 var matchIf = matchTerminalStrings(["if"])("if")
+var matchWhile = matchTerminalStrings(["while"])("while")
 var matchDnu = matchTerminalStrings(["num"])("number declaration")
 var matchStr = matchTerminalStrings(["str"])("string declaration")
 var matchSep = matchTerminal(";")
@@ -507,6 +508,13 @@ var matchExpr = (wrappedString) => {
     }
     saved = mulPrecedence
     mulPrecedence = 0
+    ret = matchWhileExpression(wrappedString)
+    mulPrecedence = saved
+    if (ret.status == "success") {
+        phi = ret
+    }
+    saved = mulPrecedence
+    mulPrecedence = 0
     ret = matchFunctionCall(wrappedString)
     mulPrecedence = saved
     if (ret.status == "success" && phi.status !== "success") {
@@ -609,6 +617,7 @@ var matchIfExpression = (wrappedString) => {
     if (phi.status !== "success") {
         return { status: "failure", next: wrappedString }
     }
+    phi.treeNode.type = "block body"
     phi.next = matchWhitespace()(phi.next).next
     var rea = matchEls()(phi.next)
     if (rea.status !== "success") {
@@ -620,6 +629,25 @@ var matchIfExpression = (wrappedString) => {
         return { status: "failure", next: wrappedString }
     }
     return { status: "success", next: rea.next, treeNode: { type: "if else expression", canonicalString: "if " + ret.treeNode.canonicalString + phi.treeNode.canonicalString + " else " + rea.treeNode.canonicalString, children: [ret.treeNode, phi.treeNode, rea.treeNode]}}
+}
+var matchWhileExpression = (wrappedString) => {
+    var ret = matchWhile(wrappedString)
+    if (ret.status !== "success") {
+        return ret
+    }
+    ret.next = matchWhitespace()(ret.next).next
+    ret = matchConditionalExpression(ret.next)
+    if (ret.status !== "success") {
+        return { status: "failure", next: wrappedString }
+    }
+    ret.next = matchWhitespace()(ret.next).next
+    var phi = matchFunbod(ret.next)
+    if (phi.status !== "success") {
+        return { status: "failure", next: wrappedString }
+    }
+    phi.treeNode.type = "block body"
+    phi.next = matchWhitespace()(phi.next).next
+    return { status: "success", next: phi.next, treeNode: { type: "while expression", canonicalString: "while " + ret.treeNode.canonicalString + phi.treeNode.canonicalString, children: [ret.treeNode, phi.treeNode]}}
 }
 var matchProgram = (wrappedString) => {
 

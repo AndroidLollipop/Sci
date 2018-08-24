@@ -58,43 +58,52 @@ var collapseString = (nodeChildren) => {
     nodeChildren.map(x => x.type == "alphanumeric literal" ? ret += x.canonicalString: x.canonicalString == "\\" ? ret += "\\" : x.canonicalString == "n" ? ret += "\n" : ret += x.canonicalString)
     return ret
 }
+var evaluateCondition = ([scopeGetter, scopeSetter, scopeDefiner]) => ([L, C, R]) => {
+    L = evaluateExpression([scopeGetter, scopeSetter, scopeDefiner])(L)
+    R = evaluateExpression([scopeGetter, scopeSetter, scopeDefiner])(R)
+    C = C.canonicalString
+    if (L.type !== "number" || R.type !== "number") {
+        return -1
+    }
+    L = L.value
+    R = R.value
+    if (C == "==" && L == R) {
+        return 1
+    }
+    if (C == ">" && L > R) {
+        return 1
+    }
+    if (C == "<" && L < R) {
+        return 1
+    }
+    return 0
+}
 var evaluateExpression = ([scopeGetter, scopeSetter, scopeDefiner]) => (expression) => {
     if (expression.type == "function declaration") {
         scopeDefiner(expression.children.filter((x) => x.type == "identifier")[0].canonicalString, { type: "function", parentScope: [scopeGetter, scopeSetter, scopeDefiner], parameters: expression.children.filter((x) => x.type == "parameter declaration")[0], body: expression.children.filter((x) => x.type == "function body")[0]})
         return scopeGetter(expression.children.filter((x) => x.type == "identifier")[0].canonicalString)
     }
     else if (expression.type == "if expression" || expression.type == "if else expression") {
-        var [L, C, R] = expression.children[0].children
-        L = evaluateExpression([scopeGetter, scopeSetter, scopeDefiner])(L)
-        R = evaluateExpression([scopeGetter, scopeSetter, scopeDefiner])(R)
-        if (L.type !== "number" || R.type !== "number") {
-            return { type: "void" }
+        var res = evaluateCondition([scopeGetter, scopeSetter, scopeDefiner])(expression.children[0].children)
+        if (res == 1) {
+            return evaluateExpression([scopeGetter, scopeSetter, scopeDefiner])(expression.children[1])
         }
-        if (C.canonicalString == "==") {
-            if (L.value == R.value) {
-                return evaluateExpression([scopeGetter, scopeSetter, scopeDefiner])(expression.children[1])
-            }
-            else if (expression.type == "if else expression") {
-                return evaluateExpression([scopeGetter, scopeSetter, scopeDefiner])(expression.children[2])
-            }
-        }
-        else if (C.canonicalString == ">") {
-            if (L.value > R.value) {
-                return evaluateExpression([scopeGetter, scopeSetter, scopeDefiner])(expression.children[1])
-            }
-            else if (expression.type == "if else expression") {
-                return evaluateExpression([scopeGetter, scopeSetter, scopeDefiner])(expression.children[2])
-            }
-        }
-        else if (C.canonicalString == "<") {
-            if (L.value < R.value) {
-                return evaluateExpression([scopeGetter, scopeSetter, scopeDefiner])(expression.children[1])
-            }
-            else if (expression.type == "if else expression") {
-                return evaluateExpression([scopeGetter, scopeSetter, scopeDefiner])(expression.children[2])
-            }
+        else if (res == 0 && expression.type == "if else expression") {
+            return evaluateExpression([scopeGetter, scopeSetter, scopeDefiner])(expression.children[2])
         }
         return { type: "void "}
+    }
+    else if (expression.type == "while expression") {
+        var res = 1
+        var ret = { type: "void" }
+        while (res == 1) {
+            res = evaluateCondition([scopeGetter, scopeSetter, scopeDefiner])(expression.children[0].children)
+            ret = evaluateExpression([scopeGetter, scopeSetter, scopeDefiner])(expression.children[1])
+            if (ret.type == "!!!INTERNAL INTERPRETER CONTROL") {
+                return ret
+            }
+        }
+        return ret
     }
     else if (expression.type == "function call") {
         var target = scopeGetter(expression.children.filter((x) => x.type == "identifier")[0].canonicalString)
@@ -115,6 +124,16 @@ var evaluateExpression = ([scopeGetter, scopeSetter, scopeDefiner]) => (expressi
             }
         }
         return { type: "!!!INTERNAL INTERPRETER CONTROL", control: "return", value: expRes } // functions implicitly return, only {} returns void
+    }
+    else if (expression.type == "block body") {
+        var expRes
+        for (var i = 0; i < expression.children.length; i++) {
+            expRes = evaluateExpression([scopeGetter, scopeSetter, scopeDefiner])(expression.children[i])
+            if (expRes.type == "!!!INTERNAL INTERPRETER CONTROL") {
+                return expRes
+            }
+        }
+        return expRes
     }
     else if (expression.type == "return statement") {
         var expRes = evaluateExpression([scopeGetter, scopeSetter, scopeDefiner])(expression.children[0])

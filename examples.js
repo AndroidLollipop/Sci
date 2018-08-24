@@ -41,13 +41,11 @@ console.log(repl("skye"))
 console.log(repl("num slowFibonacci(n){if(n < 3){return 1};return slowFibonacci(n-1)+slowFibonacci(n-2)}"))
 console.log(repl("slowFibonacci(10)"))
 console.log(repl("(if (slowFibonacci(10)==55){1}else{2})+1"))
-// when treated implicitly as values, if expressions are treated as expressions and have their return values captured
 console.log(repl("if (slowFibonacci(10)==55){1}else{2}"))
-// without brackets, if expressions are treated as in the body of the scope and can cause a function to return
 console.log(repl("(if (slowFibonacci(10)==55){1}else{2})"))
-// with brackets, if expressions are treated as expressions and have their return values captured
 console.log(repl("num s(n){if(n<3){1}else{s(n-1)+s(n-2)}}"))
 console.log(repl("num res = s(10)"))
 console.log(repl("if(res==55){1}else{2}"))
 console.log(repl("if(res==55){1}else{2}+1"))
-// you can see the benefits of this terse syntax above
+console.log(repl("num k = 0"))
+console.log(repl("while(k<10){k=k+1}"))
