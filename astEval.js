@@ -65,8 +65,6 @@ var evaluateExpression = ([scopeGetter, scopeSetter, scopeDefiner]) => (expressi
         var [L, C, R] = expression.children[0].children
         L = evaluateExpression([scopeGetter, scopeSetter, scopeDefiner])(L)
         R = evaluateExpression([scopeGetter, scopeSetter, scopeDefiner])(R)
-        console.log(L)
-        console.log(R)
         if (L.type !== "number" || R.type !== "number") {
             return { type: "void" }
         }
@@ -99,7 +97,6 @@ var evaluateExpression = ([scopeGetter, scopeSetter, scopeDefiner]) => (expressi
     else if (expression.type == "function call") {
         var target = scopeGetter(expression.children.filter((x) => x.type == "identifier")[0].canonicalString)
         var targetScope = adjoinScope(target.parentScope)(emptyScope())
-        console.log(scopeGetter("n"))
         defineInScope([scopeGetter, scopeSetter, scopeDefiner])(target.parameters)(targetScope)(expression.children.filter((x) => x.type == "function call bindings")[0])
         var expRes = evaluateExpression(targetScope)(target.body)
         if (expRes.type !== "!!!INTERNAL INTERPRETER CONTROL" || expRes.control !== "return") { // someone is trying to trick us
@@ -108,7 +105,6 @@ var evaluateExpression = ([scopeGetter, scopeSetter, scopeDefiner]) => (expressi
         return expRes.value
     }
     else if (expression.type == "function body") {
-        console.log(scopeGetter("n"))
         var expRes
         for (var i = 0; i < expression.children.length; i++) {
             expRes = evaluateExpression([scopeGetter, scopeSetter, scopeDefiner])(expression.children[i])
@@ -119,7 +115,6 @@ var evaluateExpression = ([scopeGetter, scopeSetter, scopeDefiner]) => (expressi
         return { type: "!!!INTERNAL INTERPRETER CONTROL", control: "return", value: expRes } // functions implicitly return, only {} returns undefined
     }
     else if (expression.type == "return statement") {
-        console.log(scopeGetter("n"))
         var expRes = evaluateExpression([scopeGetter, scopeSetter, scopeDefiner])(expression.children[0])
         return { type: "!!!INTERNAL INTERPRETER CONTROL", control: "return", value: expRes } // this could be a source of vulnerabilities, damn
     }

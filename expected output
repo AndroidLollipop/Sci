@@ -18,20 +18,20 @@
 { type: 'number', value: 12 }
 { type: 'function',
   parentScope: [ [Function], [Function], [Function] ],
-  parameters: 
+  parameters:
    { type: 'parameter declaration',
      canonicalString: '(p1, p2, p3)',
-     children: 
+     children:
       [ { type: 'identifier', canonicalString: 'p1', children: [] },
         { type: 'identifier', canonicalString: 'p2', children: [] },
         { type: 'identifier', canonicalString: 'p3', children: [] } ] },
-  body: 
+  body:
    { type: 'function body',
      canonicalString: '{num skye = 1;num scotland = 2;return p1+p2+p3+skye+scotland;}',
-     children: 
+     children:
       [ { type: 'variable declaration',
           canonicalString: 'num skye = 1',
-          children: 
+          children:
            [ { type: 'number declaration',
                canonicalString: 'num',
                children: [] },
@@ -40,7 +40,7 @@
              { type: 'integral literal', canonicalString: '1', children: [] } ] },
         { type: 'variable declaration',
           canonicalString: 'num scotland = 2',
-          children: 
+          children:
            [ { type: 'number declaration',
                canonicalString: 'num',
                children: [] },
@@ -49,10 +49,10 @@
              { type: 'integral literal', canonicalString: '2', children: [] } ] },
         { type: 'return statement',
           canonicalString: 'return p1+p2+p3+skye+scotland',
-          children: 
+          children:
            [ { type: 'expression',
                canonicalString: 'p1+p2+p3+skye+scotland',
-               children: 
+               children:
                 [ { type: 'identifier', canonicalString: 'p1', children: [] },
                   { type: 'operator: as', canonicalString: '+', children: [] },
                   { type: 'identifier', canonicalString: 'p2', children: [] },
@@ -65,52 +65,52 @@
 { type: 'number', value: 9 }
 { type: 'function',
   parentScope: [ [Function], [Function], [Function] ],
-  parameters: 
+  parameters:
    { type: 'parameter declaration',
      canonicalString: '(p1, p2, p3)',
      children: [ [Object], [Object], [Object] ] },
-  body: 
+  body:
    { type: 'function body',
      canonicalString: '{num skye = 1;num scotland = 2;num add (p1, p2, p3, p4, p5) {return p1+p2+p3+p4+p5;};return add(p1, p2, p3, skye, scotland);}',
      children: [ [Object], [Object], [Object], [Object] ] } }
 { type: 'number', value: 9 }
 { type: 'function',
   parentScope: [ [Function], [Function], [Function] ],
-  parameters: 
+  parameters:
    { type: 'parameter declaration',
      canonicalString: '(multiplier, start)',
      children: [ [Object], [Object] ] },
-  body: 
+  body:
    { type: 'function body',
      canonicalString: '{num add () {skye = skye+1;return (skye*multiplier);};num skye = (start/multiplier)-1;return add;}',
      children: [ [Object], [Object], [Object] ] } }
 { type: 'function',
   parentScope: [ [Function], [Function], [Function] ],
-  parameters: 
+  parameters:
    { type: 'parameter declaration',
      canonicalString: '(multiplier, start)',
      children: [ [Object], [Object] ] },
-  body: 
+  body:
    { type: 'function body',
      canonicalString: '{num add () {skye = skye+1;return (skye*multiplier);};num skye = (start/multiplier)-1;return add;}',
      children: [ [Object], [Object], [Object] ] } }
 { type: 'function',
   parentScope: [ [Function], [Function], [Function] ],
-  parameters: 
+  parameters:
    { type: 'parameter declaration',
      canonicalString: '()',
      children: [] },
-  body: 
+  body:
    { type: 'function body',
      canonicalString: '{skye = skye+1;return (skye*multiplier);}',
      children: [ [Object], [Object] ] } }
 { type: 'function',
   parentScope: [ [Function], [Function], [Function] ],
-  parameters: 
+  parameters:
    { type: 'parameter declaration',
      canonicalString: '()',
      children: [] },
-  body: 
+  body:
    { type: 'function body',
      canonicalString: '{skye = skye+1;return (skye*multiplier);}',
      children: [ [Object], [Object] ] } }
@@ -122,14 +122,25 @@
 { type: 'number', value: 24 }
 { type: 'function',
   parentScope: [ [Function], [Function], [Function] ],
-  parameters: 
+  parameters:
    { type: 'parameter declaration',
      canonicalString: '()',
      children: [] },
-  body: 
+  body:
    { type: 'function body',
      canonicalString: '{skye = skye+1;return (skye*multiplier);}',
      children: [ [Object], [Object] ] } }
 { type: 'number', value: 32 }
 { type: 'number', value: 38 }
 undefined
+{ type: 'function',
+  parentScope: [ [Function], [Function], [Function] ],
+  parameters:
+   { type: 'parameter declaration',
+     canonicalString: '(n)',
+     children: [ [Object] ] },
+  body:
+   { type: 'function body',
+     canonicalString: '{if (n<3){return 1;};return slowFibonacci(n-1)+slowFibonacci(n-2);}',
+     children: [ [Object], [Object] ] } }
+{ type: 'number', value: 55 }

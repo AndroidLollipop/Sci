@@ -19,6 +19,14 @@ output:
 { type: 'number', value: 3 }  
 { type: 'number', value: 4 }  
 undefined <- this is expected! this shows that skye is not in the global scope
+### recursion!
+var e = require("./simpleAndCleanInterfaceForRepl.js")  
+var repl = e.getRepl()  
+console.log(repl("num slowFibonacci(n){if(n < 3){return 1};return slowFibonacci(n-1)+slowFibonacci(n-2)}"))  
+console.log(repl("slowFibonacci(10)"))  
+  
+output:  
+{ type: 'number', value: 55 }
 ## example output for repl (ok, more like a pseudo-repl)
 var e = require("./simpleAndCleanInterfaceForRepl.js")  
 var repl = e.getRepl()  
