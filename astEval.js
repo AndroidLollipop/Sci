@@ -1,5 +1,4 @@
 // see tokparse.js for ast definition
-// i haven't defined the ast properly yet so i can't write asteval yet
 var operate = (p1, op, p2) => {
     if (op.canonicalString == "+") {
         if (p1.type == p2.type) {
