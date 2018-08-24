@@ -46,3 +46,6 @@ console.log(repl("if (slowFibonacci(10)==55){1}else{2}"))
 // without brackets, if expressions are treated as in the body of the scope and can cause a function to return
 console.log(repl("(if (slowFibonacci(10)==55){1}else{2})"))
 // with brackets, if expressions are treated as expressions and have their return values captured
+console.log(repl("num s(n){if(n<3){1}else{s(n-1)+s(n-2)}}"))
+console.log(repl("s(10)"))
+// you can see the benefits of this terse syntax above

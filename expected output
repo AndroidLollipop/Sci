@@ -149,3 +149,14 @@ undefined
   control: 'return',
   value: { type: 'number', value: 1 } }
 { type: 'number', value: 1 }
+{ type: 'function',
+  parentScope: [ [Function], [Function], [Function] ],
+  parameters:
+   { type: 'parameter declaration',
+     canonicalString: '(n)',
+     children: [ [Object] ] },
+  body:
+   { type: 'function body',
+     canonicalString: '{if (n<3){1;} else {s(n-1)+s(n-2);};}',
+     children: [ [Object] ] } }
+{ type: 'number', value: 55 }
