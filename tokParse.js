@@ -500,9 +500,18 @@ var matchExpr = (wrappedString) => {
     // but that's as ugly as hell and this works too so to hell with it
     var saved = mulPrecedence
     mulPrecedence = 0
-    var ret = matchFunctionCall(wrappedString)
+    var ret = matchIfExpression(wrappedString)
+    console.log(ret)
+    console.log("x"+peek(ret.next))
     mulPrecedence = saved
     if (ret.status == "success") {
+        phi = ret
+    }
+    saved = mulPrecedence
+    mulPrecedence = 0
+    ret = matchFunctionCall(wrappedString)
+    mulPrecedence = saved
+    if (ret.status == "success" && phi.status !== "success") {
         phi = ret
     }
     ret = matchIdentifier(wrappedString)
@@ -605,7 +614,7 @@ var matchIfExpression = (wrappedString) => {
     phi.next = matchWhitespace()(phi.next).next
     var rea = matchEls()(phi.next)
     if (rea.status !== "success") {
-        return { status: "success", next: ret.next, treeNode: { type: "if expression", canonicalString: "if " + ret.treeNode.canonicalString + phi.treeNode.canonicalString, children: [ret.treeNode, phi.treeNode]}}
+        return { status: "success", next: phi.next, treeNode: { type: "if expression", canonicalString: "if " + ret.treeNode.canonicalString + phi.treeNode.canonicalString, children: [ret.treeNode, phi.treeNode]}}
     }
     rea.next = matchWhitespace()(rea.next).next
     rea = matchFunbod(rea.next)
