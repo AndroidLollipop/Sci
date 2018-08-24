@@ -144,3 +144,8 @@ undefined
      canonicalString: '{if (n<3){return 1;};return slowFibonacci(n-1)+slowFibonacci(n-2);}',
      children: [ [Object], [Object] ] } }
 { type: 'number', value: 55 }
+{ type: 'number', value: 2 }
+{ type: '!!!INTERNAL INTERPRETER CONTROL',
+  control: 'return',
+  value: { type: 'number', value: 1 } }
+{ type: 'number', value: 1 }

@@ -26,6 +26,12 @@ var operate = (p1, op, p2) => {
     }
     return undefined
 }
+var unwrap = (typ) => {
+    while (typ.type == "!!!INTERNAL INTERPRETER CONTROL") {
+        typ = typ.value
+    }
+    return typ
+}
 var emptyScope = () => {
     var scopeDict = {}
     return ([(name) => scopeDict[name], (name, value) => scopeDict[name] = value, (name, value) => scopeDict[name] = value])
@@ -132,15 +138,15 @@ var evaluateExpression = ([scopeGetter, scopeSetter, scopeDefiner]) => (expressi
         if (expression.children[0] == undefined) {
             return undefined
         }
-        return evaluateExpression([scopeGetter, scopeSetter, scopeDefiner])(expression.children[0])
+        return unwrap(evaluateExpression([scopeGetter, scopeSetter, scopeDefiner])(expression.children[0]))
     }
     else if (expression.type == "expression") {
         if (expression.children[0] == undefined) {
             return undefined
         }
-        var acc = evaluateExpression([scopeGetter, scopeSetter, scopeDefiner])(expression.children[0])
+        var acc = unwrap(evaluateExpression([scopeGetter, scopeSetter, scopeDefiner])(expression.children[0]))
         for (var i = 1; i < expression.children.length; i+=2) {
-            acc = operate(acc, expression.children[i], evaluateExpression([scopeGetter, scopeSetter, scopeDefiner])(expression.children[i+1]))
+            acc = operate(acc, expression.children[i], unwrap(evaluateExpression([scopeGetter, scopeSetter, scopeDefiner])(expression.children[i+1])))
         }
         return acc
     }
