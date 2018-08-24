@@ -565,12 +565,12 @@ var matchConditionalExpression = (wrappedString) => {
         return { status: "failure", next: wrappedString }
     }
     ret.next = matchWhitespace()(ret.next).next
-    var phi = matchDeq()(ret.next)
+    var phi = matchDeq("comparator")(ret.next)
     if (phi.status !== "success") {
-        phi = matchLat()(ret.next)
+        phi = matchLat("comparator")(ret.next)
     }
     if (phi.status !== "success") {
-        phi = matchSmt()(ret.next)
+        phi = matchSmt("comparator")(ret.next)
     }
     if (phi.status !== "success") {
         return { status: "failure", next: wrappedString }
@@ -602,17 +602,17 @@ var matchIfExpression = (wrappedString) => {
     if (phi.status !== "success") {
         return { status: "failure", next: wrappedString }
     }
-    phi.next = matchWhitespace(phi.next).next
-    var rea = matchEls(phi.next)
+    phi.next = matchWhitespace()(phi.next).next
+    var rea = matchEls()(phi.next)
     if (rea.status !== "success") {
         return { status: "success", next: ret.next, treeNode: { type: "if expression", canonicalString: "if " + ret.treeNode.canonicalString + phi.treeNode.canonicalString, children: [ret.treeNode, phi.treeNode]}}
     }
-    rea.next = matchWhitespace(rea.next).next
+    rea.next = matchWhitespace()(rea.next).next
     rea = matchFunbod(rea.next)
     if (rea.status !== "success") {
         return { status: "failure", next: wrappedString }
     }
-    return { status: "success", next: rea.next, treeNode: { type: "if else expression", canonicalString: "if " + ret.treeNode.canonicalString + phi.treeNode.canonicalString + rea.treeNode.canonicalString, children: [ret.treeNode, phi.treeNode, rea.treeNode]}}
+    return { status: "success", next: rea.next, treeNode: { type: "if else expression", canonicalString: "if " + ret.treeNode.canonicalString + phi.treeNode.canonicalString + " else " + rea.treeNode.canonicalString, children: [ret.treeNode, phi.treeNode, rea.treeNode]}}
 }
 var matchProgram = (wrappedString) => {
 
