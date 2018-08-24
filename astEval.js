@@ -24,7 +24,7 @@ var operate = (p1, op, p2) => {
         }
 
     }
-    return undefined
+    return { type: "void" }
 }
 var unwrap = (typ) => {
     while (typ.type == "!!!INTERNAL INTERPRETER CONTROL") {
@@ -34,16 +34,16 @@ var unwrap = (typ) => {
 }
 var emptyScope = () => {
     var scopeDict = {}
-    return ([(name) => scopeDict[name], (name, value) => scopeDict[name] = value, (name, value) => scopeDict[name] = value])
+    return ([(name) => scopeDict[name] !== undefined ? scopeDict[name] : { type: "undefined" }, (name, value) => scopeDict[name] = value, (name, value) => scopeDict[name] = value])
 }
 var adjoinScope = ([scopeGetter, scopeSetter, scopeDefiner]) => ([newScopeGetter, newScopeSetter, newScopeDefiner]) => {
     return ([(name) => {
-        if (newScopeGetter(name) == undefined) {
+        if (newScopeGetter(name).type == "undefined") {
             return scopeGetter(name)
         }
         return newScopeGetter(name)
     }, (name, value) => {
-        if (newScopeGetter(name) == undefined) {
+        if (newScopeGetter(name).type == "undefined") {
             return scopeSetter(name, value)
         }
         return newScopeSetter(name, value)
@@ -52,7 +52,7 @@ var adjoinScope = ([scopeGetter, scopeSetter, scopeDefiner]) => ([newScopeGetter
 var defineInScope = ([parentScopeGetter, parentScopeSetter, parentScopeDefiner]) => (identifiers) => ([scopeGetter, scopeSetter, scopeDefiner]) => (expressions) => {
     for (var i = 0; i < identifiers.children.length; i++) {
         if (expressions.children[i] == undefined) {
-            return undefined
+            return
         }
         scopeDefiner(identifiers.children[i].canonicalString, evaluateExpression([parentScopeGetter, parentScopeSetter, parentScopeDefiner])(expressions.children[i]))
     }
@@ -106,7 +106,7 @@ var evaluateExpression = ([scopeGetter, scopeSetter, scopeDefiner]) => (expressi
         defineInScope([scopeGetter, scopeSetter, scopeDefiner])(target.parameters)(targetScope)(expression.children.filter((x) => x.type == "function call bindings")[0])
         var expRes = evaluateExpression(targetScope)(target.body)
         if (expRes.type !== "!!!INTERNAL INTERPRETER CONTROL" || expRes.control !== "return") { // someone is trying to trick us
-            return undefined
+            return { type: "void" }
         }
         return expRes.value
     }
@@ -118,7 +118,7 @@ var evaluateExpression = ([scopeGetter, scopeSetter, scopeDefiner]) => (expressi
                 return expRes
             }
         }
-        return { type: "!!!INTERNAL INTERPRETER CONTROL", control: "return", value: expRes } // functions implicitly return, only {} returns undefined
+        return { type: "!!!INTERNAL INTERPRETER CONTROL", control: "return", value: expRes } // functions implicitly return, only {} returns void
     }
     else if (expression.type == "return statement") {
         var expRes = evaluateExpression([scopeGetter, scopeSetter, scopeDefiner])(expression.children[0])
@@ -136,13 +136,13 @@ var evaluateExpression = ([scopeGetter, scopeSetter, scopeDefiner]) => (expressi
     }
     else if (expression.type == "parenthesized expression") {
         if (expression.children[0] == undefined) {
-            return undefined
+            return { type: "void" }
         }
         return unwrap(evaluateExpression([scopeGetter, scopeSetter, scopeDefiner])(expression.children[0]))
     }
     else if (expression.type == "expression") {
         if (expression.children[0] == undefined) {
-            return undefined
+            return { type: "void" }
         }
         var acc = unwrap(evaluateExpression([scopeGetter, scopeSetter, scopeDefiner])(expression.children[0]))
         for (var i = 1; i < expression.children.length; i+=2) {
@@ -152,11 +152,11 @@ var evaluateExpression = ([scopeGetter, scopeSetter, scopeDefiner]) => (expressi
     }
     else if (expression.type == "negated literal") {
         if (expression.children[0] == undefined) {
-            return undefined
+            return { type: "void" }
         }
         var expRes = evaluateExpression([scopeGetter, scopeSetter, scopeDefiner])(expression.children[0])
         if (expRes.type !== "number") {
-            return undefined
+            return { type: "void" }
         }
         return { type: "number", value: -expRes.value }
     }
@@ -172,6 +172,7 @@ var evaluateExpression = ([scopeGetter, scopeSetter, scopeDefiner]) => (expressi
     else if (expression.type == "identifier") {
         return scopeGetter(expression.canonicalString)
     }
+    return { type: "void" }
 }
 module.exports = {
     evaluateExpression: evaluateExpression,

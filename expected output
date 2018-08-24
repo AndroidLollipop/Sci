@@ -132,7 +132,7 @@
      children: [ [Object], [Object] ] } }
 { type: 'number', value: 32 }
 { type: 'number', value: 38 }
-undefined
+{ type: 'undefined' }
 { type: 'function',
   parentScope: [ [Function], [Function], [Function] ],
   parameters:

@@ -18,7 +18,7 @@ output:
 { type: 'number', value: 2 }  
 { type: 'number', value: 3 }  
 { type: 'number', value: 4 }  
-undefined <- this is expected! this shows that skye is not in the global scope
+{ type: 'undefined' } <- this is expected! this shows that skye is not in the global scope
 ### recursion!
 var e = require("./simpleAndCleanInterfaceForRepl.js")  
 var repl = e.getRepl()  
