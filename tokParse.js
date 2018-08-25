@@ -650,7 +650,12 @@ var matchWhileExpression = (wrappedString) => {
     return { status: "success", next: phi.next, treeNode: { type: "while expression", canonicalString: "while " + ret.treeNode.canonicalString + phi.treeNode.canonicalString, children: [ret.treeNode, phi.treeNode]}}
 }
 var matchProgram = (wrappedString) => {
-
+    var ret = matchBrae(wrappedString)
+    if (ret.status !== "success") {
+        return ret
+    }
+    ret.treeNode.type = "function body"
+    return { status: "success", next: ret.next, treeNode: { type: "parenthesized expression", canonicalString: ret.canonicalString, children: [ret.treeNode]}}
 }
 //formal definition of operators
 //expr -> (expr)
@@ -672,5 +677,6 @@ module.exports = {
     matchFundef: matchFundef,
     matchFunbod: matchFunbod,
     matchFunctionCall: matchFunctionCall,
-    matchIfExpression: matchIfExpression
+    matchIfExpression: matchIfExpression,
+    matchProgram: matchProgram
 }
