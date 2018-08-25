@@ -665,6 +665,11 @@ var matchProgram = (wrappedString) => {
 //expr' -> expr
 //hmmm...................
 //this is really 麻烦 to implement
+//plan for implementing arrays:
+//should be even easier than implementing functions.
+//repurpose function parser with square brackets
+//add runtime positive integer coercion for floats
+//array length is largest index + 1
 module.exports = {
     matchExpr: matchExpr,
     matchStringLiteral: matchStringLiteral,
