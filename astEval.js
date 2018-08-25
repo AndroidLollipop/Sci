@@ -28,8 +28,8 @@ var unwrap = (typ) => {
     }
     return typ
 }
-var emptyScope = () => {
-    var scopeDict = {}
+var emptyScope = (predict) => { // i know, predict is a fitting name
+    var scopeDict = predict !== undefined ? predict : {}
     return ([(name) => scopeDict[name] !== undefined ? scopeDict[name] : { type: "undefined" }, (name, value) => scopeDict[name] = value, (name, value) => scopeDict[name] = value])
 }
 var adjoinScope = ([scopeGetter, scopeSetter, scopeDefiner]) => ([newScopeGetter, newScopeSetter, newScopeDefiner]) => {
@@ -91,7 +91,7 @@ var evaluateExpression = ([scopeGetter, scopeSetter, scopeDefiner]) => (expressi
         else if (res == 0 && expression.type == "if else expression") {
             return evaluateExpression([scopeGetter, scopeSetter, scopeDefiner])(expression.children[2])
         }
-        return { type: "void "}
+        return { type: "void" }
     }
     else if (expression.type == "while expression") {
         var res = evaluateCondition([scopeGetter, scopeSetter, scopeDefiner])(expression.children[0].children)
