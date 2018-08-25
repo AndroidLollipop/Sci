@@ -27,6 +27,10 @@ console.log(repl("slowFibonacci(10)"))
   
 output:  
 { type: 'number', value: 55 }
+## important files
+see exampleProgram.js for an example program  
+the parser is defined in tokParse.js  
+the ast evaluator is defined in astEval.js
 ## example output for repl (ok, more like a pseudo-repl)
 var e = require("./simpleAndCleanInterfaceForRepl.js")  
 var repl = e.getRepl()  

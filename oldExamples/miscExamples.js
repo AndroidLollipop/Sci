@@ -1,5 +1,5 @@
-var a = require("./astEval.js")
-var t = require("./tokParse.js")
+var a = require("../astEval.js")
+var t = require("../tokParse.js")
 const util = require('util')
 var youClod = (x) => console.log(util.inspect(x, { showHidden: false, depth: null }))
 var wrapString = (string) => {

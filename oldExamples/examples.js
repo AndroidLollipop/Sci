@@ -1,4 +1,4 @@
-var e = require("./simpleAndCleanInterfaceForRepl.js")
+var e = require("../simpleAndCleanInterfaceForRepl.js")
 var repl = e.getRepl()
 var youClod = (x) => console.log(require("util").inspect(x, { showHidden: false, depth: null }))
 console.log(repl("(123*456)+(789*0.12)"))

@@ -18,4 +18,21 @@ num fastFibonacci(n){num a = 1 \
     } \
     return c \
 } \
-print(fastFibonacci(10))")
+print(fastFibonacci(10)) \
+num pi = 3.1415926535 \
+print(mathSin(pi/6)) \
+num closure(multiplier, start){ \
+    num add(){skye = skye + 1 \
+        return skye*multiplier \
+    } \
+    num skye = start/multiplier-1 \
+    return add \
+} \
+num clo = closure(1, 10) \
+num ver = closure(2, 20) \
+print(clo()) \
+print(ver()) \
+print(clo()) \
+print(ver()) \
+print(clo()) \
+print(ver())")
