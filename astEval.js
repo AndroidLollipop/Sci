@@ -83,6 +83,10 @@ var evaluateExpression = ([scopeGetter, scopeSetter, scopeDefiner]) => (expressi
         scopeDefiner(expression.children.filter((x) => x.type == "identifier")[0].canonicalString, { type: "function", parentScope: [scopeGetter, scopeSetter, scopeDefiner], parameters: expression.children.filter((x) => x.type == "parameter declaration")[0], body: expression.children.filter((x) => x.type == "function body")[0]})
         return scopeGetter(expression.children.filter((x) => x.type == "identifier")[0].canonicalString)
     }
+    else if (expression.type == "!!!BUILTIN") {
+        var res = expression.builtin([scopeGetter, scopeSetter, scopeDefiner])
+        return res
+    }
     else if (expression.type == "if expression" || expression.type == "if else expression") {
         var res = evaluateCondition([scopeGetter, scopeSetter, scopeDefiner])(expression.children[0].children)
         if (res == 1) {
