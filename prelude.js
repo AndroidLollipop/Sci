@@ -3,8 +3,8 @@ var a = require("./astEval.js")
 var Prelude = {
     print: {
         type: "function",
-        parentScope: a.emptyScope(), // it is unnecessary to define parentScope, () => {} * 3 is fine, but whatever honestly
-        parameters: { type: "parameter declaration", canonicalString: '(x)', // canonicalString is unnecessary, i'm including it to make builtins consistent with regular functions
+        parentScope: a.emptyScope(), // it's unnecessary to define parentScope, () => {} * 3 is fine, but whatever honestly
+        parameters: { type: "parameter declaration", canonicalString: "(x)", // canonicalString is unnecessary, i'm including it to make builtins consistent with regular functions
             children: [{ type: "identifier", canonicalString: "x", children: []}] // canonicalString is necessary here as it defines the parameters for the builtin
         },
         body: {
@@ -12,15 +12,31 @@ var Prelude = {
             canonicalString: "{return EXTERNALCONSOLELOG(x)}",
             children: [{ type: "!!!BUILTIN", builtin: ([scopeGetter, scopeSetter, scopeDefiner]) => {
                 var x = scopeGetter("x")
-                x !== undefined ? (x.value !== undefined ? console.log(x.value) : undefined) : undefined
+                x !== undefined && x.value !== undefined ? console.log(x.value) : undefined
                 return x
             }}]
         }
     },
+    typeOf: {
+        type: "function",
+        parentScope: a.emptyScope(),
+        parameters: { type: "parameter declaration", canonicalString: "(x)", // canonicalString is unnecessary, i'm including it to make builtins consistent with regular functions
+            children: [{ type: "identifier", canonicalString: "x", children: []}] // canonicalString is necessary here as it defines the parameters for the builtin
+        },
+        body: {
+            type: "function body",
+            canonicalString: "{return RUNTIMETYPEOF(x)}",
+            children: [{ type: "!!!BUILTIN", builtin: ([scopeGetter, scopeSetter, scopeDefiner]) => {
+                var x = scopeGetter("x")
+                return x !== undefined && x.type !== undefined ? { type: "string", value: x.type } : { type: "void" }
+            }}]
+        }
+    },
+    void : { type: "void" },
     mathSin: {
         type: "function",
-        parentScope: a.emptyScope(), // it is unnecessary to define parentScope, () => {} * 3 is fine, but whatever honestly
-        parameters: { type: "parameter declaration", canonicalString: '(x)',
+        parentScope: a.emptyScope(), // it's unnecessary to define parentScope, () => {} * 3 is fine, but whatever honestly
+        parameters: { type: "parameter declaration", canonicalString: "(x)",
             children: [{ type: "identifier", canonicalString: "x", children: []}]
         },
         body: {
@@ -28,10 +44,13 @@ var Prelude = {
             canonicalString: "{return EXTERNALTRIGSIN(x)}",
             children: [{ type: "!!!BUILTIN", builtin: ([scopeGetter, scopeSetter, scopeDefiner]) => {
                 var x = scopeGetter("x")
-                var v = { type: "void" }
-                return x !== undefined ? (x.type == "number" ? { type: "number", value: Math.sin(x.value) } : v) : v 
+                return x !== undefined && x.type == "number" ? { type: "number", value: Math.sin(x.value) } : { type: "void" }
             }}]
         }
+    },
+    mathPi: {
+        type: "number",
+        value: Math.PI
     }
 }
 module.exports = {

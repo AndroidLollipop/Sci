@@ -20,8 +20,7 @@ num fastFibonacci(n){ \
     return c \
 } \
 print(fastFibonacci(10)) \
-num pi = 3.1415926535 \
-print(mathSin(pi/6)) \
+print(mathSin(mathPi/6)) \
 num closure(multiplier, start){ \
     num add(){ \
         skye = skye + 1 \
@@ -41,4 +40,6 @@ print(ver()) \
 print('language runtime written by AndroidLollipop in the year') \
 print(9*8*7*(6+5-4-3)+2*1) \
 print('example program written by AndroidLollipop in the year') \
-print((10+9)*(8+7+6)*5+4*3*2-1)")
+print((10+9)*(8+7+6)*5+4*3*2-1) \
+print(typeOf('hi')) \
+print(typeOf(1))")
