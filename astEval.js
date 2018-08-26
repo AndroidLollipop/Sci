@@ -78,14 +78,15 @@ var evaluateCondition = (sco) => ([L, C, R]) => {
     }
     return 0
 }
-var evaluateExpression = ([scopeGetter, scopeSetter, scopeDefiner]) => {
+var evaluateExpression = (scc) => {
+    var [scopeGetter, scopeSetter, scopeDefiner] = scc
     var sco = (expression) => {
         if (expression.type == "function declaration") {
-            scopeDefiner(expression.children.filter((x) => x.type == "identifier")[0].canonicalString, { type: "function", parentScope: [scopeGetter, scopeSetter, scopeDefiner], parameters: expression.children.filter((x) => x.type == "parameter declaration")[0], body: expression.children.filter((x) => x.type == "function body")[0]})
+            scopeDefiner(expression.children.filter((x) => x.type == "identifier")[0].canonicalString, { type: "function", parentScope: scc, parameters: expression.children.filter((x) => x.type == "parameter declaration")[0], body: expression.children.filter((x) => x.type == "function body")[0]})
             return scopeGetter(expression.children.filter((x) => x.type == "identifier")[0].canonicalString)
         }
         else if (expression.type == "!!!BUILTIN") {
-            var res = expression.builtin([scopeGetter, scopeSetter, scopeDefiner])
+            var res = expression.builtin(scc)
             return res
         }
         else if (expression.type == "if expression" || expression.type == "if else expression") {
@@ -146,12 +147,28 @@ var evaluateExpression = ([scopeGetter, scopeSetter, scopeDefiner]) => {
         }
         else if (expression.type == "variable declaration") {
             var expRes = sco(expression.children[3])
-            scopeDefiner(expression.children.filter((x) => x.type == "identifier")[0].canonicalString, expRes)
+            // to prevent the language spec from getting too insane, we restrict variable declarations to straight identifiers
+            // e.g. num k[1] = 1 is not allowed
+            scopeDefiner(expression.children[1].canonicalString, expRes)
             return expRes
         }
         else if (expression.type == "variable set") {
             var expRes = sco(expression.children[2])
-            scopeSetter(expression.children.filter((x) => x.type == "identifier")[0].canonicalString, expRes)
+            // the result is always computed first.
+            // this is unlike javascript, where the array index is computed first (i tested this)
+            // javascript test code:
+            // [][console.log("index computed")] = console.log("value computed")
+            // logs to console:
+            // index computed
+            // value computed
+            if (expression.children[0].type == "array access") {
+                var arrRes = sco(expression.children[0].children[0])
+                if (arrRes.setter == undefined) {
+                    return { type: "void" }
+                }
+                return arrRes.setter(sco(expression.children[0].children[1]), expRes)
+            }
+            scopeSetter(expression.children[0].canonicalString, expRes)
             return expRes
         }
         else if (expression.type == "parenthesized expression") {

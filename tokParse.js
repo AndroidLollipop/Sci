@@ -290,7 +290,7 @@ var matchDefine = (wrappedString) => {
     return { status: "success", next: alp.next, treeNode: { type: "variable declaration", canonicalString: ret.treeNode.canonicalString + " " + phi.treeNode.canonicalString + " " + gam.treeNode.canonicalString + " " + alp.treeNode.canonicalString, children: [ret.treeNode, phi.treeNode, gam.treeNode, alp.treeNode] } } // types must be checked at runtime since parser doesn't check them
 }
 var matchSetvar = (wrappedString) => {
-    var phi = matchIdentifier(wrappedString)
+    var phi = matchExpr(wrappedString)
     if (phi.status !== "success") {
         return phi
     }

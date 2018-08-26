@@ -63,4 +63,5 @@ num inc(n) { \
 } \
 print('for church numerals, application is exponentiation') \
 print('church 5 applied to church 5 is church') \
-print(church(5)(church(5))(inc)(0))")
+print(church(5)(church(5))(inc)(0))\
+k[1] = 2")
