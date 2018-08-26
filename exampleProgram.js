@@ -61,5 +61,5 @@ num church(n) { \
 num inc(n) { \
     return n+1 \
 } \
-print(church(5)(church(5))(inc)(1)) \
-print(closure(1, 100)())")
+print('for church numerals, application is exponentiation') \
+print(church(5)(church(5))(inc)(1))")
