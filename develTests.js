@@ -73,4 +73,12 @@ print(arrayLength(k[2])) \
 print(arrayLength(k)) \
 print(arrayPush(k, 1)) \
 print(k) \
+var fun(n) { \
+    var fun(m) { \
+        return [n+m+1] \
+    } \
+    return [fun, fun(1)] \
+} \
+print(fun(1)[0](1)[0]) \
+print(fun(1)[1]) \
 print('no showstoppers occurred')")
