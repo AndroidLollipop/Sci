@@ -223,7 +223,7 @@ var evaluateExpression = (scc) => {
             for (var i = 0; i < expression.children.length; i++) {
                 arr.push(sco(expression.children[i]))
             }
-            return { type: "array", array: arr, getter: (x) => arr[x.value] == undefined ? { type: "void" } : arr[x.value], setter: (x, v) => arr[x.value] = v }
+            return { type: "array", array: arr, getter: (x) => arr[Math.round(Math.abs(x.value))] == undefined ? { type: "void" } : arr[Math.round(Math.abs(x.value))], setter: (x, v) => arr[Math.round(Math.abs(x.value))] = v }
             // void in place of undefined. we don't want to let people accidentally unset variables and leak into the parent scope
         }
         else if (expression.type == "identifier") {

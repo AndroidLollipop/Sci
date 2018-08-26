@@ -1,5 +1,27 @@
 // named after Prelude from Haskell
 var a = require("./astEval.js")
+var flattenArray = (array) => {
+    var res = "["
+    for (var i = 0; i < array.array.length; i++) {
+        if (array.array[i].type == "array") {
+            ret = flattenArray(array.array[i])
+            res += ret
+        }
+        else if (array.array[i].type == "function") {
+            res += "Function"
+        }
+        else if (array.array[i].type == "string") {
+            res += '"' + array.array[i].value + '"'
+        }
+        else {
+            res += array.array[i].value
+        }
+        if (i < (array.array.length - 1)) {
+            res += ", "
+        }
+    }
+    return res + "]"
+}
 var Prelude = {
     print: {
         type: "function",
@@ -12,7 +34,14 @@ var Prelude = {
             canonicalString: "{return EXTERNALCONSOLELOG(x)}",
             children: [{ type: "!!!BUILTIN", builtin: ([scopeGetter, scopeSetter, scopeDefiner]) => {
                 var x = scopeGetter("x")
-                x !== undefined && x.value !== undefined ? console.log(x.value) : undefined
+                if (x !== undefined) {
+                    if (x.value !== undefined) {
+                        console.log(x.value)
+                    }
+                    else if (x.type == "array") {
+                        console.log(flattenArray(x))
+                    }
+                }
                 return x
             }}]
         }
@@ -51,6 +80,37 @@ var Prelude = {
     mathPi: {
         type: "number",
         value: Math.PI
+    },
+    arrayLength: {
+        type: "function",
+        parentScope: a.emptyScope(), // it's unnecessary to define parentScope, () => {} * 3 is fine, but whatever honestly
+        parameters: { type: "parameter declaration", canonicalString: "(x)",
+            children: [{ type: "identifier", canonicalString: "x", children: []}]
+        },
+        body: {
+            type: "function body",
+            canonicalString: "{return ARRAYLENGTH(x)}",
+            children: [{ type: "!!!BUILTIN", builtin: ([scopeGetter, scopeSetter, scopeDefiner]) => {
+                var x = scopeGetter("x")
+                return x !== undefined && x.type == "array" ? { type: "number", value: x.array.length } : { type: "void" }
+            }}]
+        }
+    },
+    arrayPush: {
+        type: "function",
+        parentScope: a.emptyScope(), // it's unnecessary to define parentScope, () => {} * 3 is fine, but whatever honestly
+        parameters: { type: "parameter declaration", canonicalString: "(x,y)",
+            children: [{ type: "identifier", canonicalString: "x", children: []}, { type: "identifier", canonicalString: "y", children: []}]
+        },
+        body: {
+            type: "function body",
+            canonicalString: "{return ARRAYPUSH(x,y)}",
+            children: [{ type: "!!!BUILTIN", builtin: ([scopeGetter, scopeSetter, scopeDefiner]) => {
+                var x = scopeGetter("x")
+                var y = scopeGetter("y")
+                return x !== undefined && x.type == "array" ? (x.array.push(y),y) : { type: "void" }
+            }}]
+        }
     }
 }
 module.exports = {

@@ -64,9 +64,13 @@ num inc(n) { \
 print('for church numerals, application is exponentiation') \
 print('church 5 applied to church 5 is church') \
 print(church(5)(church(5))(inc)(0)) \
-var k = [1, 2, [1,2,3]] \
+var k = [inc(1), inc(2), [inc(1),inc(2),inc(3)]] \
 print(k[1]) \
 k[2][1] = 4 \
 print(k[2][1]) \
-print(k[2][2]) \
+print(k[inc(1)][inc(1)]) \
+print(arrayLength(k[2])) \
+print(arrayLength(k)) \
+print(arrayPush(k, 1)) \
+print(k) \
 print('no showstoppers occurred')")
