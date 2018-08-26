@@ -41,5 +41,6 @@ print('language runtime written by AndroidLollipop in the year') \
 print(9*8*7*(6+5-4-3)+2*1) \
 print('example program written by AndroidLollipop in the year') \
 print((10+9)*(8+7+6)*5+4*3*2-1) \
-print(typeOf('hi')) \
-print(typeOf(1))")
+print(typeOf(1)) \
+print(typeOf(typeOf(1))) \
+print(typeOf(typeOf))")

@@ -110,7 +110,7 @@ var evaluateExpression = ([scopeGetter, scopeSetter, scopeDefiner]) => (expressi
         return ret
     }
     else if (expression.type == "function call") {
-        var target = scopeGetter(expression.children.filter((x) => x.type == "identifier")[0].canonicalString)
+        var target = evaluateExpression([scopeGetter, scopeSetter, scopeDefiner])(expression.children[0])
         var targetScope = adjoinScope(target.parentScope)(emptyScope())
         defineInScope([scopeGetter, scopeSetter, scopeDefiner])(target.parameters)(targetScope)(expression.children.filter((x) => x.type == "function call bindings")[0])
         var expRes = evaluateExpression(targetScope)(target.body)
