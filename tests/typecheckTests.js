@@ -1,4 +1,4 @@
-var e = require("./simpleAndCleanInterfaceForRepl.js")
+var e = require("../simpleAndCleanInterfaceForRepl.js")
 var repl = e.getRepl() // sadly no support for += yet, it isn't hard to implement but isn't a priority right now
 var passed = 1
 try {
