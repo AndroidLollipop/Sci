@@ -32,7 +32,7 @@
       [ { type: 'variable declaration',
           canonicalString: 'num skye = 1',
           children:
-           [ { type: 'number declaration',
+           [ { type: 'typed declaration',
                canonicalString: 'num',
                children: [] },
              { type: 'identifier', canonicalString: 'skye', children: [] },
@@ -41,7 +41,7 @@
         { type: 'variable declaration',
           canonicalString: 'num scotland = 2',
           children:
-           [ { type: 'number declaration',
+           [ { type: 'typed declaration',
                canonicalString: 'num',
                children: [] },
              { type: 'identifier', canonicalString: 'scotland', children: [] },

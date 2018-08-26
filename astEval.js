@@ -78,12 +78,19 @@ var evaluateCondition = (sco) => ([L, C, R]) => {
     }
     return 0
 }
+var typeMap = {
+    num : "number",
+    str: "string"
+}
 var evaluateExpression = (scc) => {
     var [scopeGetter, scopeSetter, scopeDefiner] = scc
     var sco = (expression) => {
         if (expression.type == "function declaration") {
-            scopeDefiner(expression.children.filter((x) => x.type == "identifier")[0].canonicalString, { type: "function", parentScope: scc, parameters: expression.children.filter((x) => x.type == "parameter declaration")[0], body: expression.children.filter((x) => x.type == "function body")[0]})
-            return scopeGetter(expression.children.filter((x) => x.type == "identifier")[0].canonicalString)
+            scopeDefiner(expression.children[1].canonicalString, { type: "function", parentScope: scc, parameters: expression.children.filter((x) => x.type == "parameter declaration")[0], body: expression.children.filter((x) => x.type == "function body")[0]})
+            if (expression.children[0].type == "typed declaration") {
+                scopeDefiner(".typeof" + expression.children[1].canonicalString, { type: "typecheck", value: expression.children[0].canonicalString}) // this is safe since identifiers cannot start with .
+            }
+            return scopeGetter(expression.children[1].canonicalString)
         }
         else if (expression.type == "!!!BUILTIN") {
             var res = expression.builtin(scc)
@@ -113,11 +120,18 @@ var evaluateExpression = (scc) => {
         }
         else if (expression.type == "function call") {
             var target = sco(expression.children[0])
+            var typecheck = { type: "void" }
+            if (expression.children[0].type == "identifier") {
+                typecheck = scopeGetter(".typeof" + expression.children[0].canonicalString)
+            }
             var targetScope = adjoinScope(target.parentScope)(emptyScope())
             defineInScope(sco)(target.parameters)(targetScope)(expression.children.filter((x) => x.type == "function call bindings")[0])
             var expRes = evaluateExpression(targetScope)(target.body)
             if (expRes.type !== "!!!INTERNAL INTERPRETER CONTROL" || expRes.control !== "return") { // someone is trying to trick us
                 return { type: "void" }
+            }
+            if (typecheck.type == "typecheck" && expRes.value.type !== typeMap[typecheck.value]) {
+                throw "TypeError: function call return type, " + expRes.value.type + " did not match declared type, " + typeMap[typecheck.value] + " for function " + expression.children[0].canonicalString
             }
             return expRes.value
         }
@@ -150,6 +164,12 @@ var evaluateExpression = (scc) => {
             // to prevent the language spec from getting too insane, we restrict variable declarations to straight identifiers
             // e.g. num k[1] = 1 is not allowed
             scopeDefiner(expression.children[1].canonicalString, expRes)
+            if (expression.children[0].type == "typed declaration") {
+                if (expRes.type !== typeMap[expression.children[0].canonicalString]) {
+                    throw "TypeError: expression type, " + expRes.type + " did not match declared type, " + typeMap[expression.children[0].canonicalString] + " for variable " + expression.children[1].canonicalString
+                }
+                scopeDefiner(".typeof" + expression.children[1].canonicalString, { type: "typecheck", value: expression.children[0].canonicalString}) // this is safe since identifiers cannot start with .
+            }
             return expRes
         }
         else if (expression.type == "variable set") {
@@ -169,6 +189,10 @@ var evaluateExpression = (scc) => {
                 return arrRes.setter(sco(expression.children[0].children[1].children[0]), expRes)
             }
             else if (expression.children[0].type == "identifier") {
+                var typecheck = scopeGetter(".typeof" + expression.children[0].canonicalString)
+                if (typecheck.type == "typecheck" && expRes.type !== typeMap[typecheck.value]) {
+                    throw "TypeError: expression type, " + expRes.type + " did not match declared type, " + typeMap[typecheck.value] + " for variable " + expression.children[0].canonicalString
+                }
                 scopeSetter(expression.children[0].canonicalString, expRes)
                 return expRes
             }
