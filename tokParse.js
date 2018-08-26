@@ -142,6 +142,23 @@ var matchFuncallParams = (wrappedString) => {
     }
     return { status: "success", next: ret.next, treeNode: { type: "function call bindings", canonicalString: "(" + rea + ")", children: reb}}
 }
+var matchArrayIndex = (wrappedString) => {
+    var ret = matchOpA()(wrappedString)
+    if (ret.status !== "success") {
+        return ret
+    }
+    ret.next = matchWhitespace()(ret.next).next
+    ret = matchExpr(ret.next)
+    if (ret.status !== "success") {
+        return { status: "failure", next: wrappedString }
+    }
+    ret.next = matchWhitespace()(ret.next).next
+    var tem = matchClA()(ret.next)
+    if (tem.status !== "success") {
+        return { status: "failure", next: wrappedString }
+    }
+    return { status: "success", next: tem.next, treeNode: { type: "array index", canonicalString: "[" + ret.treeNode.canonicalString + "]", children: [ret.treeNode]}}
+}
 var matchEscapedLiteral = (wrappedString) => { // only alphanumeric strings, for now... it's trivial to extend it anyway
     var ret = matchAls("alphanumeric literal")(wrappedString)
     if (ret.status !== "success") {
@@ -199,6 +216,9 @@ var matchStringLiteral = (wrappedString) => {
         }
     }
     return { status: "failure", next: wrappedString }
+}
+var matchArrayLiteral = (wrappedString) => {
+    
 }
 var matchFloatLiteral = (wrappedString) => {
     var ret = matchNum("integral literal")(wrappedString)
@@ -512,19 +532,32 @@ var matchExpr = (wrappedString) => {
     if (ret.status == "success") {
         phi = ret
     }
+    var tem
     if (phi.status == "success") {
         saved = mulPrecedence
         mulPrecedence = 0
-        ret = matchFuncallParams(matchWhitespace()(phi.next).next)
-        while (ret.status == "success") {
-            phi = { status: "success", next: ret.next, treeNode: { type: "function call", canonicalString: phi.treeNode.canonicalString + ret.treeNode.canonicalString, children: [phi.treeNode, ret.treeNode]}}
-            ret = matchFuncallParams(matchWhitespace()(phi.next).next)
+        tem = matchWhitespace()(phi.next)
+        ret = matchFuncallParams(tem.next)
+        while (true) {
+            if (ret.status == "success") {
+                phi = { status: "success", next: ret.next, treeNode: { type: "function call", canonicalString: phi.treeNode.canonicalString + ret.treeNode.canonicalString, children: [phi.treeNode, ret.treeNode]}}
+            }
+            else {
+                ret = matchArrayIndex(tem.next)
+                if (ret.status == "success") {
+                    phi = { status: "success", next: ret.next, treeNode: { type: "array access", canonicalString: phi.treeNode.canonicalString + ret.treeNode.canonicalString, children: [phi.treeNode, ret.treeNode]}}
+                }
+                else {
+                    break
+                }
+            }
+            tem = matchWhitespace()(phi.next)
+            ret = matchFuncallParams(tem.next)
         }
         mulPrecedence = saved
     }
     var rea = 0
     var reb
-    var tem
     if (phi.status == "success") {
         saved = mulPrecedence
         mulPrecedence = 1

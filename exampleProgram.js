@@ -61,6 +61,7 @@ num church(n) { \
 num inc(n) { \
     return n+1 \
 } \
+print(a[a[1+2*3]]) \
 print('for church numerals, application is exponentiation') \
 print('church 5 applied to church 5 is church') \
 print(church(5)(church(5))(inc)(0))")
