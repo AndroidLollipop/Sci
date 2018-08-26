@@ -110,18 +110,6 @@ var matchIdentifier = (wrappedString) => {
     }
     return { status: "failure", next: wrappedString }
 }
-var matchFunctionCall = (wrappedString) => {
-    var ret = matchIdentifier(wrappedString)
-    if (ret.status !== "success") {
-        return ret
-    }
-    ret.next = matchWhitespace()(ret.next).next
-    var phi = matchFuncallParams(ret.next)
-    if (phi.status !== "success") {
-        return { status: "failure", next: wrappedString }
-    }
-    return { status: "success", next: phi.next, treeNode: { type: "function call", canonicalString: ret.treeNode.canonicalString + phi.treeNode.canonicalString, children: [ret.treeNode, phi.treeNode]}}
-}
 var matchFuncallParams = (wrappedString) => {
     var ret = matchOpP()(wrappedString)
     if (ret.status !== "success") {
@@ -513,13 +501,6 @@ var matchExpr = (wrappedString) => {
     if (ret.status == "success") {
         phi = ret
     }
-    saved = mulPrecedence
-    mulPrecedence = 0
-    ret = matchFunctionCall(wrappedString)
-    mulPrecedence = saved
-    if (ret.status == "success" && phi.status !== "success") {
-        phi = ret
-    }
     ret = matchIdentifier(wrappedString)
     if (ret.status == "success" && phi.status !== "success") {
         phi = ret
@@ -531,9 +512,21 @@ var matchExpr = (wrappedString) => {
     if (ret.status == "success") {
         phi = ret
     }
+    var tem
+    if (phi.status == "success") {
+        saved = mulPrecedence
+        mulPrecedence = 0
+        ret.next = matchWhitespace()(phi.next).next
+        tem = matchFuncallParams(ret.next)
+        while (tem.status == "success") {
+            phi = { status: "success", next: tem.next, treeNode: { type: "function call", canonicalString: phi.treeNode.canonicalString + tem.treeNode.canonicalString, children: [phi.treeNode, tem.treeNode]}}
+            tem = matchFuncallParams(phi.next)
+            tem.next = matchWhitespace()(tem.next).next
+        }
+        mulPrecedence = saved
+    }
     var rea = 0
     var reb
-    var tem
     if (phi.status == "success") {
         saved = mulPrecedence
         mulPrecedence = 1
@@ -681,7 +674,6 @@ module.exports = {
     matchDefine: matchDefine,
     matchFundef: matchFundef,
     matchFunbod: matchFunbod,
-    matchFunctionCall: matchFunctionCall,
     matchIfExpression: matchIfExpression,
     matchProgram: matchProgram
 }
