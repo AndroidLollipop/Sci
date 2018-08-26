@@ -30,3 +30,10 @@ try {
 catch(e) {
     console.log(e)
 }
+try {
+    repl("arr = [1, 2] \
+    str k = arr[1]") // this should fail since type of arr[1] is num
+}
+catch(e) {
+    console.log(e)
+}
