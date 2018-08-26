@@ -166,10 +166,22 @@ var evaluateExpression = (scc) => {
                 if (arrRes.setter == undefined) {
                     return { type: "void" }
                 }
-                return arrRes.setter(sco(expression.children[0].children[1]), expRes)
+                return arrRes.setter(sco(expression.children[0].children[1].children[0]), expRes)
             }
-            scopeSetter(expression.children[0].canonicalString, expRes)
-            return expRes
+            else if (expression.children[0].type == "identifier") {
+                scopeSetter(expression.children[0].canonicalString, expRes)
+                return expRes
+            }
+            return { type: "void" } // someone tried to do something like 1 = 2
+            // an interesting quirk is that 1 = print(1) would print something
+            // but this is edge case behaviour and doesn't really matter
+        }
+        else if (expression.type == "array access") {
+            var arrRes = sco(expression.children[0])
+            if (arrRes.getter == undefined) {
+                return { type: "void" }
+            }
+            return arrRes.getter(sco(expression.children[1].children[0]))
         }
         else if (expression.type == "parenthesized expression") {
             if (expression.children[0] == undefined) {
@@ -205,6 +217,14 @@ var evaluateExpression = (scc) => {
         }
         else if (expression.type == "string literal") {
             return { type: "string", value: collapseString(expression.children) }
+        }
+        else if (expression.type == "array literal") {
+            var arr = []
+            for (var i = 0; i < expression.children.length; i++) {
+                arr.push(sco(expression.children[i]))
+            }
+            return { type: "array", array: arr, getter: (x) => arr[x.value] == undefined ? { type: "void" } : arr[x.value], setter: (x, v) => arr[x.value] = v }
+            // void in place of undefined. we don't want to let people accidentally unset variables and leak into the parent scope
         }
         else if (expression.type == "identifier") {
             return scopeGetter(expression.canonicalString)

@@ -218,7 +218,36 @@ var matchStringLiteral = (wrappedString) => {
     return { status: "failure", next: wrappedString }
 }
 var matchArrayLiteral = (wrappedString) => {
-    
+    var ret = matchOpA()(wrappedString)
+    if (ret.status !== "success") {
+        return ret
+    }
+    ret.next = matchWhitespace()(ret.next).next
+    var rea = ""
+    var reb = []
+    var iet = ret
+    while (true) {
+        ret = matchExpr(ret.next)
+        if (ret.status !== "success") {
+            break
+        }
+        ret.next = matchWhitespace()(ret.next).next
+        iet = ret
+        rea += ret.treeNode.canonicalString
+        reb.push(ret.treeNode)
+        ret = matchCom()(ret.next)
+        if (ret.status !== "success") {
+            break
+        }
+        ret.next = matchWhitespace()(ret.next).next
+        iet = ret
+        rea += ", "
+    }
+    ret = matchClA()(iet.next)
+    if (ret.status !== "success") {
+        return { status: "failure", next: wrappedString }
+    }
+    return { status: "success", next: ret.next, treeNode: { type: "array literal", canonicalString: "[" + rea + "]", children: reb}}
 }
 var matchFloatLiteral = (wrappedString) => {
     var ret = matchNum("integral literal")(wrappedString)
@@ -263,7 +292,7 @@ var composeMatch = (matchers) => (wrappedString) => { // i should have written t
     return { status: "failure", next: wrappedString }
 }
 var matchDec = composeMatch([matchDnu, matchStr])
-var matchLit = composeMatch([matchNegatedLiteral, matchFloatLiteral, matchStringLiteral])
+var matchLit = composeMatch([matchNegatedLiteral, matchFloatLiteral, matchStringLiteral, matchArrayLiteral])
 var matchDefine = (wrappedString) => {
     var ret = matchDec(wrappedString)
     if (ret.status !== "success") {
