@@ -566,9 +566,9 @@ var matchExpr = (wrappedString) => {
     if (phi.status == "success") {
         saved = mulPrecedence
         mulPrecedence = 0
-        tem = matchWhitespace()(phi.next)
-        ret = matchFuncallParams(tem.next)
         while (true) {
+            tem = matchWhitespace()(phi.next)
+            ret = matchFuncallParams(tem.next)
             if (ret.status == "success") {
                 phi = { status: "success", next: ret.next, treeNode: { type: "function call", canonicalString: phi.treeNode.canonicalString + ret.treeNode.canonicalString, children: [phi.treeNode, ret.treeNode]}}
             }
@@ -581,8 +581,6 @@ var matchExpr = (wrappedString) => {
                     break
                 }
             }
-            tem = matchWhitespace()(phi.next)
-            ret = matchFuncallParams(tem.next)
         }
         mulPrecedence = saved
     }
