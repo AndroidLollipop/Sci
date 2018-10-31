@@ -52,6 +52,15 @@ try {
 catch(e) {
     console.log(e)
 }
+try {
+    repl("var arr = [1, 2] \
+    bool k = true \
+    k = arr[1]") // this should fail since type of arr[1] is num
+    passed = 0
+}
+catch(e) {
+    console.log(e)
+}
 if (passed == 1) {
     console.log("typecheck test PASSED!")
 }

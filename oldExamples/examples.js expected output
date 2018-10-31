@@ -930,3 +930,6 @@
 { type: 'number', value: 1 }
 { type: 'number', value: 6 }
 { type: 'number', value: 6 }
+{ type: 'boolean', value: true }
+{ type: 'boolean', value: true }
+{ type: 'boolean', value: false }

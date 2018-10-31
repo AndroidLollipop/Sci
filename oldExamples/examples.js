@@ -55,3 +55,6 @@ youClod(repl("num languageQuirks3(){num n = 0;1+while(1==1){n=n+1;if(n>5){return
 youClod(repl("languageQuirks1()"))
 youClod(repl("languageQuirks2()"))
 youClod(repl("languageQuirks3()"))
+youClod(repl("bool hello = true"))
+youClod(repl("true && 3"))
+youClod(repl("true && 0"))

@@ -88,6 +88,7 @@ var matchCom = matchTerminal(",")
 var matchIf = matchTerminalStrings(["if"])("if")
 var matchWhile = matchTerminalStrings(["while"])("while")
 var matchDnu = matchTerminalStrings(["num"])("typed declaration")
+var matchDbo = matchTerminalStrings(["bool"])("typed declaration")
 var matchStr = matchTerminalStrings(["str"])("typed declaration")
 var matchVar = matchTerminalStrings(["var"])("untyped declaration")
 var matchSep = matchTerminal(";")
@@ -294,7 +295,7 @@ var composeMatch = (matchers) => (wrappedString) => { // i should have written t
     }
     return { status: "failure", next: wrappedString }
 }
-var matchDec = composeMatch([matchDnu, matchStr, matchVar])
+var matchDec = composeMatch([matchDnu, matchStr, matchVar, matchDbo])
 var matchLit = composeMatch([matchNegatedLiteral, matchFloatLiteral, matchStringLiteral, matchArrayLiteral, matchBooleanLiteral])
 var matchDefine = (wrappedString) => {
     var ret = matchDec(wrappedString)

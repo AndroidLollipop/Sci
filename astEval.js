@@ -109,7 +109,8 @@ var collapseString = (nodeChildren) => {
 }
 var typeMap = {
     num : "number",
-    str: "string"
+    str: "string",
+    bool: "boolean"
 }
 var evaluateExpression = (scc) => {
     var [scopeGetter, scopeSetter, scopeDefiner] = scc
@@ -278,6 +279,12 @@ var evaluateExpression = (scc) => {
             }
             return { type: "array", array: arr, getter: (x) => arr[Math.round(Math.abs(x.value))] == undefined ? { type: "void" } : arr[Math.round(Math.abs(x.value))], setter: (x, v) => arr[Math.round(Math.abs(x.value))] = v }
             // void in place of undefined. we don't want to let people accidentally unset variables and leak into the parent scope
+        }
+        else if (expression.type == "boolean literal") {
+            if (expression.canonicalString == "true") {
+                return { type: "boolean", value: true }
+            }
+            return { type: "boolean", value: true }
         }
         else if (expression.type == "identifier") {
             return scopeGetter(expression.canonicalString)
