@@ -1,5 +1,6 @@
 // why not use regex, i hear you ask
 // well, we're trying to build an AST here, it's not nice to use regex to do that
+const MPR = -2
 var wrapString = (string) => {
     return [0, string]
 }
@@ -70,6 +71,8 @@ var matchSiC = matchTerminal("'")
 var matchEsc = matchTerminal("\\")
 var matchDm = matchTerminals("/*") // ordinarily */ would be more natural, but we're following BODMAS here
 var matchAs = matchTerminals("+-")
+var matchAo = matchTerminalStrings(["&&", "||"])
+var matchEn = matchTerminalStrings(["==", "!="])
 var matchOpB = matchTerminal("{")
 var matchClB = matchTerminal("}")
 var matchOpA = matchTerminal("[")
@@ -121,7 +124,7 @@ var matchFuncallParams = (wrappedString) => {
     var reb = []
     var iet = ret
     while (true) {
-        ret = matchExpr(0)(ret.next)
+        ret = matchExpr(MPR)(ret.next)
         if (ret.status !== "success") {
             break
         }
@@ -149,7 +152,7 @@ var matchArrayIndex = (wrappedString) => {
         return ret
     }
     ret.next = matchWhitespace()(ret.next).next
-    ret = matchExpr(0)(ret.next)
+    ret = matchExpr(MPR)(ret.next)
     if (ret.status !== "success") {
         return { status: "failure", next: wrappedString }
     }
@@ -228,7 +231,7 @@ var matchArrayLiteral = (wrappedString) => {
     var reb = []
     var iet = ret
     while (true) {
-        ret = matchExpr(0)(ret.next)
+        ret = matchExpr(MPR)(ret.next)
         if (ret.status !== "success") {
             break
         }
@@ -310,14 +313,14 @@ var matchDefine = (wrappedString) => {
         return { status: "failure", next: wrappedString }
     }
     gam.next = matchWhitespace()(gam.next).next
-    var alp = matchExpr(0)(gam.next)
+    var alp = matchExpr(MPR)(gam.next)
     if (alp.status !== "success") {
         return { status: "failure", next: wrappedString }
     }
     return { status: "success", next: alp.next, treeNode: { type: "variable declaration", canonicalString: ret.treeNode.canonicalString + " " + phi.treeNode.canonicalString + " " + gam.treeNode.canonicalString + " " + alp.treeNode.canonicalString, children: [ret.treeNode, phi.treeNode, gam.treeNode, alp.treeNode] } } // types must be checked at runtime since parser doesn't check them
 }
 var matchSetvar = (wrappedString) => {
-    var phi = matchExpr(0)(wrappedString)
+    var phi = matchExpr(MPR)(wrappedString)
     if (phi.status !== "success") {
         return phi
     }
@@ -327,7 +330,7 @@ var matchSetvar = (wrappedString) => {
         return { status: "failure", next: wrappedString }
     }
     gam.next = matchWhitespace()(gam.next).next
-    var alp = matchExpr(0)(gam.next)
+    var alp = matchExpr(MPR)(gam.next)
     if (alp.status !== "success") {
         return { status: "failure", next: wrappedString }
     }
@@ -415,7 +418,7 @@ var matchBrac = (wrappedString) => {
     if (ret.status !== "success") {
         return { status: "failure", next: wrappedString }
     }
-    var phi = matchExpr(0)(ret.next)
+    var phi = matchExpr(MPR)(ret.next)
     if (phi.status !== "success") {
         return { status: "failure", next: wrappedString }
     }
@@ -435,7 +438,7 @@ var matchReturn = (wrappedString) => {
     if (tem.status !== "success") {
         return { status: "failure", next: wrappedString }
     }
-    var rex = matchExpr(0)(tem.next)
+    var rex = matchExpr(MPR)(tem.next)
     if (rex.status !== "success") {
         return { status: "failure", next: wrappedString }
     }
@@ -459,7 +462,7 @@ var matchBrae = (wrappedString) => {
             tem = matchSetvar(ret.next)
         }
         if (tem.status !== "success") {
-            tem = matchExpr(0)(ret.next)
+            tem = matchExpr(MPR)(ret.next)
         }
         if (tem.status !== "success") {
             break
@@ -474,6 +477,38 @@ var matchBrae = (wrappedString) => {
         } // we don't need to handle fail, since this will fail the next iteration anyway (which also removes any trailing whitespace)
     }
     return { status: "success", next: ret.next, treeNode: { type: "braced expressions", canonicalString: rst, children: phi}}
+}
+var matchEneq = (wrappedString) => {
+    var failureWrappedString = wrappedString
+    wrappedString = matchWhitespace()(wrappedString).next
+    var phi = matchEn("operator: en")(wrappedString)
+    if (phi.status !== "success") {
+        return { status: "failure", next: failureWrappedString }
+    }
+    ret = matchExpr(-1)(phi.next)
+    if (ret.status !== "success") {
+        return { status: "failure", next: failureWrappedString }
+    }
+    if (ret.treeNode.type == "expression") {
+        return { status: "success", next: ret.next, treeNode: { type: "expression", canonicalString: phi.treeNode.canonicalString + ret.treeNode.canonicalString , children: [phi.treeNode].concat(ret.treeNode.children)}}    
+    }
+    return { status: "success", next: ret.next, treeNode: { type: "expression", canonicalString: phi.treeNode.canonicalString + ret.treeNode.canonicalString , children: [phi.treeNode, ret.treeNode]}}
+}
+var matchAnor = (wrappedString) => {
+    var failureWrappedString = wrappedString
+    wrappedString = matchWhitespace()(wrappedString).next
+    var phi = matchAo("operator: ao")(wrappedString)
+    if (phi.status !== "success") {
+        return { status: "failure", next: failureWrappedString }
+    }
+    ret = matchExpr(-2)(phi.next)
+    if (ret.status !== "success") {
+        return { status: "failure", next: failureWrappedString }
+    }
+    if (ret.treeNode.type == "expression") {
+        return { status: "success", next: ret.next, treeNode: { type: "expression", canonicalString: phi.treeNode.canonicalString + ret.treeNode.canonicalString , children: [phi.treeNode].concat(ret.treeNode.children)}}    
+    }
+    return { status: "success", next: ret.next, treeNode: { type: "expression", canonicalString: phi.treeNode.canonicalString + ret.treeNode.canonicalString , children: [phi.treeNode, ret.treeNode]}}
 }
 var matchAper = (wrappedString) => {
     var failureWrappedString = wrappedString
@@ -551,7 +586,7 @@ var matchExpr = (minPrecedenceLevel) => (wrappedString) => {
     if (phi.status == "success" && minPrecedenceLevel <= 1) {
         tem = matchMper(phi.next)
         if (tem.status == "success") {
-            if (minPrecedenceLevel >= 1) {
+            if (minPrecedenceLevel == 1) {
                 return { status: "success", next: tem.next, treeNode: { type: "expression", canonicalString: phi.treeNode.canonicalString + tem.treeNode.canonicalString, children: [phi.treeNode].concat(tem.treeNode.children)}}
             }
             else {
@@ -559,10 +594,37 @@ var matchExpr = (minPrecedenceLevel) => (wrappedString) => {
             }
         }
     }
-    if (phi.status == "success" && minPrecedenceLevel == 0) {
+    if (phi.status == "success" && minPrecedenceLevel <= 0) {
         tem = matchAper(phi.next)
         if (tem.status == "success") {
-            phi = { status: "success", next: tem.next, treeNode: { type: "expression", canonicalString: phi.treeNode.canonicalString + tem.treeNode.canonicalString, children: [phi.treeNode].concat(tem.treeNode.children)}}
+            if (minPrecedenceLevel == 0) {
+                return { status: "success", next: tem.next, treeNode: { type: "expression", canonicalString: phi.treeNode.canonicalString + tem.treeNode.canonicalString, children: [phi.treeNode].concat(tem.treeNode.children)}}
+            }
+            else {
+                phi = { status: "success", next: tem.next, treeNode: { type: "expression", canonicalString: phi.treeNode.canonicalString + tem.treeNode.canonicalString, children: [{ type: "expression", canonicalString: phi.treeNode.canonicalString + tem.treeNode.canonicalString, children: [phi.treeNode].concat(tem.treeNode.children)}]}}
+            }
+        }
+    }
+    if (phi.status == "success" && minPrecedenceLevel <= -1) {
+        tem = matchEneq(phi.next)
+        if (tem.status == "success") {
+            if (minPrecedenceLevel == -1) {
+                return { status: "success", next: tem.next, treeNode: { type: "expression", canonicalString: phi.treeNode.canonicalString + tem.treeNode.canonicalString, children: [phi.treeNode].concat(tem.treeNode.children)}}
+            }
+            else {
+                phi = { status: "success", next: tem.next, treeNode: { type: "expression", canonicalString: phi.treeNode.canonicalString + tem.treeNode.canonicalString, children: [{ type: "expression", canonicalString: phi.treeNode.canonicalString + tem.treeNode.canonicalString, children: [phi.treeNode].concat(tem.treeNode.children)}]}}
+            }
+        }
+    }
+    if (phi.status == "success" && minPrecedenceLevel <= -2) {
+        tem = matchAnor(phi.next)
+        if (tem.status == "success") {
+            if (minPrecedenceLevel == -2) {
+                return { status: "success", next: tem.next, treeNode: { type: "expression", canonicalString: phi.treeNode.canonicalString + tem.treeNode.canonicalString, children: [phi.treeNode].concat(tem.treeNode.children)}}
+            }
+            else {
+                phi = { status: "success", next: tem.next, treeNode: { type: "expression", canonicalString: phi.treeNode.canonicalString + tem.treeNode.canonicalString, children: [{ type: "expression", canonicalString: phi.treeNode.canonicalString + tem.treeNode.canonicalString, children: [phi.treeNode].concat(tem.treeNode.children)}]}}
+            }
         }
     }
     if (phi.status !== "success") {
@@ -576,7 +638,7 @@ var matchConditionalExpression = (wrappedString) => {
         return ret
     }
     ret.next = matchWhitespace()(ret.next).next
-    ret = matchExpr(0)(ret.next)
+    ret = matchExpr(MPR)(ret.next)
     if (ret.status !== "success") {
         return { status: "failure", next: wrappedString }
     }
@@ -592,7 +654,7 @@ var matchConditionalExpression = (wrappedString) => {
         return { status: "failure", next: wrappedString }
     }
     phi.next = matchWhitespace()(phi.next).next
-    var rea = matchExpr(0)(phi.next)
+    var rea = matchExpr(MPR)(phi.next)
     if (rea.status !== "success") {
         return { status: "failure", next: wrappedString }
     }
