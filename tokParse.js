@@ -568,33 +568,21 @@ var matchExpr = (minPrecedenceLevel) => (wrappedString) => {
             }
         }
     }
-    var rea = 0
-    var reb
     if (phi.status == "success") {
         tem = matchMper(phi.next)
         if (tem.status == "success") {
-            if (minPrecedenceLevel == 0) {
-                rea = 1 // i don't want to make this part even more heavily nested
-                reb = { status: "success", next: tem.next, treeNode: {type: "parenthesized expression", canonicalString: "("+ phi.treeNode.canonicalString + tem.treeNode.canonicalString + ")" , children: [{ type: "expression", canonicalString: phi.treeNode.canonicalString + tem.treeNode.canonicalString, children: [phi.treeNode].concat(tem.treeNode.children)}]}}
+            if (minPrecedenceLevel >= 1) {
+                return { status: "success", next: tem.next, treeNode: { type: "expression", canonicalString: phi.treeNode.canonicalString + tem.treeNode.canonicalString, children: [phi.treeNode].concat(tem.treeNode.children)}}
             }
             else {
-                return { status: "success", next: tem.next, treeNode: { type: "expression", canonicalString: phi.treeNode.canonicalString + tem.treeNode.canonicalString, children: [phi.treeNode].concat(tem.treeNode.children)}}
+                phi = { status: "success", next: tem.next, treeNode: {type: "parenthesized expression", canonicalString: "("+ phi.treeNode.canonicalString + tem.treeNode.canonicalString + ")" , children: [{ type: "expression", canonicalString: phi.treeNode.canonicalString + tem.treeNode.canonicalString, children: [phi.treeNode].concat(tem.treeNode.children)}]}}
             }
         }
     }
     if (phi.status == "success" && minPrecedenceLevel == 0) {
         tem = matchAper(phi.next)
         if (tem.status == "success") {
-            return { status: "success", next: tem.next, treeNode: { type: "expression", canonicalString: phi.treeNode.canonicalString + tem.treeNode.canonicalString, children: [phi.treeNode].concat(tem.treeNode.children)}}
-        }
-    }
-    if (rea == 1) {
-        tem = matchAper(reb.next)
-        if (tem.status == "success") {
-            return { status: "success", next: tem.next, treeNode: { type: "expression", canonicalString: reb.treeNode.canonicalString + tem.treeNode.canonicalString, children: [reb.treeNode].concat(tem.treeNode.children)}}
-        }
-        else {
-            return reb
+            phi = { status: "success", next: tem.next, treeNode: { type: "expression", canonicalString: phi.treeNode.canonicalString + tem.treeNode.canonicalString, children: [phi.treeNode].concat(tem.treeNode.children)}}
         }
     }
     if (phi.status !== "success") {
