@@ -475,26 +475,6 @@ var matchBrae = (wrappedString) => {
     }
     return { status: "success", next: ret.next, treeNode: { type: "braced expressions", canonicalString: rst, children: phi}}
 }
-var matchOper = (wrappedString) => { // DEPRECATED, replaced with matchAper and matchMper
-    var failureWrappedString = wrappedString
-    wrappedString = matchWhitespace()(wrappedString).next
-    var phi = matchDm("operator: dm")(wrappedString)
-    var ret = matchAs("operator: as")(wrappedString)
-    if (ret.status == "success") {
-        phi = ret
-    }
-    if (phi.status !== "success") {
-        return { status: "failure", next: failureWrappedString }
-    }
-    ret = matchExpr(0)(phi.next)
-    if (ret.status !== "success") {
-        return { status: "failure", next: failureWrappedString }
-    }
-    if (ret.treeNode.type == "expression") {
-        return { status: "success", next: ret.next, treeNode: { type: "expression", canonicalString: phi.treeNode.canonicalString + ret.treeNode.canonicalString , children: [phi.treeNode].concat(ret.treeNode.children)}}    
-    }
-    return { status: "success", next: ret.next, treeNode: { type: "expression", canonicalString: phi.treeNode.canonicalString + ret.treeNode.canonicalString , children: [phi.treeNode, ret.treeNode]}}
-}
 var matchAper = (wrappedString) => {
     var failureWrappedString = wrappedString
     wrappedString = matchWhitespace()(wrappedString).next
@@ -568,14 +548,14 @@ var matchExpr = (minPrecedenceLevel) => (wrappedString) => {
             }
         }
     }
-    if (phi.status == "success") {
+    if (phi.status == "success" && minPrecedenceLevel <= 1) {
         tem = matchMper(phi.next)
         if (tem.status == "success") {
             if (minPrecedenceLevel >= 1) {
                 return { status: "success", next: tem.next, treeNode: { type: "expression", canonicalString: phi.treeNode.canonicalString + tem.treeNode.canonicalString, children: [phi.treeNode].concat(tem.treeNode.children)}}
             }
             else {
-                phi = { status: "success", next: tem.next, treeNode: {type: "parenthesized expression", canonicalString: "("+ phi.treeNode.canonicalString + tem.treeNode.canonicalString + ")" , children: [{ type: "expression", canonicalString: phi.treeNode.canonicalString + tem.treeNode.canonicalString, children: [phi.treeNode].concat(tem.treeNode.children)}]}}
+                phi = { status: "success", next: tem.next, treeNode: { type: "expression", canonicalString: phi.treeNode.canonicalString + tem.treeNode.canonicalString, children: [{ type: "expression", canonicalString: phi.treeNode.canonicalString + tem.treeNode.canonicalString, children: [phi.treeNode].concat(tem.treeNode.children)}]}}
             }
         }
     }

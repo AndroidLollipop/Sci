@@ -69,35 +69,244 @@
   parameters:
    { type: 'parameter declaration',
      canonicalString: '(p1, p2, p3)',
-     children: [ [Object], [Object], [Object] ] },
+     children:
+      [ { type: 'identifier', canonicalString: 'p1', children: [] },
+        { type: 'identifier', canonicalString: 'p2', children: [] },
+        { type: 'identifier', canonicalString: 'p3', children: [] } ] },
   body:
    { type: 'function body',
      canonicalString:
       '{num skye = 1;num scotland = 2;num add (p1, p2, p3, p4, p5) {return p1+p2+p3+p4+p5;};return add(p1, p2, p3, skye, scotland);}',
-     children: [ [Object], [Object], [Object], [Object] ] } }
+     children:
+      [ { type: 'variable declaration',
+          canonicalString: 'num skye = 1',
+          children:
+           [ { type: 'typed declaration',
+               canonicalString: 'num',
+               children: [] },
+             { type: 'identifier', canonicalString: 'skye', children: [] },
+             { type: 'equals', canonicalString: '=', children: [] },
+             { type: 'integral literal', canonicalString: '1', children: [] } ] },
+        { type: 'variable declaration',
+          canonicalString: 'num scotland = 2',
+          children:
+           [ { type: 'typed declaration',
+               canonicalString: 'num',
+               children: [] },
+             { type: 'identifier', canonicalString: 'scotland', children: [] },
+             { type: 'equals', canonicalString: '=', children: [] },
+             { type: 'integral literal', canonicalString: '2', children: [] } ] },
+        { type: 'function declaration',
+          canonicalString: 'num add (p1, p2, p3, p4, p5) {return p1+p2+p3+p4+p5;}',
+          children:
+           [ { type: 'typed declaration',
+               canonicalString: 'num',
+               children: [] },
+             { type: 'identifier', canonicalString: 'add', children: [] },
+             { type: 'parameter declaration',
+               canonicalString: '(p1, p2, p3, p4, p5)',
+               children:
+                [ { type: 'identifier', canonicalString: 'p1', children: [] },
+                  { type: 'identifier', canonicalString: 'p2', children: [] },
+                  { type: 'identifier', canonicalString: 'p3', children: [] },
+                  { type: 'identifier', canonicalString: 'p4', children: [] },
+                  { type: 'identifier', canonicalString: 'p5', children: [] } ] },
+             { type: 'function body',
+               canonicalString: '{return p1+p2+p3+p4+p5;}',
+               children:
+                [ { type: 'return statement',
+                    canonicalString: 'return p1+p2+p3+p4+p5',
+                    children:
+                     [ { type: 'expression',
+                         canonicalString: 'p1+p2+p3+p4+p5',
+                         children:
+                          [ { type: 'identifier', canonicalString: 'p1', children: [] },
+                            { type: 'operator: as', canonicalString: '+', children: [] },
+                            { type: 'identifier', canonicalString: 'p2', children: [] },
+                            { type: 'operator: as', canonicalString: '+', children: [] },
+                            { type: 'identifier', canonicalString: 'p3', children: [] },
+                            { type: 'operator: as', canonicalString: '+', children: [] },
+                            { type: 'identifier', canonicalString: 'p4', children: [] },
+                            { type: 'operator: as', canonicalString: '+', children: [] },
+                            { type: 'identifier', canonicalString: 'p5', children: [] } ] } ] } ] } ] },
+        { type: 'return statement',
+          canonicalString: 'return add(p1, p2, p3, skye, scotland)',
+          children:
+           [ { type: 'function call',
+               canonicalString: 'add(p1, p2, p3, skye, scotland)',
+               children:
+                [ { type: 'identifier', canonicalString: 'add', children: [] },
+                  { type: 'function call bindings',
+                    canonicalString: '(p1, p2, p3, skye, scotland)',
+                    children:
+                     [ { type: 'identifier', canonicalString: 'p1', children: [] },
+                       { type: 'identifier', canonicalString: 'p2', children: [] },
+                       { type: 'identifier', canonicalString: 'p3', children: [] },
+                       { type: 'identifier', canonicalString: 'skye', children: [] },
+                       { type: 'identifier', canonicalString: 'scotland', children: [] } ] } ] } ] } ] } }
 { type: 'number', value: 9 }
 { type: 'function',
   parentScope: [ [Function], [Function], [Function] ],
   parameters:
    { type: 'parameter declaration',
      canonicalString: '(multiplier, start)',
-     children: [ [Object], [Object] ] },
+     children:
+      [ { type: 'identifier',
+          canonicalString: 'multiplier',
+          children: [] },
+        { type: 'identifier', canonicalString: 'start', children: [] } ] },
   body:
    { type: 'function body',
      canonicalString:
-      '{num add () {skye = skye+1;return (skye*multiplier);};num skye = (start/multiplier)-1;return add;}',
-     children: [ [Object], [Object], [Object] ] } }
+      '{num add () {skye = skye+1;return skye*multiplier;};num skye = start/multiplier-1;return add;}',
+     children:
+      [ { type: 'function declaration',
+          canonicalString: 'num add () {skye = skye+1;return skye*multiplier;}',
+          children:
+           [ { type: 'typed declaration',
+               canonicalString: 'num',
+               children: [] },
+             { type: 'identifier', canonicalString: 'add', children: [] },
+             { type: 'parameter declaration',
+               canonicalString: '()',
+               children: [] },
+             { type: 'function body',
+               canonicalString: '{skye = skye+1;return skye*multiplier;}',
+               children:
+                [ { type: 'variable set',
+                    canonicalString: 'skye = skye+1',
+                    children:
+                     [ { type: 'identifier', canonicalString: 'skye', children: [] },
+                       { type: 'equals', canonicalString: '=', children: [] },
+                       { type: 'expression',
+                         canonicalString: 'skye+1',
+                         children:
+                          [ { type: 'identifier', canonicalString: 'skye', children: [] },
+                            { type: 'operator: as', canonicalString: '+', children: [] },
+                            { type: 'integral literal', canonicalString: '1', children: [] } ] } ] },
+                  { type: 'return statement',
+                    canonicalString: 'return skye*multiplier',
+                    children:
+                     [ { type: 'expression',
+                         canonicalString: 'skye*multiplier',
+                         children:
+                          [ { type: 'expression',
+                              canonicalString: 'skye*multiplier',
+                              children:
+                               [ { type: 'identifier', canonicalString: 'skye', children: [] },
+                                 { type: 'operator: dm', canonicalString: '*', children: [] },
+                                 { type: 'identifier',
+                                   canonicalString: 'multiplier',
+                                   children: [] } ] } ] } ] } ] } ] },
+        { type: 'variable declaration',
+          canonicalString: 'num skye = start/multiplier-1',
+          children:
+           [ { type: 'typed declaration',
+               canonicalString: 'num',
+               children: [] },
+             { type: 'identifier', canonicalString: 'skye', children: [] },
+             { type: 'equals', canonicalString: '=', children: [] },
+             { type: 'expression',
+               canonicalString: 'start/multiplier-1',
+               children:
+                [ { type: 'expression',
+                    canonicalString: 'start/multiplier',
+                    children:
+                     [ { type: 'expression',
+                         canonicalString: 'start/multiplier',
+                         children:
+                          [ { type: 'identifier', canonicalString: 'start', children: [] },
+                            { type: 'operator: dm', canonicalString: '/', children: [] },
+                            { type: 'identifier',
+                              canonicalString: 'multiplier',
+                              children: [] } ] } ] },
+                  { type: 'operator: as', canonicalString: '-', children: [] },
+                  { type: 'integral literal', canonicalString: '1', children: [] } ] } ] },
+        { type: 'return statement',
+          canonicalString: 'return add',
+          children:
+           [ { type: 'identifier', canonicalString: 'add', children: [] } ] } ] } }
 { type: 'function',
   parentScope: [ [Function], [Function], [Function] ],
   parameters:
    { type: 'parameter declaration',
      canonicalString: '(multiplier, start)',
-     children: [ [Object], [Object] ] },
+     children:
+      [ { type: 'identifier',
+          canonicalString: 'multiplier',
+          children: [] },
+        { type: 'identifier', canonicalString: 'start', children: [] } ] },
   body:
    { type: 'function body',
      canonicalString:
-      '{num add () {skye = skye+1;return (skye*multiplier);};num skye = (start/multiplier)-1;return add;}',
-     children: [ [Object], [Object], [Object] ] } }
+      '{num add () {skye = skye+1;return skye*multiplier;};num skye = start/multiplier-1;return add;}',
+     children:
+      [ { type: 'function declaration',
+          canonicalString: 'num add () {skye = skye+1;return skye*multiplier;}',
+          children:
+           [ { type: 'typed declaration',
+               canonicalString: 'num',
+               children: [] },
+             { type: 'identifier', canonicalString: 'add', children: [] },
+             { type: 'parameter declaration',
+               canonicalString: '()',
+               children: [] },
+             { type: 'function body',
+               canonicalString: '{skye = skye+1;return skye*multiplier;}',
+               children:
+                [ { type: 'variable set',
+                    canonicalString: 'skye = skye+1',
+                    children:
+                     [ { type: 'identifier', canonicalString: 'skye', children: [] },
+                       { type: 'equals', canonicalString: '=', children: [] },
+                       { type: 'expression',
+                         canonicalString: 'skye+1',
+                         children:
+                          [ { type: 'identifier', canonicalString: 'skye', children: [] },
+                            { type: 'operator: as', canonicalString: '+', children: [] },
+                            { type: 'integral literal', canonicalString: '1', children: [] } ] } ] },
+                  { type: 'return statement',
+                    canonicalString: 'return skye*multiplier',
+                    children:
+                     [ { type: 'expression',
+                         canonicalString: 'skye*multiplier',
+                         children:
+                          [ { type: 'expression',
+                              canonicalString: 'skye*multiplier',
+                              children:
+                               [ { type: 'identifier', canonicalString: 'skye', children: [] },
+                                 { type: 'operator: dm', canonicalString: '*', children: [] },
+                                 { type: 'identifier',
+                                   canonicalString: 'multiplier',
+                                   children: [] } ] } ] } ] } ] } ] },
+        { type: 'variable declaration',
+          canonicalString: 'num skye = start/multiplier-1',
+          children:
+           [ { type: 'typed declaration',
+               canonicalString: 'num',
+               children: [] },
+             { type: 'identifier', canonicalString: 'skye', children: [] },
+             { type: 'equals', canonicalString: '=', children: [] },
+             { type: 'expression',
+               canonicalString: 'start/multiplier-1',
+               children:
+                [ { type: 'expression',
+                    canonicalString: 'start/multiplier',
+                    children:
+                     [ { type: 'expression',
+                         canonicalString: 'start/multiplier',
+                         children:
+                          [ { type: 'identifier', canonicalString: 'start', children: [] },
+                            { type: 'operator: dm', canonicalString: '/', children: [] },
+                            { type: 'identifier',
+                              canonicalString: 'multiplier',
+                              children: [] } ] } ] },
+                  { type: 'operator: as', canonicalString: '-', children: [] },
+                  { type: 'integral literal', canonicalString: '1', children: [] } ] } ] },
+        { type: 'return statement',
+          canonicalString: 'return add',
+          children:
+           [ { type: 'identifier', canonicalString: 'add', children: [] } ] } ] } }
 { type: 'function',
   parentScope: [ [Function], [Function], [Function] ],
   parameters:
@@ -106,8 +315,33 @@
      children: [] },
   body:
    { type: 'function body',
-     canonicalString: '{skye = skye+1;return (skye*multiplier);}',
-     children: [ [Object], [Object] ] } }
+     canonicalString: '{skye = skye+1;return skye*multiplier;}',
+     children:
+      [ { type: 'variable set',
+          canonicalString: 'skye = skye+1',
+          children:
+           [ { type: 'identifier', canonicalString: 'skye', children: [] },
+             { type: 'equals', canonicalString: '=', children: [] },
+             { type: 'expression',
+               canonicalString: 'skye+1',
+               children:
+                [ { type: 'identifier', canonicalString: 'skye', children: [] },
+                  { type: 'operator: as', canonicalString: '+', children: [] },
+                  { type: 'integral literal', canonicalString: '1', children: [] } ] } ] },
+        { type: 'return statement',
+          canonicalString: 'return skye*multiplier',
+          children:
+           [ { type: 'expression',
+               canonicalString: 'skye*multiplier',
+               children:
+                [ { type: 'expression',
+                    canonicalString: 'skye*multiplier',
+                    children:
+                     [ { type: 'identifier', canonicalString: 'skye', children: [] },
+                       { type: 'operator: dm', canonicalString: '*', children: [] },
+                       { type: 'identifier',
+                         canonicalString: 'multiplier',
+                         children: [] } ] } ] } ] } ] } }
 { type: 'function',
   parentScope: [ [Function], [Function], [Function] ],
   parameters:
@@ -116,8 +350,33 @@
      children: [] },
   body:
    { type: 'function body',
-     canonicalString: '{skye = skye+1;return (skye*multiplier);}',
-     children: [ [Object], [Object] ] } }
+     canonicalString: '{skye = skye+1;return skye*multiplier;}',
+     children:
+      [ { type: 'variable set',
+          canonicalString: 'skye = skye+1',
+          children:
+           [ { type: 'identifier', canonicalString: 'skye', children: [] },
+             { type: 'equals', canonicalString: '=', children: [] },
+             { type: 'expression',
+               canonicalString: 'skye+1',
+               children:
+                [ { type: 'identifier', canonicalString: 'skye', children: [] },
+                  { type: 'operator: as', canonicalString: '+', children: [] },
+                  { type: 'integral literal', canonicalString: '1', children: [] } ] } ] },
+        { type: 'return statement',
+          canonicalString: 'return skye*multiplier',
+          children:
+           [ { type: 'expression',
+               canonicalString: 'skye*multiplier',
+               children:
+                [ { type: 'expression',
+                    canonicalString: 'skye*multiplier',
+                    children:
+                     [ { type: 'identifier', canonicalString: 'skye', children: [] },
+                       { type: 'operator: dm', canonicalString: '*', children: [] },
+                       { type: 'identifier',
+                         canonicalString: 'multiplier',
+                         children: [] } ] } ] } ] } ] } }
 { type: 'number', value: 10 }
 { type: 'number', value: 20 }
 { type: 'number', value: 11 }
@@ -132,8 +391,33 @@
      children: [] },
   body:
    { type: 'function body',
-     canonicalString: '{skye = skye+1;return (skye*multiplier);}',
-     children: [ [Object], [Object] ] } }
+     canonicalString: '{skye = skye+1;return skye*multiplier;}',
+     children:
+      [ { type: 'variable set',
+          canonicalString: 'skye = skye+1',
+          children:
+           [ { type: 'identifier', canonicalString: 'skye', children: [] },
+             { type: 'equals', canonicalString: '=', children: [] },
+             { type: 'expression',
+               canonicalString: 'skye+1',
+               children:
+                [ { type: 'identifier', canonicalString: 'skye', children: [] },
+                  { type: 'operator: as', canonicalString: '+', children: [] },
+                  { type: 'integral literal', canonicalString: '1', children: [] } ] } ] },
+        { type: 'return statement',
+          canonicalString: 'return skye*multiplier',
+          children:
+           [ { type: 'expression',
+               canonicalString: 'skye*multiplier',
+               children:
+                [ { type: 'expression',
+                    canonicalString: 'skye*multiplier',
+                    children:
+                     [ { type: 'identifier', canonicalString: 'skye', children: [] },
+                       { type: 'operator: dm', canonicalString: '*', children: [] },
+                       { type: 'identifier',
+                         canonicalString: 'multiplier',
+                         children: [] } ] } ] } ] } ] } }
 { type: 'number', value: 32 }
 { type: 'number', value: 38 }
 { type: 'undefined' }
@@ -142,12 +426,66 @@
   parameters:
    { type: 'parameter declaration',
      canonicalString: '(n)',
-     children: [ [Object] ] },
+     children:
+      [ { type: 'identifier', canonicalString: 'n', children: [] } ] },
   body:
    { type: 'function body',
      canonicalString:
       '{if (n<3){return 1;};return slowFibonacci(n-1)+slowFibonacci(n-2);}',
-     children: [ [Object], [Object] ] } }
+     children:
+      [ { type: 'if expression',
+          canonicalString: 'if (n<3){return 1;}',
+          children:
+           [ { type: 'conditional expression',
+               canonicalString: '(n<3)',
+               children:
+                [ { type: 'identifier', canonicalString: 'n', children: [] },
+                  { type: 'comparator', canonicalString: '<', children: [] },
+                  { type: 'integral literal', canonicalString: '3', children: [] } ] },
+             { type: 'block body',
+               canonicalString: '{return 1;}',
+               children:
+                [ { type: 'return statement',
+                    canonicalString: 'return 1',
+                    children:
+                     [ { type: 'integral literal', canonicalString: '1', children: [] } ] } ] } ] },
+        { type: 'return statement',
+          canonicalString: 'return slowFibonacci(n-1)+slowFibonacci(n-2)',
+          children:
+           [ { type: 'expression',
+               canonicalString: 'slowFibonacci(n-1)+slowFibonacci(n-2)',
+               children:
+                [ { type: 'function call',
+                    canonicalString: 'slowFibonacci(n-1)',
+                    children:
+                     [ { type: 'identifier',
+                         canonicalString: 'slowFibonacci',
+                         children: [] },
+                       { type: 'function call bindings',
+                         canonicalString: '(n-1)',
+                         children:
+                          [ { type: 'expression',
+                              canonicalString: 'n-1',
+                              children:
+                               [ { type: 'identifier', canonicalString: 'n', children: [] },
+                                 { type: 'operator: as', canonicalString: '-', children: [] },
+                                 { type: 'integral literal', canonicalString: '1', children: [] } ] } ] } ] },
+                  { type: 'operator: as', canonicalString: '+', children: [] },
+                  { type: 'function call',
+                    canonicalString: 'slowFibonacci(n-2)',
+                    children:
+                     [ { type: 'identifier',
+                         canonicalString: 'slowFibonacci',
+                         children: [] },
+                       { type: 'function call bindings',
+                         canonicalString: '(n-2)',
+                         children:
+                          [ { type: 'expression',
+                              canonicalString: 'n-2',
+                              children:
+                               [ { type: 'identifier', canonicalString: 'n', children: [] },
+                                 { type: 'operator: as', canonicalString: '-', children: [] },
+                                 { type: 'integral literal', canonicalString: '2', children: [] } ] } ] } ] } ] } ] } ] } }
 { type: 'number', value: 55 }
 { type: 'number', value: 2 }
 { type: 'number', value: 1 }
@@ -157,11 +495,58 @@
   parameters:
    { type: 'parameter declaration',
      canonicalString: '(n)',
-     children: [ [Object] ] },
+     children:
+      [ { type: 'identifier', canonicalString: 'n', children: [] } ] },
   body:
    { type: 'function body',
      canonicalString: '{if (n<3){1;} else {s(n-1)+s(n-2);};}',
-     children: [ [Object] ] } }
+     children:
+      [ { type: 'if else expression',
+          canonicalString: 'if (n<3){1;} else {s(n-1)+s(n-2);}',
+          children:
+           [ { type: 'conditional expression',
+               canonicalString: '(n<3)',
+               children:
+                [ { type: 'identifier', canonicalString: 'n', children: [] },
+                  { type: 'comparator', canonicalString: '<', children: [] },
+                  { type: 'integral literal', canonicalString: '3', children: [] } ] },
+             { type: 'block body',
+               canonicalString: '{1;}',
+               children:
+                [ { type: 'integral literal', canonicalString: '1', children: [] } ] },
+             { type: 'function body',
+               canonicalString: '{s(n-1)+s(n-2);}',
+               children:
+                [ { type: 'expression',
+                    canonicalString: 's(n-1)+s(n-2)',
+                    children:
+                     [ { type: 'function call',
+                         canonicalString: 's(n-1)',
+                         children:
+                          [ { type: 'identifier', canonicalString: 's', children: [] },
+                            { type: 'function call bindings',
+                              canonicalString: '(n-1)',
+                              children:
+                               [ { type: 'expression',
+                                   canonicalString: 'n-1',
+                                   children:
+                                    [ { type: 'identifier', canonicalString: 'n', children: [] },
+                                      { type: 'operator: as', canonicalString: '-', children: [] },
+                                      { type: 'integral literal', canonicalString: '1', children: [] } ] } ] } ] },
+                       { type: 'operator: as', canonicalString: '+', children: [] },
+                       { type: 'function call',
+                         canonicalString: 's(n-2)',
+                         children:
+                          [ { type: 'identifier', canonicalString: 's', children: [] },
+                            { type: 'function call bindings',
+                              canonicalString: '(n-2)',
+                              children:
+                               [ { type: 'expression',
+                                   canonicalString: 'n-2',
+                                   children:
+                                    [ { type: 'identifier', canonicalString: 'n', children: [] },
+                                      { type: 'operator: as', canonicalString: '-', children: [] },
+                                      { type: 'integral literal', canonicalString: '2', children: [] } ] } ] } ] } ] } ] } ] } ] } }
 { type: 'number', value: 55 }
 { type: 'number', value: 1 }
 { type: 'number', value: 2 }
@@ -170,12 +555,90 @@
   parameters:
    { type: 'parameter declaration',
      canonicalString: '(n)',
-     children: [ [Object] ] },
+     children:
+      [ { type: 'identifier', canonicalString: 'n', children: [] } ] },
   body:
    { type: 'function body',
      canonicalString:
       '{num a = 1;num b = 1;num c = 1;while (n>2){c = a+b;a = b;b = c;n = n-1;};return c;}',
-     children: [ [Object], [Object], [Object], [Object], [Object] ] } }
+     children:
+      [ { type: 'variable declaration',
+          canonicalString: 'num a = 1',
+          children:
+           [ { type: 'typed declaration',
+               canonicalString: 'num',
+               children: [] },
+             { type: 'identifier', canonicalString: 'a', children: [] },
+             { type: 'equals', canonicalString: '=', children: [] },
+             { type: 'integral literal', canonicalString: '1', children: [] } ] },
+        { type: 'variable declaration',
+          canonicalString: 'num b = 1',
+          children:
+           [ { type: 'typed declaration',
+               canonicalString: 'num',
+               children: [] },
+             { type: 'identifier', canonicalString: 'b', children: [] },
+             { type: 'equals', canonicalString: '=', children: [] },
+             { type: 'integral literal', canonicalString: '1', children: [] } ] },
+        { type: 'variable declaration',
+          canonicalString: 'num c = 1',
+          children:
+           [ { type: 'typed declaration',
+               canonicalString: 'num',
+               children: [] },
+             { type: 'identifier', canonicalString: 'c', children: [] },
+             { type: 'equals', canonicalString: '=', children: [] },
+             { type: 'integral literal', canonicalString: '1', children: [] } ] },
+        { type: 'while expression',
+          canonicalString: 'while (n>2){c = a+b;a = b;b = c;n = n-1;}',
+          children:
+           [ { type: 'conditional expression',
+               canonicalString: '(n>2)',
+               children:
+                [ { type: 'identifier', canonicalString: 'n', children: [] },
+                  { type: 'comparator', canonicalString: '>', children: [] },
+                  { type: 'integral literal', canonicalString: '2', children: [] } ] },
+             { type: 'block body',
+               canonicalString: '{c = a+b;a = b;b = c;n = n-1;}',
+               children:
+                [ { type: 'variable set',
+                    canonicalString: 'c = a+b',
+                    children:
+                     [ { type: 'identifier', canonicalString: 'c', children: [] },
+                       { type: 'equals', canonicalString: '=', children: [] },
+                       { type: 'expression',
+                         canonicalString: 'a+b',
+                         children:
+                          [ { type: 'identifier', canonicalString: 'a', children: [] },
+                            { type: 'operator: as', canonicalString: '+', children: [] },
+                            { type: 'identifier', canonicalString: 'b', children: [] } ] } ] },
+                  { type: 'variable set',
+                    canonicalString: 'a = b',
+                    children:
+                     [ { type: 'identifier', canonicalString: 'a', children: [] },
+                       { type: 'equals', canonicalString: '=', children: [] },
+                       { type: 'identifier', canonicalString: 'b', children: [] } ] },
+                  { type: 'variable set',
+                    canonicalString: 'b = c',
+                    children:
+                     [ { type: 'identifier', canonicalString: 'b', children: [] },
+                       { type: 'equals', canonicalString: '=', children: [] },
+                       { type: 'identifier', canonicalString: 'c', children: [] } ] },
+                  { type: 'variable set',
+                    canonicalString: 'n = n-1',
+                    children:
+                     [ { type: 'identifier', canonicalString: 'n', children: [] },
+                       { type: 'equals', canonicalString: '=', children: [] },
+                       { type: 'expression',
+                         canonicalString: 'n-1',
+                         children:
+                          [ { type: 'identifier', canonicalString: 'n', children: [] },
+                            { type: 'operator: as', canonicalString: '-', children: [] },
+                            { type: 'integral literal', canonicalString: '1', children: [] } ] } ] } ] } ] },
+        { type: 'return statement',
+          canonicalString: 'return c',
+          children:
+           [ { type: 'identifier', canonicalString: 'c', children: [] } ] } ] } }
 { type: 'number', value: 4.346655768693743e+208 }
 { type: 'function',
   parentScope: [ [Function], [Function], [Function] ],
@@ -187,7 +650,59 @@
    { type: 'function body',
      canonicalString:
       '{num n = 0;while (1==1){n = n+1;if (n>5){return 1;};};return n;}',
-     children: [ [Object], [Object], [Object] ] } }
+     children:
+      [ { type: 'variable declaration',
+          canonicalString: 'num n = 0',
+          children:
+           [ { type: 'typed declaration',
+               canonicalString: 'num',
+               children: [] },
+             { type: 'identifier', canonicalString: 'n', children: [] },
+             { type: 'equals', canonicalString: '=', children: [] },
+             { type: 'integral literal', canonicalString: '0', children: [] } ] },
+        { type: 'while expression',
+          canonicalString: 'while (1==1){n = n+1;if (n>5){return 1;};}',
+          children:
+           [ { type: 'conditional expression',
+               canonicalString: '(1==1)',
+               children:
+                [ { type: 'integral literal', canonicalString: '1', children: [] },
+                  { type: 'comparator', canonicalString: '==', children: [] },
+                  { type: 'integral literal', canonicalString: '1', children: [] } ] },
+             { type: 'block body',
+               canonicalString: '{n = n+1;if (n>5){return 1;};}',
+               children:
+                [ { type: 'variable set',
+                    canonicalString: 'n = n+1',
+                    children:
+                     [ { type: 'identifier', canonicalString: 'n', children: [] },
+                       { type: 'equals', canonicalString: '=', children: [] },
+                       { type: 'expression',
+                         canonicalString: 'n+1',
+                         children:
+                          [ { type: 'identifier', canonicalString: 'n', children: [] },
+                            { type: 'operator: as', canonicalString: '+', children: [] },
+                            { type: 'integral literal', canonicalString: '1', children: [] } ] } ] },
+                  { type: 'if expression',
+                    canonicalString: 'if (n>5){return 1;}',
+                    children:
+                     [ { type: 'conditional expression',
+                         canonicalString: '(n>5)',
+                         children:
+                          [ { type: 'identifier', canonicalString: 'n', children: [] },
+                            { type: 'comparator', canonicalString: '>', children: [] },
+                            { type: 'integral literal', canonicalString: '5', children: [] } ] },
+                       { type: 'block body',
+                         canonicalString: '{return 1;}',
+                         children:
+                          [ { type: 'return statement',
+                              canonicalString: 'return 1',
+                              children:
+                               [ { type: 'integral literal', canonicalString: '1', children: [] } ] } ] } ] } ] } ] },
+        { type: 'return statement',
+          canonicalString: 'return n',
+          children:
+           [ { type: 'identifier', canonicalString: 'n', children: [] } ] } ] } }
 { type: 'function',
   parentScope: [ [Function], [Function], [Function] ],
   parameters:
@@ -198,7 +713,62 @@
    { type: 'function body',
      canonicalString:
       '{num n = 0;(while (1==1){n = n+1;if (n>5){return 1;};});return n;}',
-     children: [ [Object], [Object], [Object] ] } }
+     children:
+      [ { type: 'variable declaration',
+          canonicalString: 'num n = 0',
+          children:
+           [ { type: 'typed declaration',
+               canonicalString: 'num',
+               children: [] },
+             { type: 'identifier', canonicalString: 'n', children: [] },
+             { type: 'equals', canonicalString: '=', children: [] },
+             { type: 'integral literal', canonicalString: '0', children: [] } ] },
+        { type: 'parenthesized expression',
+          canonicalString: '(while (1==1){n = n+1;if (n>5){return 1;};})',
+          children:
+           [ { type: 'while expression',
+               canonicalString: 'while (1==1){n = n+1;if (n>5){return 1;};}',
+               children:
+                [ { type: 'conditional expression',
+                    canonicalString: '(1==1)',
+                    children:
+                     [ { type: 'integral literal', canonicalString: '1', children: [] },
+                       { type: 'comparator', canonicalString: '==', children: [] },
+                       { type: 'integral literal', canonicalString: '1', children: [] } ] },
+                  { type: 'block body',
+                    canonicalString: '{n = n+1;if (n>5){return 1;};}',
+                    children:
+                     [ { type: 'variable set',
+                         canonicalString: 'n = n+1',
+                         children:
+                          [ { type: 'identifier', canonicalString: 'n', children: [] },
+                            { type: 'equals', canonicalString: '=', children: [] },
+                            { type: 'expression',
+                              canonicalString: 'n+1',
+                              children:
+                               [ { type: 'identifier', canonicalString: 'n', children: [] },
+                                 { type: 'operator: as', canonicalString: '+', children: [] },
+                                 { type: 'integral literal', canonicalString: '1', children: [] } ] } ] },
+                       { type: 'if expression',
+                         canonicalString: 'if (n>5){return 1;}',
+                         children:
+                          [ { type: 'conditional expression',
+                              canonicalString: '(n>5)',
+                              children:
+                               [ { type: 'identifier', canonicalString: 'n', children: [] },
+                                 { type: 'comparator', canonicalString: '>', children: [] },
+                                 { type: 'integral literal', canonicalString: '5', children: [] } ] },
+                            { type: 'block body',
+                              canonicalString: '{return 1;}',
+                              children:
+                               [ { type: 'return statement',
+                                   canonicalString: 'return 1',
+                                   children:
+                                    [ { type: 'integral literal', canonicalString: '1', children: [] } ] } ] } ] } ] } ] } ] },
+        { type: 'return statement',
+          canonicalString: 'return n',
+          children:
+           [ { type: 'identifier', canonicalString: 'n', children: [] } ] } ] } }
 { type: 'function',
   parentScope: [ [Function], [Function], [Function] ],
   parameters:
@@ -209,7 +779,64 @@
    { type: 'function body',
      canonicalString:
       '{num n = 0;1+while (1==1){n = n+1;if (n>5){return 1;};};return n;}',
-     children: [ [Object], [Object], [Object] ] } }
+     children:
+      [ { type: 'variable declaration',
+          canonicalString: 'num n = 0',
+          children:
+           [ { type: 'typed declaration',
+               canonicalString: 'num',
+               children: [] },
+             { type: 'identifier', canonicalString: 'n', children: [] },
+             { type: 'equals', canonicalString: '=', children: [] },
+             { type: 'integral literal', canonicalString: '0', children: [] } ] },
+        { type: 'expression',
+          canonicalString: '1+while (1==1){n = n+1;if (n>5){return 1;};}',
+          children:
+           [ { type: 'integral literal', canonicalString: '1', children: [] },
+             { type: 'operator: as', canonicalString: '+', children: [] },
+             { type: 'while expression',
+               canonicalString: 'while (1==1){n = n+1;if (n>5){return 1;};}',
+               children:
+                [ { type: 'conditional expression',
+                    canonicalString: '(1==1)',
+                    children:
+                     [ { type: 'integral literal', canonicalString: '1', children: [] },
+                       { type: 'comparator', canonicalString: '==', children: [] },
+                       { type: 'integral literal', canonicalString: '1', children: [] } ] },
+                  { type: 'block body',
+                    canonicalString: '{n = n+1;if (n>5){return 1;};}',
+                    children:
+                     [ { type: 'variable set',
+                         canonicalString: 'n = n+1',
+                         children:
+                          [ { type: 'identifier', canonicalString: 'n', children: [] },
+                            { type: 'equals', canonicalString: '=', children: [] },
+                            { type: 'expression',
+                              canonicalString: 'n+1',
+                              children:
+                               [ { type: 'identifier', canonicalString: 'n', children: [] },
+                                 { type: 'operator: as', canonicalString: '+', children: [] },
+                                 { type: 'integral literal', canonicalString: '1', children: [] } ] } ] },
+                       { type: 'if expression',
+                         canonicalString: 'if (n>5){return 1;}',
+                         children:
+                          [ { type: 'conditional expression',
+                              canonicalString: '(n>5)',
+                              children:
+                               [ { type: 'identifier', canonicalString: 'n', children: [] },
+                                 { type: 'comparator', canonicalString: '>', children: [] },
+                                 { type: 'integral literal', canonicalString: '5', children: [] } ] },
+                            { type: 'block body',
+                              canonicalString: '{return 1;}',
+                              children:
+                               [ { type: 'return statement',
+                                   canonicalString: 'return 1',
+                                   children:
+                                    [ { type: 'integral literal', canonicalString: '1', children: [] } ] } ] } ] } ] } ] } ] },
+        { type: 'return statement',
+          canonicalString: 'return n',
+          children:
+           [ { type: 'identifier', canonicalString: 'n', children: [] } ] } ] } }
 { type: 'number', value: 1 }
 { type: 'number', value: 6 }
 { type: 'number', value: 6 }
