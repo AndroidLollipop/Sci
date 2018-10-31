@@ -1,10 +1,9 @@
 // why not use regex, i hear you ask
 // well, we're trying to build an AST here, it's not nice to use regex to do that
-const MPR = -2
-var wrapString = (string) => {
+const wrapString = (string) => {
     return [0, string]
 }
-var peek = (wrappedString) => {
+const peek = (wrappedString) => {
     if (wrappedString[1][wrappedString[0]]) {
         return wrappedString[1][wrappedString[0]]
     }
@@ -13,10 +12,10 @@ var peek = (wrappedString) => {
     }
     return "end"
 }
-var next = (wrappedString) => wrappedString[0] < wrappedString[1].length ? [wrappedString[0] + 1, wrappedString[1]] : wrappedString
-var prev = (wrappedString) => wrappedString[0] > -1 ? [wrappedString[0] - 1, wrappedString[1]] : wrappedString
+const next = (wrappedString) => wrappedString[0] < wrappedString[1].length ? [wrappedString[0] + 1, wrappedString[1]] : wrappedString
+const prev = (wrappedString) => wrappedString[0] > -1 ? [wrappedString[0] - 1, wrappedString[1]] : wrappedString
 // next and prev must not mutate their parameters
-var matchTerminal = (terminal) => (type) => (wrappedString) => {
+const matchTerminal = (terminal) => (type) => (wrappedString) => {
     if (peek(wrappedString) == terminal) {
         return { status: "success", next: next(wrappedString), treeNode: { type: type, canonicalString: terminal, children: [] } }
     }
@@ -24,7 +23,7 @@ var matchTerminal = (terminal) => (type) => (wrappedString) => {
         return { status: "failure", next: wrappedString}
     }
 }
-var matchTerminals = (terminals) => (type) => (wrappedString) => {
+const matchTerminals = (terminals) => (type) => (wrappedString) => {
     if (terminals.includes(peek(wrappedString))) {
         return { status: "success", next: next(wrappedString), treeNode: { type: type, canonicalString: peek(wrappedString), children: [] } }
     }
@@ -32,7 +31,7 @@ var matchTerminals = (terminals) => (type) => (wrappedString) => {
         return { status: "failure", next: wrappedString }
     }
 }
-var matchTerminalStrings = (terminalStrings) => (type) => (wrappedString) => {
+const matchTerminalStrings = (terminalStrings) => (type) => (wrappedString) => {
     for (var i = 0; i < terminalStrings.length; i++) {
         if (wrappedString[1].startsWith(terminalStrings[i], wrappedString[0])) {
             return { status: "success", next: [wrappedString[0] + terminalStrings[i].length, wrappedString[1]], treeNode: { type: type, canonicalString: terminalStrings[i], children: [] } }
@@ -40,7 +39,7 @@ var matchTerminalStrings = (terminalStrings) => (type) => (wrappedString) => {
     }
     return { status: "failure", next: wrappedString }
 }
-var matchTerminalsStar = (terminals) => (type) => (wrappedString) => { // to avoid having a horrifically convoluted tree structure
+const matchTerminalsStar = (terminals) => (type) => (wrappedString) => { // to avoid having a horrifically convoluted tree structure
     if (!terminals.includes(peek(wrappedString))) {
         return { status: "failure", next: wrappedString }
     }
@@ -53,46 +52,43 @@ var matchTerminalsStar = (terminals) => (type) => (wrappedString) => { // to avo
     }
     return { status: "success", next: wrappedString, treeNode: { type: type, canonicalString: ret, children: [] } }
 }
-var lca = "qwertyuiopasdfghjklzxcvbnm"
-var uca = "QWERTYUIOPASDFGHJKLZXCVBNM"
-var num = "1234567890"
-var matchWhitespace = matchTerminalsStar(" \n")
-var matchOpP = matchTerminal("(")
-var matchClP = matchTerminal(")")
-var matchNum = matchTerminalsStar(num)
-var matchLca = matchTerminalsStar(lca)
-var matchUca = matchTerminalsStar(uca)
-var matchAlp = matchTerminalsStar(lca + uca)
-var matchAln = matchTerminalsStar(lca + uca + num)
-var matchAls = matchTerminalsStar(lca + uca + num + " ,./;[]<>?:{}|!@#$%^&*()_+-=")
-var matchSls = matchTerminals(lca + uca + num + " ")
-var matchDoC = matchTerminal('"')
-var matchSiC = matchTerminal("'")
-var matchEsc = matchTerminal("\\")
-var matchDm = matchTerminals("/*") // ordinarily */ would be more natural, but we're following BODMAS here
-var matchAs = matchTerminals("+-")
-var matchAo = matchTerminalStrings(["&&", "||"])
-var matchEn = matchTerminalStrings(["==", "!="])
-var matchGs = matchTerminalStrings([">", "<", ">=", "<="])
-var matchOpB = matchTerminal("{")
-var matchClB = matchTerminal("}")
-var matchOpA = matchTerminal("[")
-var matchClA = matchTerminal("]")
-var matchPip = matchTerminal("|")
-var matchDef = matchTerminal("=")
-var matchDeq = matchTerminalStrings(["=="])
-var matchEls = matchTerminalStrings(["else"])
-var matchLat = matchTerminal(">")
-var matchSmt = matchTerminal("<")
-var matchCom = matchTerminal(",")
-var matchIf = matchTerminalStrings(["if"])("if")
-var matchWhile = matchTerminalStrings(["while"])("while")
-var matchDnu = matchTerminalStrings(["num"])("typed declaration")
-var matchDbo = matchTerminalStrings(["bool"])("typed declaration")
-var matchStr = matchTerminalStrings(["str"])("typed declaration")
-var matchVar = matchTerminalStrings(["var"])("untyped declaration")
-var matchSep = matchTerminal(";")
-var matchCes = (wrappedString) => {
+const lca = "qwertyuiopasdfghjklzxcvbnm"
+const uca = "QWERTYUIOPASDFGHJKLZXCVBNM"
+const num = "1234567890"
+const matchWhitespace = matchTerminalsStar(" \n")
+const matchOpP = matchTerminal("(")
+const matchClP = matchTerminal(")")
+const matchNum = matchTerminalsStar(num)
+const matchLca = matchTerminalsStar(lca)
+const matchUca = matchTerminalsStar(uca)
+const matchAlp = matchTerminalsStar(lca + uca)
+const matchAln = matchTerminalsStar(lca + uca + num)
+const matchAls = matchTerminalsStar(lca + uca + num + " ,./;[]<>?:{}|!@#$%^&*()_+-=")
+const matchSls = matchTerminals(lca + uca + num + " ")
+const matchDoC = matchTerminal('"')
+const matchSiC = matchTerminal("'")
+const matchEsc = matchTerminal("\\")
+const matchDm = matchTerminals("/*") // ordinarily */ would be more natural, but we're following BODMAS here
+const matchAs = matchTerminals("+-")
+const matchAo = matchTerminalStrings(["&&", "||"])
+const matchEn = matchTerminalStrings(["==", "!="])
+const matchGs = matchTerminalStrings([">", "<", ">=", "<="])
+const matchOpB = matchTerminal("{")
+const matchClB = matchTerminal("}")
+const matchOpA = matchTerminal("[")
+const matchClA = matchTerminal("]")
+const matchPip = matchTerminal("|")
+const matchDef = matchTerminal("=")
+const matchEls = matchTerminalStrings(["else"])
+const matchCom = matchTerminal(",")
+const matchIf = matchTerminalStrings(["if"])("if")
+const matchWhile = matchTerminalStrings(["while"])("while")
+const matchDnu = matchTerminalStrings(["num"])("typed declaration")
+const matchDbo = matchTerminalStrings(["bool"])("typed declaration")
+const matchStr = matchTerminalStrings(["str"])("typed declaration")
+const matchVar = matchTerminalStrings(["var"])("untyped declaration")
+const matchSep = matchTerminal(";")
+const matchCes = (wrappedString) => {
     var ret = matchEsc("escape literal")(wrappedString)
     if (ret.status !== "success") {
         return ret
@@ -106,7 +102,7 @@ var matchCes = (wrappedString) => {
     }
     return ret
 }
-var matchIdentifier = (wrappedString) => {
+const matchIdentifier = (wrappedString) => {
     if (matchNum()(wrappedString).status == "success") {
         return { status: "failure", next: wrappedString } // identifiers cannot start with a numeric character
     }
@@ -116,7 +112,7 @@ var matchIdentifier = (wrappedString) => {
     }
     return { status: "failure", next: wrappedString }
 }
-var matchFuncallParams = (wrappedString) => {
+const matchFuncallParams = (wrappedString) => {
     var ret = matchOpP()(wrappedString)
     if (ret.status !== "success") {
         return ret
@@ -148,7 +144,7 @@ var matchFuncallParams = (wrappedString) => {
     }
     return { status: "success", next: ret.next, treeNode: { type: "function call bindings", canonicalString: "(" + rea + ")", children: reb}}
 }
-var matchArrayIndex = (wrappedString) => {
+const matchArrayIndex = (wrappedString) => {
     var ret = matchOpA()(wrappedString)
     if (ret.status !== "success") {
         return ret
@@ -165,7 +161,7 @@ var matchArrayIndex = (wrappedString) => {
     }
     return { status: "success", next: tem.next, treeNode: { type: "array index", canonicalString: "[" + ret.treeNode.canonicalString + "]", children: [ret.treeNode]}}
 }
-var matchEscapedLiteral = (wrappedString) => { // only alphanumeric strings, for now... it's trivial to extend it anyway
+const matchEscapedLiteral = (wrappedString) => { // only alphanumeric strings, for now... it's trivial to extend it anyway
     var ret = matchAls("alphanumeric literal")(wrappedString)
     if (ret.status !== "success") {
         return ret
@@ -189,7 +185,7 @@ var matchEscapedLiteral = (wrappedString) => { // only alphanumeric strings, for
     }
     return { status: "success", next: wrappedString, treeNode: { type: "escaped literal", canonicalString: day, children: phi } }
 }
-var matchStringLiteral = (wrappedString) => {
+const matchStringLiteral = (wrappedString) => {
     var phi
     var ret = matchDoC()(wrappedString)
     if (ret.status == "success") {
@@ -223,7 +219,7 @@ var matchStringLiteral = (wrappedString) => {
     }
     return { status: "failure", next: wrappedString }
 }
-var matchArrayLiteral = (wrappedString) => {
+const matchArrayLiteral = (wrappedString) => {
     var ret = matchOpA()(wrappedString)
     if (ret.status !== "success") {
         return ret
@@ -255,7 +251,7 @@ var matchArrayLiteral = (wrappedString) => {
     }
     return { status: "success", next: ret.next, treeNode: { type: "array literal", canonicalString: "[" + rea + "]", children: reb}}
 }
-var matchFloatLiteral = (wrappedString) => {
+const matchFloatLiteral = (wrappedString) => {
     var ret = matchNum("integral literal")(wrappedString)
     if (ret.status == "success") {
         var phi = matchTerminal(".")()(ret.next)
@@ -271,7 +267,7 @@ var matchFloatLiteral = (wrappedString) => {
     }
     return { status: "failure", wrappedString }
 }
-var matchNegatedLiteral = (wrappedString) => {
+const matchNegatedLiteral = (wrappedString) => {
     var ret = matchTerminal("-")()(wrappedString)
     if (ret.status !== "success") {
         return ret
@@ -285,8 +281,8 @@ var matchNegatedLiteral = (wrappedString) => {
     }
     return { status: "success", next: phi.next, treeNode: { type: "negated literal", canonicalString: "-" + phi.treeNode.canonicalString, children: [phi.treeNode]}}
 }
-var matchBooleanLiteral = matchTerminalStrings(["true", "false"])("boolean literal")
-var composeMatch = (matchers) => (wrappedString) => { // i should have written this from the start, damn
+const matchBooleanLiteral = matchTerminalStrings(["true", "false"])("boolean literal")
+const composeMatch = (matchers) => (wrappedString) => { // i should have written this from the start, damn
     for (var i = 0; i < matchers.length; i++) {
         let ret = matchers[i](wrappedString)
         if (ret.status == "success") {
@@ -295,9 +291,9 @@ var composeMatch = (matchers) => (wrappedString) => { // i should have written t
     }
     return { status: "failure", next: wrappedString }
 }
-var matchDec = composeMatch([matchDnu, matchStr, matchVar, matchDbo])
-var matchLit = composeMatch([matchNegatedLiteral, matchFloatLiteral, matchStringLiteral, matchArrayLiteral, matchBooleanLiteral])
-var matchDefine = (wrappedString) => {
+const matchDec = composeMatch([matchDnu, matchStr, matchVar, matchDbo])
+const matchLit = composeMatch([matchNegatedLiteral, matchFloatLiteral, matchStringLiteral, matchArrayLiteral, matchBooleanLiteral])
+const matchDefine = (wrappedString) => {
     var ret = matchDec(wrappedString)
     if (ret.status !== "success") {
         return ret
@@ -322,7 +318,7 @@ var matchDefine = (wrappedString) => {
     }
     return { status: "success", next: alp.next, treeNode: { type: "variable declaration", canonicalString: ret.treeNode.canonicalString + " " + phi.treeNode.canonicalString + " " + gam.treeNode.canonicalString + " " + alp.treeNode.canonicalString, children: [ret.treeNode, phi.treeNode, gam.treeNode, alp.treeNode] } } // types must be checked at runtime since parser doesn't check them
 }
-var matchSetvar = (wrappedString) => {
+const matchSetvar = (wrappedString) => {
     var phi = matchExpr(MPR)(wrappedString)
     if (phi.status !== "success") {
         return phi
@@ -339,7 +335,7 @@ var matchSetvar = (wrappedString) => {
     }
     return { status: "success", next: alp.next, treeNode: { type: "variable set", canonicalString: phi.treeNode.canonicalString + " " + gam.treeNode.canonicalString + " " + alp.treeNode.canonicalString, children: [phi.treeNode, gam.treeNode, alp.treeNode] } } // types must be checked at runtime since parser doesn't check them
 }
-var matchParamd = (wrappedString) => {
+const matchParamd = (wrappedString) => {
     var ret = matchOpP()(wrappedString)
     if (ret.status !== "success") {
         return ret
@@ -371,7 +367,7 @@ var matchParamd = (wrappedString) => {
     }
     return { status: "success", next: ret.next, treeNode: { type: "parameter declaration", canonicalString: "(" + rea + ")", children: reb } }
 }
-var matchFunbod = (wrappedString) => {
+const matchFunbod = (wrappedString) => {
     var ret = matchOpB()(wrappedString)
     if (ret.status !== "success") {
         return ret
@@ -387,7 +383,7 @@ var matchFunbod = (wrappedString) => {
     }
     return { status: "success", next: phi.next, treeNode: {type: "function body", canonicalString: "{" + ret.treeNode.canonicalString + "}", children: ret.treeNode.children}}
 }
-var matchFundef = (wrappedString) => {
+const matchFundef = (wrappedString) => {
     var ret = matchDec(wrappedString)
     if (ret.status !== "success") {
         return ret
@@ -412,7 +408,7 @@ var matchFundef = (wrappedString) => {
     }
     return { status: "success", next: alp.next, treeNode: { type: "function declaration", canonicalString: ret.treeNode.canonicalString + " " + phi.treeNode.canonicalString + " " + gam.treeNode.canonicalString + " " + alp.treeNode.canonicalString, children: [ret.treeNode, phi.treeNode, gam.treeNode, alp.treeNode] } } // types must be checked at runtime since parser doesn't check them
 }
-var matchBrac = (wrappedString) => {
+const matchBrac = (wrappedString) => {
     var ret = matchOpP()(wrappedString)
     if (ret.status !== "success") {
         return ret
@@ -432,7 +428,7 @@ var matchBrac = (wrappedString) => {
     }
     return { status: "success", next: alp.next, treeNode: { type: "parenthesized expression", canonicalString: "(" + phi.treeNode.canonicalString + ")", children: [phi.treeNode] } }
 }
-var matchReturn = (wrappedString) => {
+const matchReturn = (wrappedString) => {
     var ret = matchTerminalStrings(["return"])()(wrappedString)
     if (ret.status !== "success") {
         return ret
@@ -447,7 +443,7 @@ var matchReturn = (wrappedString) => {
     }
     return { status: "success", next: rex.next, treeNode: { type: "return statement", canonicalString: "return " + rex.treeNode.canonicalString, children: [rex.treeNode]}}
 }
-var matchBrae = (wrappedString) => {
+const matchBrae = (wrappedString) => {
     var phi = []
     var ret = { next: wrappedString }
     var tem
@@ -481,14 +477,14 @@ var matchBrae = (wrappedString) => {
     }
     return { status: "success", next: ret.next, treeNode: { type: "braced expressions", canonicalString: rst, children: phi}}
 }
-var matchEneq = (wrappedString) => {
+const matchOperClass = (operatorClassMatcher) => (operatorClassName) => (precedenceLevel) => (wrappedString) => {
     var failureWrappedString = wrappedString
     wrappedString = matchWhitespace()(wrappedString).next
-    var phi = matchEn("operator: en")(wrappedString)
+    var phi = operatorClassMatcher(operatorClassName)(wrappedString)
     if (phi.status !== "success") {
         return { status: "failure", next: failureWrappedString }
     }
-    ret = matchExpr(-1)(phi.next)
+    var ret = matchExpr(precedenceLevel)(phi.next)
     if (ret.status !== "success") {
         return { status: "failure", next: failureWrappedString }
     }
@@ -497,72 +493,27 @@ var matchEneq = (wrappedString) => {
     }
     return { status: "success", next: ret.next, treeNode: { type: "expression", canonicalString: phi.treeNode.canonicalString + ret.treeNode.canonicalString , children: [phi.treeNode, ret.treeNode]}}
 }
-var matchGsth = (wrappedString) => {
-    var failureWrappedString = wrappedString
-    wrappedString = matchWhitespace()(wrappedString).next
-    var phi = matchGs("operator: gs")(wrappedString)
-    if (phi.status !== "success") {
-        return { status: "failure", next: failureWrappedString }
-    }
-    ret = matchExpr(-1)(phi.next)
-    if (ret.status !== "success") {
-        return { status: "failure", next: failureWrappedString }
-    }
-    if (ret.treeNode.type == "expression") {
-        return { status: "success", next: ret.next, treeNode: { type: "expression", canonicalString: phi.treeNode.canonicalString + ret.treeNode.canonicalString , children: [phi.treeNode].concat(ret.treeNode.children)}}    
-    }
-    return { status: "success", next: ret.next, treeNode: { type: "expression", canonicalString: phi.treeNode.canonicalString + ret.treeNode.canonicalString , children: [phi.treeNode, ret.treeNode]}}
-}
-var matchAnor = (wrappedString) => {
-    var failureWrappedString = wrappedString
-    wrappedString = matchWhitespace()(wrappedString).next
-    var phi = matchAo("operator: ao")(wrappedString)
-    if (phi.status !== "success") {
-        return { status: "failure", next: failureWrappedString }
-    }
-    ret = matchExpr(-2)(phi.next)
-    if (ret.status !== "success") {
-        return { status: "failure", next: failureWrappedString }
-    }
-    if (ret.treeNode.type == "expression") {
-        return { status: "success", next: ret.next, treeNode: { type: "expression", canonicalString: phi.treeNode.canonicalString + ret.treeNode.canonicalString , children: [phi.treeNode].concat(ret.treeNode.children)}}    
-    }
-    return { status: "success", next: ret.next, treeNode: { type: "expression", canonicalString: phi.treeNode.canonicalString + ret.treeNode.canonicalString , children: [phi.treeNode, ret.treeNode]}}
-}
-var matchAper = (wrappedString) => {
-    var failureWrappedString = wrappedString
-    wrappedString = matchWhitespace()(wrappedString).next
-    var phi = matchAs("operator: as")(wrappedString)
-    if (phi.status !== "success") {
-        return { status: "failure", next: failureWrappedString }
-    }
-    ret = matchExpr(0)(phi.next)
-    if (ret.status !== "success") {
-        return { status: "failure", next: failureWrappedString }
-    }
-    if (ret.treeNode.type == "expression") {
-        return { status: "success", next: ret.next, treeNode: { type: "expression", canonicalString: phi.treeNode.canonicalString + ret.treeNode.canonicalString , children: [phi.treeNode].concat(ret.treeNode.children)}}    
-    }
-    return { status: "success", next: ret.next, treeNode: { type: "expression", canonicalString: phi.treeNode.canonicalString + ret.treeNode.canonicalString , children: [phi.treeNode, ret.treeNode]}}
-}
-var matchMper = (wrappedString) => {
-    var failureWrappedString = wrappedString
-    wrappedString = matchWhitespace()(wrappedString).next
-    var phi = matchDm("operator: dm")(wrappedString)
-    if (phi.status !== "success") {
-        return { status: "failure", next: failureWrappedString }
-    }
-    var ret = matchExpr(1)(phi.next)
-    if (ret.status !== "success") {
-        return { status: "failure", next: failureWrappedString }
-    }
-    if (ret.treeNode.type == "expression") {
-        return { status: "success", next: ret.next, treeNode: { type: "expression", canonicalString: phi.treeNode.canonicalString + ret.treeNode.canonicalString , children: [phi.treeNode].concat(ret.treeNode.children)}}    
-    }
-    return { status: "success", next: ret.next, treeNode: { type: "expression", canonicalString: phi.treeNode.canonicalString + ret.treeNode.canonicalString , children: [phi.treeNode, ret.treeNode]}}
-}
-var matchExpr = (minPrecedenceLevel) => (wrappedString) => {
-    var failureWrappedString = wrappedString
+const MPR = 0
+const mperPre = 4
+const aperPre = 3
+const gsthPre = 2
+const eneqPre = 1
+const anorPre = 0
+// for optimization purposes we want our precedence levels to be nonnegative integers
+const matchMper = matchOperClass(matchDm)("operator: dm")(mperPre)
+const matchAper = matchOperClass(matchAs)("operator: as")(aperPre)
+const matchGsth = matchOperClass(matchGs)("operator: gs")(gsthPre)
+const matchEneq = matchOperClass(matchEn)("operator: en")(eneqPre)
+const matchAnor = matchOperClass(matchAo)("operator: ao")(anorPre)
+const operatorMatchers = [
+    { matcher: matchMper, precedenceLevel: mperPre },
+    { matcher: matchAper, precedenceLevel: aperPre },
+    { matcher: matchGsth, precedenceLevel: gsthPre },
+    { matcher: matchEneq, precedenceLevel: eneqPre },
+    { matcher: matchAnor, precedenceLevel: anorPre }
+]
+const matchExpr = (minPrecedenceLevel) => (wrappedString) => {
+    const failureWrappedString = wrappedString
     wrappedString = matchWhitespace()(wrappedString).next
     var phi = matchLit(wrappedString)
     // the canonical way is to use else ifs
@@ -602,58 +553,16 @@ var matchExpr = (minPrecedenceLevel) => (wrappedString) => {
             }
         }
     }
-    if (phi.status == "success" && minPrecedenceLevel <= 1) {
-        tem = matchMper(phi.next)
-        if (tem.status == "success") {
-            if (minPrecedenceLevel == 1) {
-                return { status: "success", next: tem.next, treeNode: { type: "expression", canonicalString: phi.treeNode.canonicalString + tem.treeNode.canonicalString, children: [phi.treeNode].concat(tem.treeNode.children)}}
-            }
-            else {
-                phi = { status: "success", next: tem.next, treeNode: { type: "expression", canonicalString: phi.treeNode.canonicalString + tem.treeNode.canonicalString, children: [{ type: "expression", canonicalString: phi.treeNode.canonicalString + tem.treeNode.canonicalString, children: [phi.treeNode].concat(tem.treeNode.children)}]}}
-            }
-        }
-    }
-    if (phi.status == "success" && minPrecedenceLevel <= 0) {
-        tem = matchAper(phi.next)
-        if (tem.status == "success") {
-            if (minPrecedenceLevel == 0) {
-                return { status: "success", next: tem.next, treeNode: { type: "expression", canonicalString: phi.treeNode.canonicalString + tem.treeNode.canonicalString, children: [phi.treeNode].concat(tem.treeNode.children)}}
-            }
-            else {
-                phi = { status: "success", next: tem.next, treeNode: { type: "expression", canonicalString: phi.treeNode.canonicalString + tem.treeNode.canonicalString, children: [{ type: "expression", canonicalString: phi.treeNode.canonicalString + tem.treeNode.canonicalString, children: [phi.treeNode].concat(tem.treeNode.children)}]}}
-            }
-        }
-    }
-    if (phi.status == "success" && minPrecedenceLevel <= -0.5) {
-        tem = matchGsth(phi.next)
-        if (tem.status == "success") {
-            if (minPrecedenceLevel == -0.5) {
-                return { status: "success", next: tem.next, treeNode: { type: "expression", canonicalString: phi.treeNode.canonicalString + tem.treeNode.canonicalString, children: [phi.treeNode].concat(tem.treeNode.children)}}
-            }
-            else {
-                phi = { status: "success", next: tem.next, treeNode: { type: "expression", canonicalString: phi.treeNode.canonicalString + tem.treeNode.canonicalString, children: [{ type: "expression", canonicalString: phi.treeNode.canonicalString + tem.treeNode.canonicalString, children: [phi.treeNode].concat(tem.treeNode.children)}]}}
-            }
-        }
-    }
-    if (phi.status == "success" && minPrecedenceLevel <= -1) {
-        tem = matchEneq(phi.next)
-        if (tem.status == "success") {
-            if (minPrecedenceLevel == -1) {
-                return { status: "success", next: tem.next, treeNode: { type: "expression", canonicalString: phi.treeNode.canonicalString + tem.treeNode.canonicalString, children: [phi.treeNode].concat(tem.treeNode.children)}}
-            }
-            else {
-                phi = { status: "success", next: tem.next, treeNode: { type: "expression", canonicalString: phi.treeNode.canonicalString + tem.treeNode.canonicalString, children: [{ type: "expression", canonicalString: phi.treeNode.canonicalString + tem.treeNode.canonicalString, children: [phi.treeNode].concat(tem.treeNode.children)}]}}
-            }
-        }
-    }
-    if (phi.status == "success" && minPrecedenceLevel <= -2) {
-        tem = matchAnor(phi.next)
-        if (tem.status == "success") {
-            if (minPrecedenceLevel == -2) {
-                return { status: "success", next: tem.next, treeNode: { type: "expression", canonicalString: phi.treeNode.canonicalString + tem.treeNode.canonicalString, children: [phi.treeNode].concat(tem.treeNode.children)}}
-            }
-            else {
-                phi = { status: "success", next: tem.next, treeNode: { type: "expression", canonicalString: phi.treeNode.canonicalString + tem.treeNode.canonicalString, children: [{ type: "expression", canonicalString: phi.treeNode.canonicalString + tem.treeNode.canonicalString, children: [phi.treeNode].concat(tem.treeNode.children)}]}}
+    for (var i = 0; i < operatorMatchers.length; i++) {
+        if (phi.status == "success" && minPrecedenceLevel <= operatorMatchers[i].precedenceLevel) {
+            tem = operatorMatchers[i].matcher(phi.next)
+            if (tem.status == "success") {
+                if (minPrecedenceLevel == operatorMatchers[i].precedenceLevel) {
+                    return { status: "success", next: tem.next, treeNode: { type: "expression", canonicalString: phi.treeNode.canonicalString + tem.treeNode.canonicalString, children: [phi.treeNode].concat(tem.treeNode.children)}}
+                }
+                else {
+                    phi = { status: "success", next: tem.next, treeNode: { type: "expression", canonicalString: phi.treeNode.canonicalString + tem.treeNode.canonicalString, children: [{ type: "expression", canonicalString: phi.treeNode.canonicalString + tem.treeNode.canonicalString, children: [phi.treeNode].concat(tem.treeNode.children)}]}}
+                }
             }
         }
     }
@@ -662,7 +571,7 @@ var matchExpr = (minPrecedenceLevel) => (wrappedString) => {
     }
     return phi
 }
-var matchConditionalExpression = (wrappedString) => {
+const matchConditionalExpression = (wrappedString) => {
     var ret = matchOpP()(wrappedString)
     if (ret.status !== "success") {
         return ret
@@ -679,7 +588,7 @@ var matchConditionalExpression = (wrappedString) => {
     }
     return { status: "success", next: tem.next, treeNode: { type: "expression", canonicalString: "(" + ret.treeNode.canonicalString + ")", children: ret.treeNode.children}}
 }
-var matchIfExpression = (wrappedString) => {
+const matchIfExpression = (wrappedString) => {
     var ret = matchIf(wrappedString)
     if (ret.status !== "success") {
         return ret
@@ -707,7 +616,7 @@ var matchIfExpression = (wrappedString) => {
     }
     return { status: "success", next: rea.next, treeNode: { type: "if else expression", canonicalString: "if " + ret.treeNode.canonicalString + phi.treeNode.canonicalString + " else " + rea.treeNode.canonicalString, children: [ret.treeNode, phi.treeNode, rea.treeNode]}}
 }
-var matchWhileExpression = (wrappedString) => {
+const matchWhileExpression = (wrappedString) => {
     var ret = matchWhile(wrappedString)
     if (ret.status !== "success") {
         return ret
@@ -726,7 +635,7 @@ var matchWhileExpression = (wrappedString) => {
     phi.next = matchWhitespace()(phi.next).next
     return { status: "success", next: phi.next, treeNode: { type: "while expression", canonicalString: "while " + ret.treeNode.canonicalString + phi.treeNode.canonicalString, children: [ret.treeNode, phi.treeNode]}}
 }
-var matchProgram = (wrappedString) => {
+const matchProgram = (wrappedString) => {
     var ret = matchBrae(wrappedString)
     if (ret.status !== "success") {
         return ret
@@ -748,7 +657,9 @@ var matchProgram = (wrappedString) => {
 //add runtime positive integer coercion for floats
 //array length is largest index + 1
 module.exports = {
+    wrapString: wrapString,
     matchExpr: matchExpr,
+    matchExprExtern: matchExpr(MPR),
     matchStringLiteral: matchStringLiteral,
     matchEscapedLiteral: matchEscapedLiteral,
     matchFloatLiteral: matchFloatLiteral,

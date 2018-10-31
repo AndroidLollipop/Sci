@@ -1,6 +1,6 @@
 // named after Prelude from Haskell
-var a = require("./astEval.js")
-var flattenArray = (array) => {
+const a = require("./astEval.js")
+const flattenArray = (array) => {
     var res = "["
     for (var i = 0; i < array.array.length; i++) {
         if (array.array[i].type == "array") {
@@ -22,7 +22,7 @@ var flattenArray = (array) => {
     }
     return res + "]"
 }
-var Prelude = {
+const Prelude = {
     print: {
         type: "function",
         parentScope: a.emptyScope(), // it's unnecessary to define parentScope, () => {} * 3 is fine, but whatever honestly

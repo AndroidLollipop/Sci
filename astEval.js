@@ -1,6 +1,6 @@
 // see tokparse.js for ast definition
-var truthy = (v) => v&&!!v.value // we can easily modify/extend this
-var operate = (p1, op, p2) => {
+const truthy = (v) => v&&!!v.value // we can easily modify/extend this
+const operate = (p1, op, p2) => {
     if (op.canonicalString == "+") {
         if (p1.type == p2.type) {
             return { type: p1.type, value: p1.value + p2.value }
@@ -71,17 +71,17 @@ var operate = (p1, op, p2) => {
     }
     return { type: "void" }
 }
-var unwrap = (typ) => {
+const unwrap = (typ) => {
     while (typ.type == "!!!INTERNAL INTERPRETER CONTROL") {
         typ = typ.value
     }
     return typ
 }
-var emptyScope = (predict) => { // i know, predict is a fitting name
+const emptyScope = (predict) => { // i know, predict is a fitting name
     var scopeDict = predict !== undefined ? predict : {}
     return ([(name) => scopeDict[name] !== undefined ? scopeDict[name] : { type: "undefined" }, (name, value) => scopeDict[name] = value, (name, value) => scopeDict[name] = value])
 }
-var adjoinScope = ([scopeGetter, scopeSetter, scopeDefiner]) => ([newScopeGetter, newScopeSetter, newScopeDefiner]) => {
+const adjoinScope = ([scopeGetter, scopeSetter, scopeDefiner]) => ([newScopeGetter, newScopeSetter, newScopeDefiner]) => {
     return ([(name) => {
         if (newScopeGetter(name).type == "undefined") {
             return scopeGetter(name)
@@ -94,7 +94,7 @@ var adjoinScope = ([scopeGetter, scopeSetter, scopeDefiner]) => ([newScopeGetter
         return newScopeSetter(name, value)
     }, newScopeDefiner])
 } // i imagine this is how scope is implemented in javascript, and that explains why setting an undeclared variable makes it global
-var defineInScope = (sco) => (identifiers) => ([scopeGetter, scopeSetter, scopeDefiner]) => (expressions) => {
+const defineInScope = (sco) => (identifiers) => ([scopeGetter, scopeSetter, scopeDefiner]) => (expressions) => {
     for (var i = 0; i < identifiers.children.length; i++) {
         if (expressions.children[i] == undefined) {
             return
@@ -102,19 +102,19 @@ var defineInScope = (sco) => (identifiers) => ([scopeGetter, scopeSetter, scopeD
         scopeDefiner(identifiers.children[i].canonicalString, sco(expressions.children[i]))
     }
 }
-var collapseString = (nodeChildren) => {
+const collapseString = (nodeChildren) => {
     var ret = ""
     nodeChildren.map(x => x.type == "alphanumeric literal" ? ret += x.canonicalString: x.canonicalString == "\\" ? ret += "\\" : x.canonicalString == "n" ? ret += "\n" : ret += x.canonicalString)
     return ret
 }
-var typeMap = {
+const typeMap = {
     num : "number",
     str: "string",
     bool: "boolean"
 }
-var evaluateExpression = (scc) => {
-    var [scopeGetter, scopeSetter, scopeDefiner] = scc
-    var sco = (expression) => {
+const evaluateExpression = (scc) => {
+    const [scopeGetter, scopeSetter, scopeDefiner] = scc
+    const sco = (expression) => {
         if (expression.type == "function declaration") {
             scopeDefiner(expression.children[1].canonicalString, { type: "function", parentScope: scc, parameters: expression.children.filter((x) => x.type == "parameter declaration")[0], body: expression.children.filter((x) => x.type == "function body")[0]})
             if (expression.children[0].type == "typed declaration") {
@@ -123,11 +123,11 @@ var evaluateExpression = (scc) => {
             return scopeGetter(expression.children[1].canonicalString)
         }
         else if (expression.type == "!!!BUILTIN") {
-            var res = expression.builtin(scc)
+            const res = expression.builtin(scc)
             return res
         }
         else if (expression.type == "if expression" || expression.type == "if else expression") {
-            var res = truthy(sco(expression.children[0]))
+            const res = truthy(sco(expression.children[0]))
             if (res == 1) {
                 return sco(expression.children[1])
             }
@@ -149,14 +149,14 @@ var evaluateExpression = (scc) => {
             return ret
         }
         else if (expression.type == "function call") {
-            var target = sco(expression.children[0])
+            const target = sco(expression.children[0])
             var typecheck = { type: "void" }
             if (expression.children[0].type == "identifier") {
                 typecheck = scopeGetter(".typeof" + expression.children[0].canonicalString)
             }
-            var targetScope = adjoinScope(target.parentScope)(emptyScope())
+            const targetScope = adjoinScope(target.parentScope)(emptyScope())
             defineInScope(sco)(target.parameters)(targetScope)(expression.children.filter((x) => x.type == "function call bindings")[0])
-            var expRes = evaluateExpression(targetScope)(target.body)
+            const expRes = evaluateExpression(targetScope)(target.body)
             if (expRes.type !== "!!!INTERNAL INTERPRETER CONTROL" || expRes.control !== "return") { // someone is trying to trick us
                 return { type: "void" }
             }
@@ -186,11 +186,11 @@ var evaluateExpression = (scc) => {
             return expRes
         }
         else if (expression.type == "return statement") {
-            var expRes = sco(expression.children[0])
+            const expRes = sco(expression.children[0])
             return { type: "!!!INTERNAL INTERPRETER CONTROL", control: "return", value: expRes } // this could be a source of vulnerabilities, damn
         }
         else if (expression.type == "variable declaration") {
-            var expRes = sco(expression.children[3])
+            const expRes = sco(expression.children[3])
             // to prevent the language spec from getting too insane, we restrict variable declarations to straight identifiers
             // e.g. num k[1] = 1 is not allowed
             if (expression.children[0].type == "typed declaration") {
@@ -203,7 +203,7 @@ var evaluateExpression = (scc) => {
             return expRes
         }
         else if (expression.type == "variable set") {
-            var expRes = sco(expression.children[2])
+            const expRes = sco(expression.children[2])
             // the result is always computed first.
             // this is unlike javascript, where the array index is computed first (i tested this)
             // javascript test code:
@@ -212,14 +212,14 @@ var evaluateExpression = (scc) => {
             // index computed
             // value computed
             if (expression.children[0].type == "array access") {
-                var arrRes = sco(expression.children[0].children[0])
+                const arrRes = sco(expression.children[0].children[0])
                 if (arrRes.setter == undefined) {
                     return { type: "void" }
                 }
                 return arrRes.setter(sco(expression.children[0].children[1].children[0]), expRes)
             }
             else if (expression.children[0].type == "identifier") {
-                var typecheck = scopeGetter(".typeof" + expression.children[0].canonicalString)
+                const typecheck = scopeGetter(".typeof" + expression.children[0].canonicalString)
                 if (typecheck.type == "typecheck" && expRes.type !== typeMap[typecheck.value]) {
                     throw "TypeError: expression type, " + expRes.type + " did not match declared type, " + typeMap[typecheck.value] + " for variable " + expression.children[0].canonicalString
                 }
@@ -231,7 +231,7 @@ var evaluateExpression = (scc) => {
             // but this is edge case behaviour and doesn't really matter
         }
         else if (expression.type == "array access") {
-            var arrRes = sco(expression.children[0])
+            const arrRes = sco(expression.children[0])
             if (arrRes.getter == undefined) {
                 return { type: "void" }
             }
@@ -257,7 +257,7 @@ var evaluateExpression = (scc) => {
             if (expression.children[0] == undefined) {
                 return { type: "void" }
             }
-            var expRes = sco(expression.children[0])
+            const expRes = sco(expression.children[0])
             if (expRes.type !== "number") {
                 return { type: "void" }
             }

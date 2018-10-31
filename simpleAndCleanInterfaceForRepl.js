@@ -1,14 +1,12 @@
-var a = require("./astEval.js")
-var t = require("./tokParse.js")
-var p = require("./prelude.js")
-var wrapString = (string) => {
-    return [0, string]
-}
-var getRepl = () => {
-    var gloSco = a.emptyScope(p.Prelude)
+const a = require("./astEval.js")
+const t = require("./tokParse.js")
+const p = require("./prelude.js")
+const wrapString = t.wrapString
+const getRepl = () => {
+    const gloSco = a.emptyScope(p.Prelude)
     return (string) => {
-        var wrappedString = wrapString(string)
-        var ret = t.matchProgram(wrappedString)
+        const wrappedString = wrapString(string)
+        const ret = t.matchProgram(wrappedString)
         if (ret.status !== "success") {
             return "Syntax Error!"
         }
