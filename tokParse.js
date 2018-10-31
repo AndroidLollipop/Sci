@@ -553,7 +553,7 @@ const matchExpr = (minPrecedenceLevel) => (wrappedString) => {
             }
         }
     }
-    for (var i = 0; i < operatorMatchers.length; i++) {
+    for (var i = 0; i < operatorMatchers.length; i++) { // improvement: just use array index as precedence level. i'll implement this tomorrow cos it's 3:43 am now.
         if (phi.status == "success" && minPrecedenceLevel <= operatorMatchers[i].precedenceLevel) {
             tem = operatorMatchers[i].matcher(phi.next)
             if (tem.status == "success") {
