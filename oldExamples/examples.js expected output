@@ -27,7 +27,8 @@
         { type: 'identifier', canonicalString: 'p3', children: [] } ] },
   body:
    { type: 'function body',
-     canonicalString: '{num skye = 1;num scotland = 2;return p1+p2+p3+skye+scotland;}',
+     canonicalString:
+      '{num skye = 1;num scotland = 2;return p1+p2+p3+skye+scotland;}',
      children:
       [ { type: 'variable declaration',
           canonicalString: 'num skye = 1',
@@ -71,7 +72,8 @@
      children: [ [Object], [Object], [Object] ] },
   body:
    { type: 'function body',
-     canonicalString: '{num skye = 1;num scotland = 2;num add (p1, p2, p3, p4, p5) {return p1+p2+p3+p4+p5;};return add(p1, p2, p3, skye, scotland);}',
+     canonicalString:
+      '{num skye = 1;num scotland = 2;num add (p1, p2, p3, p4, p5) {return p1+p2+p3+p4+p5;};return add(p1, p2, p3, skye, scotland);}',
      children: [ [Object], [Object], [Object], [Object] ] } }
 { type: 'number', value: 9 }
 { type: 'function',
@@ -82,7 +84,8 @@
      children: [ [Object], [Object] ] },
   body:
    { type: 'function body',
-     canonicalString: '{num add () {skye = skye+1;return (skye*multiplier);};num skye = (start/multiplier)-1;return add;}',
+     canonicalString:
+      '{num add () {skye = skye+1;return (skye*multiplier);};num skye = (start/multiplier)-1;return add;}',
      children: [ [Object], [Object], [Object] ] } }
 { type: 'function',
   parentScope: [ [Function], [Function], [Function] ],
@@ -92,7 +95,8 @@
      children: [ [Object], [Object] ] },
   body:
    { type: 'function body',
-     canonicalString: '{num add () {skye = skye+1;return (skye*multiplier);};num skye = (start/multiplier)-1;return add;}',
+     canonicalString:
+      '{num add () {skye = skye+1;return (skye*multiplier);};num skye = (start/multiplier)-1;return add;}',
      children: [ [Object], [Object], [Object] ] } }
 { type: 'function',
   parentScope: [ [Function], [Function], [Function] ],
@@ -141,7 +145,8 @@
      children: [ [Object] ] },
   body:
    { type: 'function body',
-     canonicalString: '{if (n<3){return 1;};return slowFibonacci(n-1)+slowFibonacci(n-2);}',
+     canonicalString:
+      '{if (n<3){return 1;};return slowFibonacci(n-1)+slowFibonacci(n-2);}',
      children: [ [Object], [Object] ] } }
 { type: 'number', value: 55 }
 { type: 'number', value: 2 }
@@ -168,7 +173,8 @@
      children: [ [Object] ] },
   body:
    { type: 'function body',
-     canonicalString: '{num a = 1;num b = 1;num c = 1;while (n>2){c = a+b;a = b;b = c;n = n-1;};return c;}',
+     canonicalString:
+      '{num a = 1;num b = 1;num c = 1;while (n>2){c = a+b;a = b;b = c;n = n-1;};return c;}',
      children: [ [Object], [Object], [Object], [Object], [Object] ] } }
 { type: 'number', value: 4.346655768693743e+208 }
 { type: 'function',
@@ -179,7 +185,8 @@
      children: [] },
   body:
    { type: 'function body',
-     canonicalString: '{num n = 0;while (1==1){n = n+1;if (n>5){return 1;};};return n;}',
+     canonicalString:
+      '{num n = 0;while (1==1){n = n+1;if (n>5){return 1;};};return n;}',
      children: [ [Object], [Object], [Object] ] } }
 { type: 'function',
   parentScope: [ [Function], [Function], [Function] ],
@@ -189,7 +196,8 @@
      children: [] },
   body:
    { type: 'function body',
-     canonicalString: '{num n = 0;(while (1==1){n = n+1;if (n>5){return 1;};});return n;}',
+     canonicalString:
+      '{num n = 0;(while (1==1){n = n+1;if (n>5){return 1;};});return n;}',
      children: [ [Object], [Object], [Object] ] } }
 { type: 'function',
   parentScope: [ [Function], [Function], [Function] ],
@@ -199,7 +207,8 @@
      children: [] },
   body:
    { type: 'function body',
-     canonicalString: '{num n = 0;1+while (1==1){n = n+1;if (n>5){return 1;};};return n;}',
+     canonicalString:
+      '{num n = 0;1+while (1==1){n = n+1;if (n>5){return 1;};};return n;}',
      children: [ [Object], [Object], [Object] ] } }
 { type: 'number', value: 1 }
 { type: 'number', value: 6 }

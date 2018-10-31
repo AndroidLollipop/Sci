@@ -121,7 +121,7 @@ var matchFuncallParams = (wrappedString) => {
     var reb = []
     var iet = ret
     while (true) {
-        ret = matchExpr(ret.next)
+        ret = matchExpr(0)(ret.next)
         if (ret.status !== "success") {
             break
         }
@@ -149,7 +149,7 @@ var matchArrayIndex = (wrappedString) => {
         return ret
     }
     ret.next = matchWhitespace()(ret.next).next
-    ret = matchExpr(ret.next)
+    ret = matchExpr(0)(ret.next)
     if (ret.status !== "success") {
         return { status: "failure", next: wrappedString }
     }
@@ -228,7 +228,7 @@ var matchArrayLiteral = (wrappedString) => {
     var reb = []
     var iet = ret
     while (true) {
-        ret = matchExpr(ret.next)
+        ret = matchExpr(0)(ret.next)
         if (ret.status !== "success") {
             break
         }
@@ -271,10 +271,7 @@ var matchNegatedLiteral = (wrappedString) => {
     if (ret.status !== "success") {
         return ret
     }
-    var saved = mulPrecedence
-    mulPrecedence = 0
     var phi = matchBrac(ret.next)
-    mulPrecedence = saved
     if (phi.status !== "success") {
         phi = matchFloatLiteral(ret.next)
     }
@@ -313,14 +310,14 @@ var matchDefine = (wrappedString) => {
         return { status: "failure", next: wrappedString }
     }
     gam.next = matchWhitespace()(gam.next).next
-    var alp = matchExpr(gam.next)
+    var alp = matchExpr(0)(gam.next)
     if (alp.status !== "success") {
         return { status: "failure", next: wrappedString }
     }
     return { status: "success", next: alp.next, treeNode: { type: "variable declaration", canonicalString: ret.treeNode.canonicalString + " " + phi.treeNode.canonicalString + " " + gam.treeNode.canonicalString + " " + alp.treeNode.canonicalString, children: [ret.treeNode, phi.treeNode, gam.treeNode, alp.treeNode] } } // types must be checked at runtime since parser doesn't check them
 }
 var matchSetvar = (wrappedString) => {
-    var phi = matchExpr(wrappedString)
+    var phi = matchExpr(0)(wrappedString)
     if (phi.status !== "success") {
         return phi
     }
@@ -330,7 +327,7 @@ var matchSetvar = (wrappedString) => {
         return { status: "failure", next: wrappedString }
     }
     gam.next = matchWhitespace()(gam.next).next
-    var alp = matchExpr(gam.next)
+    var alp = matchExpr(0)(gam.next)
     if (alp.status !== "success") {
         return { status: "failure", next: wrappedString }
     }
@@ -418,7 +415,7 @@ var matchBrac = (wrappedString) => {
     if (ret.status !== "success") {
         return { status: "failure", next: wrappedString }
     }
-    var phi = matchExpr(ret.next)
+    var phi = matchExpr(0)(ret.next)
     if (phi.status !== "success") {
         return { status: "failure", next: wrappedString }
     }
@@ -438,7 +435,7 @@ var matchReturn = (wrappedString) => {
     if (tem.status !== "success") {
         return { status: "failure", next: wrappedString }
     }
-    var rex = matchExpr(tem.next)
+    var rex = matchExpr(0)(tem.next)
     if (rex.status !== "success") {
         return { status: "failure", next: wrappedString }
     }
@@ -462,7 +459,7 @@ var matchBrae = (wrappedString) => {
             tem = matchSetvar(ret.next)
         }
         if (tem.status !== "success") {
-            tem = matchExpr(ret.next)
+            tem = matchExpr(0)(ret.next)
         }
         if (tem.status !== "success") {
             break
@@ -489,7 +486,7 @@ var matchOper = (wrappedString) => { // DEPRECATED, replaced with matchAper and 
     if (phi.status !== "success") {
         return { status: "failure", next: failureWrappedString }
     }
-    ret = matchExpr(phi.next)
+    ret = matchExpr(0)(phi.next)
     if (ret.status !== "success") {
         return { status: "failure", next: failureWrappedString }
     }
@@ -505,7 +502,7 @@ var matchAper = (wrappedString) => {
     if (phi.status !== "success") {
         return { status: "failure", next: failureWrappedString }
     }
-    ret = matchExpr(phi.next)
+    ret = matchExpr(0)(phi.next)
     if (ret.status !== "success") {
         return { status: "failure", next: failureWrappedString }
     }
@@ -521,7 +518,7 @@ var matchMper = (wrappedString) => {
     if (phi.status !== "success") {
         return { status: "failure", next: failureWrappedString }
     }
-    var ret = matchExpr(phi.next)
+    var ret = matchExpr(1)(phi.next)
     if (ret.status !== "success") {
         return { status: "failure", next: failureWrappedString }
     }
@@ -530,24 +527,17 @@ var matchMper = (wrappedString) => {
     }
     return { status: "success", next: ret.next, treeNode: { type: "expression", canonicalString: phi.treeNode.canonicalString + ret.treeNode.canonicalString , children: [phi.treeNode, ret.treeNode]}}
 }
-var mulPrecedence = 0
-var matchExpr = (wrappedString) => {
+var matchExpr = (minPrecedenceLevel) => (wrappedString) => {
     var failureWrappedString = wrappedString
     wrappedString = matchWhitespace()(wrappedString).next
     var phi = matchLit(wrappedString)
     // the canonical way is to use else ifs
     // but that's as ugly as hell and this works too so to hell with it
-    var saved = mulPrecedence
-    mulPrecedence = 0
     var ret = matchIfExpression(wrappedString)
-    mulPrecedence = saved
     if (ret.status == "success") {
         phi = ret
     }
-    saved = mulPrecedence
-    mulPrecedence = 0
     ret = matchWhileExpression(wrappedString)
-    mulPrecedence = saved
     if (ret.status == "success") {
         phi = ret
     }
@@ -555,17 +545,12 @@ var matchExpr = (wrappedString) => {
     if (ret.status == "success" && phi.status !== "success") {
         phi = ret
     }
-    saved = mulPrecedence
-    mulPrecedence = 0
     ret = matchBrac(wrappedString)
-    mulPrecedence = saved
     if (ret.status == "success") {
         phi = ret
     }
     var tem
     if (phi.status == "success") {
-        saved = mulPrecedence
-        mulPrecedence = 0
         while (true) {
             tem = matchWhitespace()(phi.next)
             ret = matchFuncallParams(tem.next)
@@ -582,17 +567,13 @@ var matchExpr = (wrappedString) => {
                 }
             }
         }
-        mulPrecedence = saved
     }
     var rea = 0
     var reb
     if (phi.status == "success") {
-        saved = mulPrecedence
-        mulPrecedence = 1
         tem = matchMper(phi.next)
-        mulPrecedence = saved
         if (tem.status == "success") {
-            if (saved == 0) {
+            if (minPrecedenceLevel == 0) {
                 rea = 1 // i don't want to make this part even more heavily nested
                 reb = { status: "success", next: tem.next, treeNode: {type: "parenthesized expression", canonicalString: "("+ phi.treeNode.canonicalString + tem.treeNode.canonicalString + ")" , children: [{ type: "expression", canonicalString: phi.treeNode.canonicalString + tem.treeNode.canonicalString, children: [phi.treeNode].concat(tem.treeNode.children)}]}}
             }
@@ -601,7 +582,7 @@ var matchExpr = (wrappedString) => {
             }
         }
     }
-    if (phi.status == "success" && mulPrecedence == 0) {
+    if (phi.status == "success" && minPrecedenceLevel == 0) {
         tem = matchAper(phi.next)
         if (tem.status == "success") {
             return { status: "success", next: tem.next, treeNode: { type: "expression", canonicalString: phi.treeNode.canonicalString + tem.treeNode.canonicalString, children: [phi.treeNode].concat(tem.treeNode.children)}}
@@ -627,7 +608,7 @@ var matchConditionalExpression = (wrappedString) => {
         return ret
     }
     ret.next = matchWhitespace()(ret.next).next
-    ret = matchExpr(ret.next)
+    ret = matchExpr(0)(ret.next)
     if (ret.status !== "success") {
         return { status: "failure", next: wrappedString }
     }
@@ -643,7 +624,7 @@ var matchConditionalExpression = (wrappedString) => {
         return { status: "failure", next: wrappedString }
     }
     phi.next = matchWhitespace()(phi.next).next
-    var rea = matchExpr(phi.next)
+    var rea = matchExpr(0)(phi.next)
     if (rea.status !== "success") {
         return { status: "failure", next: wrappedString }
     }
