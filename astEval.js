@@ -1,4 +1,5 @@
 // see tokparse.js for ast definition
+var truthy = (v) => v&&!!v.value // we can easily modify/extend this
 var operate = (p1, op, p2) => {
     if (op.canonicalString == "+") {
         if (p1.type == p2.type) {
@@ -19,6 +20,54 @@ var operate = (p1, op, p2) => {
         if (p1.type == p2.type) {
             return { type: p1.type, value: p1.value / p2.value }
         }
+    }
+    else if (op.canonicalString == "==") {
+        if (p1.type == p2.type && p1.value != undefined) {
+            return { type: "boolean", value: p1.value == p2.value }
+        }
+        return { type: "boolean", value: false }
+    }
+    else if (op.canonicalString == "!=") {
+        if (p1.type == p2.type && p1.value != undefined) {
+            return { type: "boolean", value: p1.value != p2.value }
+        }
+        return { type: "boolean", value: true } // i decided against combining this with == for clarity
+    }
+    else if (op.canonicalString == "&&") {
+        if (truthy(p1) && truthy(p2)) {
+            return { type: "boolean", value: true }
+        }
+        return { type: "boolean", value: false }
+    }
+    else if (op.canonicalString == "||") {
+        if (truthy(p1) || truthy(p2)) {
+            return { type: "boolean", value: true }
+        }
+        return { type: "boolean", value: false }
+    }
+    else if (op.canonicalString == "<") {
+        if (p1.type == "number" && p2.type == "number" && p1.value < p2.value) {
+            return { type: "boolean", value: true }
+        }
+        return { type: "boolean", value: false }
+    }
+    else if (op.canonicalString == ">") {
+        if (p1.type == "number" && p2.type == "number" && p1.value > p2.value) {
+            return { type: "boolean", value: true }
+        }
+        return { type: "boolean", value: false }
+    }
+    else if (op.canonicalString == "<=") {
+        if (p1.type == "number" && p2.type == "number" && p1.value <= p2.value) {
+            return { type: "boolean", value: true }
+        }
+        return { type: "boolean", value: false }
+    }
+    else if (op.canonicalString == ">=") {
+        if (p1.type == "number" && p2.type == "number" && p1.value >= p2.value) {
+            return { type: "boolean", value: true }
+        }
+        return { type: "boolean", value: false }
     }
     return { type: "void" }
 }
@@ -58,26 +107,6 @@ var collapseString = (nodeChildren) => {
     nodeChildren.map(x => x.type == "alphanumeric literal" ? ret += x.canonicalString: x.canonicalString == "\\" ? ret += "\\" : x.canonicalString == "n" ? ret += "\n" : ret += x.canonicalString)
     return ret
 }
-var evaluateCondition = (sco) => ([L, C, R]) => {
-    L = sco(L)
-    R = sco(R)
-    C = C.canonicalString
-    if (L.type !== "number" || R.type !== "number") {
-        return -1
-    }
-    L = L.value
-    R = R.value
-    if (C == "==" && L == R) {
-        return 1
-    }
-    if (C == ">" && L > R) {
-        return 1
-    }
-    if (C == "<" && L < R) {
-        return 1
-    }
-    return 0
-}
 var typeMap = {
     num : "number",
     str: "string"
@@ -97,7 +126,7 @@ var evaluateExpression = (scc) => {
             return res
         }
         else if (expression.type == "if expression" || expression.type == "if else expression") {
-            var res = evaluateCondition(sco)(expression.children[0].children)
+            var res = truthy(sco(expression.children[0]))
             if (res == 1) {
                 return sco(expression.children[1])
             }
@@ -107,14 +136,14 @@ var evaluateExpression = (scc) => {
             return { type: "void" }
         }
         else if (expression.type == "while expression") {
-            var res = evaluateCondition(sco)(expression.children[0].children)
+            var res = truthy(sco(expression.children[0]))
             var ret = { type: "void" }
             while (res == 1) {
                 ret = sco(expression.children[1])
                 if (ret.type == "!!!INTERNAL INTERPRETER CONTROL") {
                     return ret
                 }
-                res = evaluateCondition(sco)(expression.children[0].children)
+                res = truthy(sco(expression.children[0]))
             }
             return ret
         }
