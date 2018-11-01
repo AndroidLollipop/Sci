@@ -53,3 +53,5 @@ youClod(t.matchFundef(wrapString("num potato(p1, p2, p3){num skye = 1;num scotla
 youClod(t.matchIfExpression(wrapString("if (5*3 == 2*4) { num potato = 1 }")))
 youClod(t.matchFundef(wrapString("num slowFibonacci(n){if(n < 3){return 1};return slowFibonacci(n-1)+slowFibonacci(n-2)}")))
 youClod(t.matchProgram(wrapString("num slowFibonacci(n){if(n < 3){return 1};return slowFibonacci(n-1)+slowFibonacci(n-2)}")))
+youClod(t.matchProgram(wrapString("(10+9)*(8+7+6)*5+4*3*2-1")))
+youClod(t.matchProgram(wrapString("9*8*7*(6+5-4-3)+2*1")))
