@@ -88,3 +88,9 @@ print(1==1||false==true) \
 print(true==1||false==true) \
 print(1==1&&true==true) \
 print('no showstoppers occurred')")
+// operator precedence levels (you can find this in tokParse.js)
+// level 4: * /
+// level 3: + -
+// level 2: > < >= <=
+// level 1: == !=
+// level 0: && ||
