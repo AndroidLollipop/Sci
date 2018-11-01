@@ -284,7 +284,7 @@ const evaluateExpression = (scc) => {
             if (expression.canonicalString == "true") {
                 return { type: "boolean", value: true }
             }
-            return { type: "boolean", value: true }
+            return { type: "boolean", value: false }
         }
         else if (expression.type == "identifier") {
             return scopeGetter(expression.canonicalString)

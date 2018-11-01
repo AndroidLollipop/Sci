@@ -81,4 +81,10 @@ var fun(n) { \
 } \
 print(fun(1)[0](1)[0]) \
 print(fun(1)[1]) \
+print(false&&false==false) \
+print(1==1&&false==true) \
+print(1==1||false==true) \
+print(1==1||false==true) \
+print(true==1||false==true) \
+print(1==1&&true==true) \
 print('no showstoppers occurred')")
