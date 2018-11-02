@@ -111,6 +111,22 @@ const Prelude = {
                 return x !== undefined && x.type == "array" ? (x.array.push(y),y) : { type: "void" }
             }}]
         }
+    },
+    setTimeout: {
+        type: "function",
+        parentScope: a.emptyScope(),
+        parameters: { type: "parameter declaration", canonicalString: "(x,y)",
+            children: [{ type: "identifier", canonicalString: "x", children: []}, { type: "identifier", canonicalString: "y", children: []}]
+        },
+        body: {
+            type: "function body",
+            canonicalString: "{return EXTERNALSETTIMEOUT(x,y)}",
+            children: [{ type: "!!!BUILTIN", builtin: ([scopeGetter, scopeSetter, scopeDefiner]) => {
+                var x = scopeGetter("x")
+                var y = scopeGetter("y")
+                return x !== undefined && x.type == "function" && y !== undefined && y.type == "number" ? { type: "number", value: setTimeout(() => a.evaluateExpression(x.parentScope)(x.body), y.value)} : { type: "void" }
+            }}]
+        }
     }
 }
 module.exports = {

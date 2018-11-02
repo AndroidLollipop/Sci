@@ -87,7 +87,11 @@ print(1==1||false==true) \
 print(1==1||false==true) \
 print(true==1||false==true) \
 print(1==1&&true==true) \
-print('no showstoppers occurred')")
+print('no showstoppers occurred') \
+var t() { \
+    print('hello') \
+} \
+setTimeout(t, 100)")
 // operator precedence levels (you can find this in tokParse.js)
 // level 4: * /
 // level 3: + -
