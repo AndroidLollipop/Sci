@@ -1,5 +1,10 @@
 // named after Prelude from Haskell
 const a = require("./astEval.js")
+const setTimeoutArray = [] // mutating consts is fine, only assigning to them is forbidden
+const setTimeoutShim = (fn, timeout) => {
+    return setTimeoutArray.push(setTimeout(fn, timeout))-1
+}
+const clearTimeoutShim = (id) => setTimeoutArray[id] !== undefined ? clearTimeout(setTimeoutArray[id]) : undefined
 const flattenArray = (array) => {
     var res = "["
     for (var i = 0; i < array.array.length; i++) {
@@ -124,7 +129,22 @@ const Prelude = {
             children: [{ type: "!!!BUILTIN", builtin: ([scopeGetter, scopeSetter, scopeDefiner]) => {
                 var x = scopeGetter("x")
                 var y = scopeGetter("y")
-                return x !== undefined && x.type == "function" && y !== undefined && y.type == "number" ? { type: "number", value: setTimeout(() => a.evaluateExpression(x.parentScope)(x.body), y.value)} : { type: "void" }
+                return x !== undefined && x.type == "function" && y !== undefined && y.type == "number" ? { type: "number", value: setTimeoutShim(() => a.evaluateExpression(x.parentScope)(x.body), y.value)} : { type: "void" }
+            }}]
+        }
+    },
+    clearTimeout: {
+        type: "function",
+        parentScope: a.emptyScope(),
+        parameters: { type: "parameter declaration", canonicalString: "(x)",
+            children: [{ type: "identifier", canonicalString: "x", children: []}]
+        },
+        body: {
+            type: "function body",
+            canonicalString: "{return EXTERNALCLEARTIMEOUT(x)}",
+            children: [{ type: "!!!BUILTIN", builtin: ([scopeGetter, scopeSetter, scopeDefiner]) => {
+                var x = scopeGetter("x")
+                return x !== undefined && x.type == "number" ? (clearTimeoutShim(x.value), { type: "void" }) : { type: "void" }
             }}]
         }
     }
