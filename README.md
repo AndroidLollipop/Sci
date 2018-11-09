@@ -2,6 +2,10 @@
 'sic' stands for 'sci interpreter/compiler'  
 see how that kinda matches the structure of a recursive descent parser? (except that it's left recursive so it wouldn't work without conversion)  
 the name of this repository is outdated. this language is too dynamic, it'll never compile to performant native code without a ton of effort. i guess this is the scam/interpreter now.
+## how to use
+install node current from https://nodejs.org  
+clone this repository  
+cd to this repository in your shell and run "node exampleProgram.js"
 ## the most legit thing that this can do right now
 ### closures!
 var e = require("./simpleAndCleanInterfaceForRepl.js")  
