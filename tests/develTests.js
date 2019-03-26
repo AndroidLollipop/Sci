@@ -92,7 +92,9 @@ var t() { \
 } \
 print(setTimeout(t, 100)) \
 clearTimeout(setTimeout(t, 200)) \
-print('no showstoppers occurred')")
+print('no showstoppers occurred') \
+print(parseFloat(stringify(201)+stringify(8.326))+1) \
+print(parseInt(stringify(201)+stringify(8.326))+1)")
 // operator precedence levels (you can find this in tokParse.js)
 // level 4: * /
 // level 3: + -
