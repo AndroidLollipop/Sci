@@ -18,8 +18,11 @@ const flattenArray = (array) => {
         else if (array.array[i].type == "string") {
             res += '"' + array.array[i].value + '"'
         }
-        else {
+        else if (array.array[i].value !== undefined) {
             res += array.array[i].value
+        }
+        else {
+            res += array.array[i].type
         }
         if (i < (array.array.length - 1)) {
             res += ", "
@@ -45,6 +48,12 @@ const Prelude = {
                     }
                     else if (x.type == "array") {
                         console.log(flattenArray(x))
+                    }
+                    else if (x.type == "function") {
+                        console.log("Function")
+                    }
+                    else {
+                        console.log(x.type)
                     }
                 }
                 return x
@@ -164,7 +173,13 @@ const Prelude = {
                         return { type: "string", value: x.value+"" }
                     }
                     else if (x.type == "array") {
-                        return { type: "string", value: flattenArray(x)+"" }
+                        return { type: "string", value: flattenArray(x) }
+                    }
+                    else if (x.type == "function") {
+                        return { type: "string", value: "Function" }
+                    }
+                    else {
+                        return { type: "string", value: x.type }
                     }
                 }
                 return { type: "string", value: "undefined" }

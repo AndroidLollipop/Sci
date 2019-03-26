@@ -88,13 +88,16 @@ print(1==1||false==true) \
 print(true==1||false==true) \
 print(1==1&&true==true) \
 var t() { \
-    print('hello') \
+    print('hello. this is not a bug, this is setTimeout in action. though, if you see this printed twice, there is a bug in the interpreter.') \
 } \
 print(setTimeout(t, 100)) \
 clearTimeout(setTimeout(t, 200)) \
 print('no showstoppers occurred') \
 print(parseFloat(stringify(201)+stringify(8.326))+1) \
-print(parseInt(stringify(201)+stringify(8.326))+1)")
+print(parseInt(stringify(201)+stringify(8.326))+1) \
+print([print, undefined, void]) \
+print(print) \
+print(stringify(print))")
 // operator precedence levels (you can find this in tokParse.js)
 // level 4: * /
 // level 3: + -
