@@ -79,7 +79,7 @@ const unwrap = (typ) => {
 }
 const emptyScope = (predict) => { // i know, predict is a fitting name
     var scopeDict = predict !== undefined ? predict : {}
-    return ([(name) => scopeDict[name] !== undefined ? scopeDict[name] : { type: "undefined" }, (name, value) => scopeDict[name] = value, (name, value) => scopeDict[name] = value])
+    return ([(name) => scopeDict[name] !== undefined ? scopeDict[name] : { type: "undefined" }, (name, value) => scopeDict[name] == undefined || scopeDict[name].protected !== true ? scopeDict[name] = value : { type: "void", protected: true }, (name, value) => scopeDict[name] == undefined || scopeDict[name].protected !== true ? scopeDict[name] = value : { type: "void", protected: true }])
 }
 const adjoinScope = ([scopeGetter, scopeSetter, scopeDefiner]) => ([newScopeGetter, newScopeSetter, newScopeDefiner]) => {
     return ([(name) => {
@@ -88,7 +88,11 @@ const adjoinScope = ([scopeGetter, scopeSetter, scopeDefiner]) => ([newScopeGett
         }
         return newScopeGetter(name)
     }, (name, value) => {
-        if (newScopeGetter(name).type == "undefined") {
+        var res = newScopeGetter(name)
+        if (res.protected == true) {
+            return { type: "void", protected: true }
+        } // not required for protected prelude (like protected define for non-global scopes), but good to have for future implementation of consts
+        if (res.type == "undefined") {
             return scopeSetter(name, value)
         }
         return newScopeSetter(name, value)
@@ -116,8 +120,8 @@ const evaluateExpression = (scc) => {
     const [scopeGetter, scopeSetter, scopeDefiner] = scc
     const sco = (expression) => {
         if (expression.type == "function declaration") {
-            scopeDefiner(expression.children[1].canonicalString, { type: "function", parentScope: scc, parameters: expression.children.filter((x) => x.type == "parameter declaration")[0], body: expression.children.filter((x) => x.type == "function body")[0]})
-            if (expression.children[0].type == "typed declaration") {
+            const res = scopeDefiner(expression.children[1].canonicalString, { type: "function", parentScope: scc, parameters: expression.children.filter((x) => x.type == "parameter declaration")[0], body: expression.children.filter((x) => x.type == "function body")[0]})
+            if (res.protected !== true && expression.children[0].type == "typed declaration") {
                 scopeDefiner(".typeof" + expression.children[1].canonicalString, { type: "typecheck", value: expression.children[0].canonicalString}) // this is safe since identifiers cannot start with .
             }
             return scopeGetter(expression.children[1].canonicalString)
@@ -197,9 +201,14 @@ const evaluateExpression = (scc) => {
                 if (expRes.type !== typeMap[expression.children[0].canonicalString]) {
                     throw "TypeError: expression type, " + expRes.type + " did not match declared type, " + typeMap[expression.children[0].canonicalString] + " for variable " + expression.children[1].canonicalString
                 }
-                scopeDefiner(".typeof" + expression.children[1].canonicalString, { type: "typecheck", value: expression.children[0].canonicalString}) // this is safe since identifiers cannot start with .
+                const res = scopeDefiner(expression.children[1].canonicalString, expRes)
+                if (res.protected !== true) {
+                    scopeDefiner(".typeof" + expression.children[1].canonicalString, { type: "typecheck", value: expression.children[0].canonicalString}) // this is safe since identifiers cannot start with .
+                }
             }
-            scopeDefiner(expression.children[1].canonicalString, expRes)
+            else {
+                scopeDefiner(expression.children[1].canonicalString, expRes)
+            }
             return expRes
         }
         else if (expression.type == "variable set") {

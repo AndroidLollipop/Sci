@@ -1,6 +1,13 @@
 const e = require("../simpleAndCleanInterfaceForRepl.js")
 const repl = e.getRepl() // sadly no support for += yet, it isn't hard to implement but isn't a priority right now
-repl("var slowFibonacci(n) { \
+repl("var print = 1 \
+var print = [1][0] \
+print = 1 \
+num print(n) { \
+    return n \
+} \
+num print = 1 \
+var slowFibonacci(n) { \
     if (n < 3) { \
         return 1 \
     } \

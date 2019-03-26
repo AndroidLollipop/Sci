@@ -58,7 +58,8 @@ const Prelude = {
                 }
                 return x
             }}]
-        }
+        },
+        protected: true
     },
     typeOf: {
         type: "function",
@@ -73,9 +74,10 @@ const Prelude = {
                 var x = scopeGetter("x")
                 return x !== undefined && x.type !== undefined ? { type: "string", value: x.type } : { type: "void" }
             }}]
-        }
+        },
+        protected: true
     },
-    void : { type: "void" },
+    void : { type: "void", protected: true },
     mathSin: {
         type: "function",
         parentScope: a.emptyScope(), // it's unnecessary to define parentScope, () => {} * 3 is fine, but whatever honestly
@@ -89,11 +91,13 @@ const Prelude = {
                 var x = scopeGetter("x")
                 return x !== undefined && x.type == "number" ? { type: "number", value: Math.sin(x.value) } : { type: "void" }
             }}]
-        }
+        },
+        protected: true
     },
     mathPi: {
         type: "number",
-        value: Math.PI
+        value: Math.PI,
+        protected: true
     },
     arrayLength: {
         type: "function",
@@ -108,7 +112,8 @@ const Prelude = {
                 var x = scopeGetter("x")
                 return x !== undefined && x.type == "array" ? { type: "number", value: x.array.length } : { type: "void" }
             }}]
-        }
+        },
+        protected: true
     },
     arrayPush: {
         type: "function",
@@ -124,7 +129,8 @@ const Prelude = {
                 var y = scopeGetter("y")
                 return x !== undefined && x.type == "array" ? (x.array.push(y),y) : { type: "void" }
             }}]
-        }
+        },
+        protected: true
     },
     setTimeout: {
         type: "function",
@@ -140,7 +146,8 @@ const Prelude = {
                 var y = scopeGetter("y")
                 return x !== undefined && x.type == "function" && y !== undefined && y.type == "number" ? { type: "number", value: setTimeoutShim(() => a.evaluateExpression(x.parentScope)(x.body), y.value)} : { type: "void" }
             }}]
-        }
+        },
+        protected: true
     },
     clearTimeout: {
         type: "function",
@@ -155,7 +162,8 @@ const Prelude = {
                 var x = scopeGetter("x")
                 return x !== undefined && x.type == "number" ? (clearTimeoutShim(x.value), { type: "void" }) : { type: "void" }
             }}]
-        }
+        },
+        protected: true
     },
     stringify: {
         type: "function",
@@ -184,7 +192,8 @@ const Prelude = {
                 }
                 return { type: "string", value: "undefined" }
             }}]
-        }
+        },
+        protected: true
     },
     parseFloat: {
         type: "function",
@@ -205,7 +214,8 @@ const Prelude = {
                 }
                 return { type: "void" }
             }}]
-        }
+        },
+        protected: true
     },
     parseInt: {
         type: "function",
@@ -226,7 +236,8 @@ const Prelude = {
                 }
                 return { type: "void" }
             }}]
-        }
+        },
+        protected: true
     }
 }
 module.exports = {
