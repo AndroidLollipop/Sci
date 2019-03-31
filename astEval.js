@@ -108,7 +108,7 @@ const defineInScope = (sco) => (identifiers) => ([scopeGetter, scopeSetter, scop
         if (expressions.children[i] == undefined) {
             return
         }
-        scopeDefiner(identifiers.children[i].canonicalString, sco(expressions.children[i]))
+        scopeDefiner(identifiers.children[i].canonicalString, unattr(sco(expressions.children[i])))
     }
 }
 const collapseString = (nodeChildren) => {

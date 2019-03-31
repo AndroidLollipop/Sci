@@ -99,13 +99,13 @@ var t() { \
 } \
 print(setTimeout(t, 100)) \
 clearTimeout(setTimeout(t, 200)) \
-print('no showstoppers occurred') \
 print(parseFloat(stringify(201)+stringify(8.326))+1) \
 print(parseInt(stringify(201)+stringify(8.326))+1) \
 print([print, undefined, void]) \
 print(print) \
 print(stringify(print)) \
 var u = print \
+print = 1 \
 u = 1 \
 print(u) \
 var m \
@@ -119,7 +119,17 @@ var k(){ \
 } \
 k() \
 m \
-print(m)")
+print(m) \
+u = 1 \
+print(while(u>0){u = u-1; return 1}) \
+print('function parameters are variable assignments too and must therefore be untraited') \
+u = print \
+u = 1 \
+var w = print \
+w('no trait leakage') \
+w = 1 \
+print('no trait leakage 2: electric boogaloo') \
+print('no showstoppers occurred')")
 // operator precedence levels (you can find this in tokParse.js)
 // level 4: * /
 // level 3: + -
