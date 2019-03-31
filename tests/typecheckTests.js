@@ -61,6 +61,55 @@ try {
 catch(e) {
     console.log(e)
 }
+try {
+    repl("const arr = [] \
+    arr = 2") // this should fail since trait of arr is const
+    passed = 0
+}
+catch(e) {
+    console.log(e)
+}
+try {
+    repl("const fun(x) { \
+        print(x) \
+    } \
+    const num fun = 2") // this should fail since trait of fun is const
+    passed = 0
+}
+catch(e) {
+    console.log(e)
+}
+try {
+    repl("const num inc = 1 \
+    const num inc(x) { \
+        return x+1 \
+    }") // this should fail since trait of inc is const
+    passed = 0
+}
+catch(e) {
+    console.log(e)
+}
+try {
+    repl("arr = 1") // this should fail since trait of arr is const (from previous repl in same scope)
+    passed = 0
+}
+catch(e) {
+    console.log(e)
+}
+try {
+    repl("fun = 1") // this should fail since trait of fun is const (from previous repl in same scope)
+    passed = 0
+}
+catch(e) {
+    console.log(e)
+}
+try {
+    repl("inc = 1") // this should fail since trait of inc is const (from previous repl in same scope)
+    passed = 0
+}
+catch(e) {
+    console.log(e)
+}
 if (passed == 1) {
     console.log("typecheck test PASSED!")
 }

@@ -77,6 +77,7 @@ const Prelude = {
         },
         protected: true
     },
+    undefined: { type: "undefined", protected: true },
     void : { type: "void", protected: true },
     mathSin: {
         type: "function",

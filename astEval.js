@@ -79,19 +79,17 @@ const unwrap = (typ) => {
 }
 const unattr = (typ) => {
     var res = Object.assign({}, unwrap(typ))
-    delete res.illegal
     delete res.protected
     return res
 }
 const setpro = (typ) => {
     var res = Object.assign({}, unwrap(typ))
-    delete res.illegal
     res.protected = true
     return res
 }
 const emptyScope = (predict) => { // i know, predict is a fitting name
     var scopeDict = predict !== undefined ? predict : {}
-    return ([(name) => scopeDict[name] !== undefined ? scopeDict[name] : { type: "undefined" }, (name, value) => scopeDict[name] == undefined || scopeDict[name].protected !== true ? scopeDict[name] = value : { type: "void", illegal: true }, (name, value) => scopeDict[name] == undefined || scopeDict[name].protected !== true ? scopeDict[name] = value : { type: "void", illegal: true }])
+    return ([(name) => scopeDict[name] !== undefined ? scopeDict[name] : { type: "undefined" }, (name, value) => scopeDict[name] == undefined || scopeDict[name].protected !== true ? scopeDict[name] = value : (()=>{throw "TypeError: attempted reassignment of constant " + name})(), (name, value) => scopeDict[name] == undefined || scopeDict[name].protected !== true ? scopeDict[name] = value : (()=>{throw "TypeError: attempted reassignment of constant " + name})()])
 }
 const adjoinScope = ([scopeGetter, scopeSetter, scopeDefiner]) => ([newScopeGetter, newScopeSetter, newScopeDefiner]) => {
     return ([(name) => {
@@ -102,7 +100,7 @@ const adjoinScope = ([scopeGetter, scopeSetter, scopeDefiner]) => ([newScopeGett
     }, (name, value) => {
         var res = newScopeGetter(name)
         if (res.protected == true) {
-            return { type: "void", illegal: true }
+            throw "TypeError: attempted reassignment of constant " + name
         } // not required for protected prelude (like protected define for non-global scopes), but good to have for future implementation of consts
         if (res.type == "undefined") {
             return scopeSetter(name, value)
@@ -136,14 +134,12 @@ const evaluateExpression = (scc) => {
             if (expression.children[0].children && expression.children[0].children[0] && expression.children[0].children[0].type == "constant declaration") {
                 expRes.protected = true
             }
-            const res = scopeDefiner(expression.children[1].canonicalString, expRes)
-            if (res.illegal !== true) {
-                if (expression.children[0].type == "typed declaration") {
-                    scopeDefiner(".typeof" + expression.children[1].canonicalString, { type: "typecheck", value: expression.children[0].declaredType}) // this is safe since identifiers cannot start with .
-                }
-                else {
-                    scopeDefiner(".typeof" + expression.children[1].canonicalString, { type: "typecheck", value: "any"})
-                }
+            scopeDefiner(expression.children[1].canonicalString, expRes)
+            if (expression.children[0].type == "typed declaration") {
+                scopeDefiner(".typeof" + expression.children[1].canonicalString, { type: "typecheck", value: expression.children[0].declaredType}) // this is safe since identifiers cannot start with .
+            }
+            else {
+                scopeDefiner(".typeof" + expression.children[1].canonicalString, { type: "typecheck", value: "any"})
             }
             return scopeGetter(expression.children[1].canonicalString)
         }
@@ -224,16 +220,12 @@ const evaluateExpression = (scc) => {
                     throw "TypeError: expression type, " + expRes.type + " did not match declared type, " + typeMap[expression.children[0].declaredType] + " for variable " + expression.children[1].canonicalString
                 }
                 // we don't use unattr in scopeSetter/scopeDefiner to allow us to implement consts nicely
-                const res = scopeDefiner(expression.children[1].canonicalString, protected ? setpro(expRes): unattr(expRes)) // this is fine since scopeDefiner checks for protection and doesn't blindly return the second parameter
-                if (res.illegal !== true) {
-                    scopeDefiner(".typeof" + expression.children[1].canonicalString, { type: "typecheck", value: expression.children[0].declaredType}) // this is safe since identifiers cannot start with .
-                }
+                scopeDefiner(expression.children[1].canonicalString, protected ? setpro(expRes): unattr(expRes)) // this is fine since scopeDefiner checks for protection and doesn't blindly return the second parameter
+                scopeDefiner(".typeof" + expression.children[1].canonicalString, { type: "typecheck", value: expression.children[0].declaredType}) // this is safe since identifiers cannot start with .
             }
             else {
-                const res = scopeDefiner(expression.children[1].canonicalString, protected ? setpro(expRes): unattr(expRes))
-                if (res.illegal !== true) {
-                    scopeDefiner(".typeof" + expression.children[1].canonicalString, { type: "typecheck", value: "any"})
-                }
+                scopeDefiner(expression.children[1].canonicalString, protected ? setpro(expRes): unattr(expRes))
+                scopeDefiner(".typeof" + expression.children[1].canonicalString, { type: "typecheck", value: "any"})
             }
             return expRes
         }

@@ -35,7 +35,8 @@
           children:
            [ { type: 'typed declaration',
                canonicalString: 'num',
-               children: [] },
+               children: [],
+               declaredType: 'num' },
              { type: 'identifier', canonicalString: 'skye', children: [] },
              { type: 'equals', canonicalString: '=', children: [] },
              { type: 'integral literal', canonicalString: '1', children: [] } ] },
@@ -44,7 +45,8 @@
           children:
            [ { type: 'typed declaration',
                canonicalString: 'num',
-               children: [] },
+               children: [],
+               declaredType: 'num' },
              { type: 'identifier', canonicalString: 'scotland', children: [] },
              { type: 'equals', canonicalString: '=', children: [] },
              { type: 'integral literal', canonicalString: '2', children: [] } ] },
@@ -86,7 +88,8 @@
           children:
            [ { type: 'typed declaration',
                canonicalString: 'num',
-               children: [] },
+               children: [],
+               declaredType: 'num' },
              { type: 'identifier', canonicalString: 'skye', children: [] },
              { type: 'equals', canonicalString: '=', children: [] },
              { type: 'integral literal', canonicalString: '1', children: [] } ] },
@@ -95,7 +98,8 @@
           children:
            [ { type: 'typed declaration',
                canonicalString: 'num',
-               children: [] },
+               children: [],
+               declaredType: 'num' },
              { type: 'identifier', canonicalString: 'scotland', children: [] },
              { type: 'equals', canonicalString: '=', children: [] },
              { type: 'integral literal', canonicalString: '2', children: [] } ] },
@@ -104,7 +108,8 @@
           children:
            [ { type: 'typed declaration',
                canonicalString: 'num',
-               children: [] },
+               children: [],
+               declaredType: 'num' },
              { type: 'identifier', canonicalString: 'add', children: [] },
              { type: 'parameter declaration',
                canonicalString: '(p1, p2, p3, p4, p5)',
@@ -171,7 +176,8 @@
           children:
            [ { type: 'typed declaration',
                canonicalString: 'num',
-               children: [] },
+               children: [],
+               declaredType: 'num' },
              { type: 'identifier', canonicalString: 'add', children: [] },
              { type: 'parameter declaration',
                canonicalString: '()',
@@ -212,7 +218,8 @@
           children:
            [ { type: 'typed declaration',
                canonicalString: 'num',
-               children: [] },
+               children: [],
+               declaredType: 'num' },
              { type: 'identifier', canonicalString: 'skye', children: [] },
              { type: 'equals', canonicalString: '=', children: [] },
              { type: 'expression',
@@ -258,7 +265,8 @@
           children:
            [ { type: 'typed declaration',
                canonicalString: 'num',
-               children: [] },
+               children: [],
+               declaredType: 'num' },
              { type: 'identifier', canonicalString: 'add', children: [] },
              { type: 'parameter declaration',
                canonicalString: '()',
@@ -299,7 +307,8 @@
           children:
            [ { type: 'typed declaration',
                canonicalString: 'num',
-               children: [] },
+               children: [],
+               declaredType: 'num' },
              { type: 'identifier', canonicalString: 'skye', children: [] },
              { type: 'equals', canonicalString: '=', children: [] },
              { type: 'expression',
@@ -618,7 +627,8 @@
           children:
            [ { type: 'typed declaration',
                canonicalString: 'num',
-               children: [] },
+               children: [],
+               declaredType: 'num' },
              { type: 'identifier', canonicalString: 'a', children: [] },
              { type: 'equals', canonicalString: '=', children: [] },
              { type: 'integral literal', canonicalString: '1', children: [] } ] },
@@ -627,7 +637,8 @@
           children:
            [ { type: 'typed declaration',
                canonicalString: 'num',
-               children: [] },
+               children: [],
+               declaredType: 'num' },
              { type: 'identifier', canonicalString: 'b', children: [] },
              { type: 'equals', canonicalString: '=', children: [] },
              { type: 'integral literal', canonicalString: '1', children: [] } ] },
@@ -636,7 +647,8 @@
           children:
            [ { type: 'typed declaration',
                canonicalString: 'num',
-               children: [] },
+               children: [],
+               declaredType: 'num' },
              { type: 'identifier', canonicalString: 'c', children: [] },
              { type: 'equals', canonicalString: '=', children: [] },
              { type: 'integral literal', canonicalString: '1', children: [] } ] },
@@ -716,7 +728,8 @@
           children:
            [ { type: 'typed declaration',
                canonicalString: 'num',
-               children: [] },
+               children: [],
+               declaredType: 'num' },
              { type: 'identifier', canonicalString: 'n', children: [] },
              { type: 'equals', canonicalString: '=', children: [] },
              { type: 'integral literal', canonicalString: '0', children: [] } ] },
@@ -788,7 +801,8 @@
           children:
            [ { type: 'typed declaration',
                canonicalString: 'num',
-               children: [] },
+               children: [],
+               declaredType: 'num' },
              { type: 'identifier', canonicalString: 'n', children: [] },
              { type: 'equals', canonicalString: '=', children: [] },
              { type: 'integral literal', canonicalString: '0', children: [] } ] },
@@ -863,7 +877,8 @@
           children:
            [ { type: 'typed declaration',
                canonicalString: 'num',
-               children: [] },
+               children: [],
+               declaredType: 'num' },
              { type: 'identifier', canonicalString: 'n', children: [] },
              { type: 'equals', canonicalString: '=', children: [] },
              { type: 'integral literal', canonicalString: '0', children: [] } ] },

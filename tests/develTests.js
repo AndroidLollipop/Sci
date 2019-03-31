@@ -1,13 +1,6 @@
 const e = require("../simpleAndCleanInterfaceForRepl.js")
 const repl = e.getRepl() // sadly no support for += yet, it isn't hard to implement but isn't a priority right now
-repl("var print = 1 \
-var print = [1][0] \
-print = 1 \
-num print(n) { \
-    return n \
-} \
-num print = 1 \
-var slowFibonacci(n) { \
+repl("var slowFibonacci(n) { \
     if (n < 3) { \
         return 1 \
     } \
@@ -105,7 +98,6 @@ print([print, undefined, void]) \
 print(print) \
 print(stringify(print)) \
 var u = print \
-print = 1 \
 u = 1 \
 print(u) \
 var m \
@@ -131,15 +123,12 @@ w = 1 \
 print('no trait leakage 2: electric boogaloo') \
 const var w = 1 \
 const x = 1 \
-w = 2 \
-x = 2 \
 print(w) \
 print(x) \
 print('const var is a bit of an oxymoron, but you know') \
 const y(x) { \
     print(x) \
 } \
-y = 1 \
 y('sound. next line should be 1') \
 const num z(x) { \
     print(x) \
