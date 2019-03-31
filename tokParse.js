@@ -315,16 +315,10 @@ const matchConstDec = (wrappedString) => {
     }
     var phi = matchTypeDec(tem.next)
     tem = matchWhitespace()(phi.next)
-    if (phi.status !== "success" || tem.status !== "success") {
+    var gam = matchIdentifier(tem.next)
+    if (phi.status !== "success" || tem.status !== "success" || gam.status !== "success") {
         phi.next = ret.next
         phi.status = "failure"
-    }
-    else {
-        var gam = matchIdentifier(tem.next)
-        if (gam.status !== "success") {
-            phi.next = ret.next
-            phi.status = "failure"
-        }
     }
     return { status: "success", next: phi.next, treeNode: { type: phi.status == "success" ? phi.treeNode.type : "variable declaration", declaredType: phi.status == "success" ? phi.treeNode.canonicalString : "any", canonicalString: phi.status == "success" ? ret.treeNode.canonicalString + " " + phi.treeNode.canonicalString : ret.treeNode.canonicalString, children: [{ type: "constant declaration", canonicalString: "const" }] } }
 }
