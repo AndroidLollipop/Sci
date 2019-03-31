@@ -136,6 +136,15 @@ x = 2 \
 print(w) \
 print(x) \
 print('const var is a bit of an oxymoron, but you know') \
+const y(x) { \
+    print(x) \
+} \
+y = 1 \
+y('sound. next line should be 1') \
+const num z(x) { \
+    print(x) \
+} \
+z(1) \
 print('no showstoppers occurred')")
 // operator precedence levels (you can find this in tokParse.js)
 // level 4: * /

@@ -79,17 +79,19 @@ const unwrap = (typ) => {
 }
 const unattr = (typ) => {
     var res = Object.assign({}, unwrap(typ))
+    delete res.illegal
     delete res.protected
     return res
 }
 const setpro = (typ) => {
     var res = Object.assign({}, unwrap(typ))
+    delete res.illegal
     res.protected = true
     return res
 }
 const emptyScope = (predict) => { // i know, predict is a fitting name
     var scopeDict = predict !== undefined ? predict : {}
-    return ([(name) => scopeDict[name] !== undefined ? scopeDict[name] : { type: "undefined" }, (name, value) => scopeDict[name] == undefined || scopeDict[name].protected !== true ? scopeDict[name] = value : { type: "void", protected: true }, (name, value) => scopeDict[name] == undefined || scopeDict[name].protected !== true ? scopeDict[name] = value : { type: "void", protected: true }])
+    return ([(name) => scopeDict[name] !== undefined ? scopeDict[name] : { type: "undefined" }, (name, value) => scopeDict[name] == undefined || scopeDict[name].protected !== true ? scopeDict[name] = value : { type: "void", illegal: true }, (name, value) => scopeDict[name] == undefined || scopeDict[name].protected !== true ? scopeDict[name] = value : { type: "void", illegal: true }])
 }
 const adjoinScope = ([scopeGetter, scopeSetter, scopeDefiner]) => ([newScopeGetter, newScopeSetter, newScopeDefiner]) => {
     return ([(name) => {
@@ -100,7 +102,7 @@ const adjoinScope = ([scopeGetter, scopeSetter, scopeDefiner]) => ([newScopeGett
     }, (name, value) => {
         var res = newScopeGetter(name)
         if (res.protected == true) {
-            return { type: "void", protected: true }
+            return { type: "void", illegal: true }
         } // not required for protected prelude (like protected define for non-global scopes), but good to have for future implementation of consts
         if (res.type == "undefined") {
             return scopeSetter(name, value)
@@ -130,9 +132,18 @@ const evaluateExpression = (scc) => {
     const [scopeGetter, scopeSetter, scopeDefiner] = scc
     const sco = (expression) => {
         if (expression.type == "function declaration") {
-            const res = scopeDefiner(expression.children[1].canonicalString, { type: "function", parentScope: scc, parameters: expression.children.filter((x) => x.type == "parameter declaration")[0], body: expression.children.filter((x) => x.type == "function body")[0]})
-            if (res.protected !== true && expression.children[0].type == "typed declaration") {
-                scopeDefiner(".typeof" + expression.children[1].canonicalString, { type: "typecheck", value: expression.children[0].canonicalString}) // this is safe since identifiers cannot start with .
+            const expRes = { type: "function", parentScope: scc, parameters: expression.children.filter((x) => x.type == "parameter declaration")[0], body: expression.children.filter((x) => x.type == "function body")[0]}
+            if (expression.children[0].children && expression.children[0].children[0] && expression.children[0].children[0].type == "constant declaration") {
+                expRes.protected = true
+            }
+            const res = scopeDefiner(expression.children[1].canonicalString, expRes)
+            if (res.illegal !== true) {
+                if (expression.children[0].type == "typed declaration") {
+                    scopeDefiner(".typeof" + expression.children[1].canonicalString, { type: "typecheck", value: expression.children[0].canonicalString}) // this is safe since identifiers cannot start with .
+                }
+                else {
+                    scopeDefiner(".typeof" + expression.children[1].canonicalString, { type: "typecheck", value: "any"})
+                }
             }
             return scopeGetter(expression.children[1].canonicalString)
         }
@@ -174,7 +185,7 @@ const evaluateExpression = (scc) => {
             if (expRes.type !== "!!!INTERNAL INTERPRETER CONTROL" || expRes.control !== "return") { // someone is trying to trick us
                 return { type: "void" }
             }
-            if (typecheck.type == "typecheck" && expRes.value.type !== typeMap[typecheck.value]) {
+            if (typecheck.type == "typecheck" && expRes.value.type !== typeMap[typecheck.value] && typecheck.value !== "any") {
                 throw "TypeError: function call return type, " + expRes.value.type + " did not match declared type, " + typeMap[typecheck.value] + " for function " + expression.children[0].canonicalString
             }
             return expRes.value
@@ -205,7 +216,7 @@ const evaluateExpression = (scc) => {
         }
         else if (expression.type == "variable declaration") {
             const expRes = sco(expression.children[3])
-            const protected = expression.children[0].type == "constant declaration"
+            const protected = expression.children[0].children && expression.children[0].children[0] && expression.children[0].children[0].type == "constant declaration"
             // to prevent the language spec from getting too insane, we restrict variable declarations to straight identifiers
             // e.g. num k[1] = 1 is not allowed
             if (expression.children[0].type == "typed declaration") {
@@ -214,12 +225,15 @@ const evaluateExpression = (scc) => {
                 }
                 // we don't use unattr in scopeSetter/scopeDefiner to allow us to implement consts nicely
                 const res = scopeDefiner(expression.children[1].canonicalString, protected ? setpro(expRes): unattr(expRes)) // this is fine since scopeDefiner checks for protection and doesn't blindly return the second parameter
-                if (res.protected !== true) {
+                if (res.illegal !== true) {
                     scopeDefiner(".typeof" + expression.children[1].canonicalString, { type: "typecheck", value: expression.children[0].canonicalString}) // this is safe since identifiers cannot start with .
                 }
             }
             else {
-                scopeDefiner(expression.children[1].canonicalString, protected ? setpro(expRes): unattr(expRes))
+                const res = scopeDefiner(expression.children[1].canonicalString, protected ? setpro(expRes): unattr(expRes))
+                if (res.illegal !== true) {
+                    scopeDefiner(".typeof" + expression.children[1].canonicalString, { type: "typecheck", value: "any"})
+                }
             }
             return expRes
         }
@@ -242,7 +256,7 @@ const evaluateExpression = (scc) => {
             }
             else if (expression.children[0].type == "identifier") {
                 const typecheck = scopeGetter(".typeof" + expression.children[0].canonicalString)
-                if (typecheck.type == "typecheck" && expRes.type !== typeMap[typecheck.value]) {
+                if (typecheck.type == "typecheck" && expRes.type !== typeMap[typecheck.value] && typecheck.value !== "any") {
                     throw "TypeError: expression type, " + expRes.type + " did not match declared type, " + typeMap[typecheck.value] + " for variable " + expression.children[0].canonicalString
                 }
                 scopeSetter(expression.children[0].canonicalString, unattr(expRes))

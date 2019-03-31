@@ -309,7 +309,7 @@ const matchConstDec = (wrappedString) => {
     if (phi.status !== "success") {
         phi.next = ret.next
     }
-    return { status: "success", next: phi.next, treeNode: { type: "constant declaration", canonicalString: phi.status == "success" ? ret.treeNode.canonicalString + " " + phi.treeNode.canonicalString : ret.treeNode.canonicalString } }
+    return { status: "success", next: phi.next, treeNode: { type: phi.status == "success" ? phi.treeNode.type : "variable declaration", canonicalString: phi.status == "success" ? phi.treeNode.canonicalString : ret.treeNode.canonicalString, children: [{ type: "constant declaration", canonicalString: "const" }] } }
 }
 const matchDec = composeMatch([matchTypeDec, matchConstDec])
 const matchLit = composeMatch([matchNegatedLiteral, matchFloatLiteral, matchStringLiteral, matchArrayLiteral, matchBooleanLiteral])
@@ -404,7 +404,7 @@ const matchFunbod = (wrappedString) => {
     return { status: "success", next: phi.next, treeNode: {type: "function body", canonicalString: "{" + ret.treeNode.canonicalString + "}", children: ret.treeNode.children}}
 }
 const matchFundef = (wrappedString) => {
-    var ret = matchTypeDec(wrappedString)
+    var ret = matchDec(wrappedString)
     if (ret.status !== "success") {
         return ret
     }
