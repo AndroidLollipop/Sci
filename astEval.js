@@ -82,6 +82,11 @@ const unattr = (typ) => {
     delete res.protected
     return res
 }
+const setpro = (typ) => {
+    var res = Object.assign({}, unwrap(typ))
+    res.protected = true
+    return res
+}
 const emptyScope = (predict) => { // i know, predict is a fitting name
     var scopeDict = predict !== undefined ? predict : {}
     return ([(name) => scopeDict[name] !== undefined ? scopeDict[name] : { type: "undefined" }, (name, value) => scopeDict[name] == undefined || scopeDict[name].protected !== true ? scopeDict[name] = value : { type: "void", protected: true }, (name, value) => scopeDict[name] == undefined || scopeDict[name].protected !== true ? scopeDict[name] = value : { type: "void", protected: true }])
@@ -200,19 +205,21 @@ const evaluateExpression = (scc) => {
         }
         else if (expression.type == "variable declaration") {
             const expRes = sco(expression.children[3])
+            const protected = expression.children[0].type == "constant declaration"
             // to prevent the language spec from getting too insane, we restrict variable declarations to straight identifiers
             // e.g. num k[1] = 1 is not allowed
             if (expression.children[0].type == "typed declaration") {
                 if (expRes.type !== typeMap[expression.children[0].canonicalString]) {
                     throw "TypeError: expression type, " + expRes.type + " did not match declared type, " + typeMap[expression.children[0].canonicalString] + " for variable " + expression.children[1].canonicalString
                 }
-                const res = scopeDefiner(expression.children[1].canonicalString, unattr(expRes)) // this is fine since scopeDefiner checks for protection and doesn't blindly return the second parameter
+                // we don't use unattr in scopeSetter/scopeDefiner to allow us to implement consts nicely
+                const res = scopeDefiner(expression.children[1].canonicalString, protected ? setpro(expRes): unattr(expRes)) // this is fine since scopeDefiner checks for protection and doesn't blindly return the second parameter
                 if (res.protected !== true) {
                     scopeDefiner(".typeof" + expression.children[1].canonicalString, { type: "typecheck", value: expression.children[0].canonicalString}) // this is safe since identifiers cannot start with .
                 }
             }
             else {
-                scopeDefiner(expression.children[1].canonicalString, unattr(expRes))
+                scopeDefiner(expression.children[1].canonicalString, protected ? setpro(expRes): unattr(expRes))
             }
             return expRes
         }

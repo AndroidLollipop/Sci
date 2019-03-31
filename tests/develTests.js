@@ -129,6 +129,13 @@ var w = print \
 w('no trait leakage') \
 w = 1 \
 print('no trait leakage 2: electric boogaloo') \
+const var w = 1 \
+const x = 1 \
+w = 2 \
+x = 2 \
+print(w) \
+print(x) \
+print('const var is a bit of an oxymoron, but you know') \
 print('no showstoppers occurred')")
 // operator precedence levels (you can find this in tokParse.js)
 // level 4: * /

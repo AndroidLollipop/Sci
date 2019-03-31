@@ -83,6 +83,7 @@ const matchEls = matchTerminalStrings(["else"])
 const matchCom = matchTerminal(",")
 const matchIf = matchTerminalStrings(["if"])("if")
 const matchWhile = matchTerminalStrings(["while"])("while")
+const matchCon = matchTerminalStrings(["const"])("constant declaration")
 const matchDnu = matchTerminalStrings(["num"])("typed declaration")
 const matchDbo = matchTerminalStrings(["bool"])("typed declaration")
 const matchStr = matchTerminalStrings(["str"])("typed declaration")
@@ -291,7 +292,26 @@ const composeMatch = (matchers) => (wrappedString) => { // i should have written
     }
     return { status: "failure", next: wrappedString }
 }
-const matchDec = composeMatch([matchDnu, matchStr, matchVar, matchDbo])
+const matchTypeDec = composeMatch([matchDnu, matchStr, matchVar, matchDbo])
+const matchConstDec = (wrappedString) => {
+    var ret = matchCon(wrappedString)
+    if (ret.status !== "success") {
+        return ret
+    }
+    var tem = matchWhitespace()(ret.next)
+    if (tem.status !== "success") {
+        // i know that const isn't strictly supposed to fail to match when it isn't followed by whitespace
+        // however all calling functions will immediately fail to match anyway since they all expect whitespace to follow a const declaration
+        // so we might as well fail the match immediately
+        return { status: "failure", next: wrappedString }
+    }
+    var phi = matchTypeDec(tem.next)
+    if (phi.status !== "success") {
+        phi.next = ret.next
+    }
+    return { status: "success", next: phi.next, treeNode: { type: "constant declaration", canonicalString: phi.status == "success" ? ret.treeNode.canonicalString + " " + phi.treeNode.canonicalString : ret.treeNode.canonicalString } }
+}
+const matchDec = composeMatch([matchTypeDec, matchConstDec])
 const matchLit = composeMatch([matchNegatedLiteral, matchFloatLiteral, matchStringLiteral, matchArrayLiteral, matchBooleanLiteral])
 const matchDefine = (wrappedString) => {
     var ret = matchDec(wrappedString)
@@ -384,7 +404,7 @@ const matchFunbod = (wrappedString) => {
     return { status: "success", next: phi.next, treeNode: {type: "function body", canonicalString: "{" + ret.treeNode.canonicalString + "}", children: ret.treeNode.children}}
 }
 const matchFundef = (wrappedString) => {
-    var ret = matchDec(wrappedString)
+    var ret = matchTypeDec(wrappedString)
     if (ret.status !== "success") {
         return ret
     }
