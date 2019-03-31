@@ -104,7 +104,22 @@ print(parseFloat(stringify(201)+stringify(8.326))+1) \
 print(parseInt(stringify(201)+stringify(8.326))+1) \
 print([print, undefined, void]) \
 print(print) \
-print(stringify(print))")
+print(stringify(print)) \
+var u = print \
+u = 1 \
+print(u) \
+var m \
+var v(){ \
+    m = while(u>0){u = u-1; return 1} \
+} \
+v() \
+var k(){ \
+    m \
+    print('variables are not allowed to be traited') \
+} \
+k() \
+m \
+print(m)")
 // operator precedence levels (you can find this in tokParse.js)
 // level 4: * /
 // level 3: + -

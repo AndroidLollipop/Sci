@@ -77,6 +77,11 @@ const unwrap = (typ) => {
     }
     return typ
 }
+const unattr = (typ) => {
+    var res = Object.assign({}, unwrap(typ))
+    delete res.protected
+    return res
+}
 const emptyScope = (predict) => { // i know, predict is a fitting name
     var scopeDict = predict !== undefined ? predict : {}
     return ([(name) => scopeDict[name] !== undefined ? scopeDict[name] : { type: "undefined" }, (name, value) => scopeDict[name] == undefined || scopeDict[name].protected !== true ? scopeDict[name] = value : { type: "void", protected: true }, (name, value) => scopeDict[name] == undefined || scopeDict[name].protected !== true ? scopeDict[name] = value : { type: "void", protected: true }])
@@ -201,13 +206,13 @@ const evaluateExpression = (scc) => {
                 if (expRes.type !== typeMap[expression.children[0].canonicalString]) {
                     throw "TypeError: expression type, " + expRes.type + " did not match declared type, " + typeMap[expression.children[0].canonicalString] + " for variable " + expression.children[1].canonicalString
                 }
-                const res = scopeDefiner(expression.children[1].canonicalString, expRes)
+                const res = scopeDefiner(expression.children[1].canonicalString, unattr(expRes)) // this is fine since scopeDefiner checks for protection and doesn't blindly return the second parameter
                 if (res.protected !== true) {
                     scopeDefiner(".typeof" + expression.children[1].canonicalString, { type: "typecheck", value: expression.children[0].canonicalString}) // this is safe since identifiers cannot start with .
                 }
             }
             else {
-                scopeDefiner(expression.children[1].canonicalString, expRes)
+                scopeDefiner(expression.children[1].canonicalString, unattr(expRes))
             }
             return expRes
         }
@@ -225,14 +230,15 @@ const evaluateExpression = (scc) => {
                 if (arrRes.setter == undefined) {
                     return { type: "void" }
                 }
-                return arrRes.setter(sco(expression.children[0].children[1].children[0]), expRes)
+                arrRes.setter(sco(expression.children[0].children[1].children[0]), unattr(expRes))
+                return expRes // we need to return traited expRes
             }
             else if (expression.children[0].type == "identifier") {
                 const typecheck = scopeGetter(".typeof" + expression.children[0].canonicalString)
                 if (typecheck.type == "typecheck" && expRes.type !== typeMap[typecheck.value]) {
                     throw "TypeError: expression type, " + expRes.type + " did not match declared type, " + typeMap[typecheck.value] + " for variable " + expression.children[0].canonicalString
                 }
-                scopeSetter(expression.children[0].canonicalString, expRes)
+                scopeSetter(expression.children[0].canonicalString, unattr(expRes))
                 return expRes
             }
             return { type: "void" } // someone tried to do something like 1 = 2
