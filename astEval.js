@@ -139,7 +139,7 @@ const evaluateExpression = (scc) => {
             const res = scopeDefiner(expression.children[1].canonicalString, expRes)
             if (res.illegal !== true) {
                 if (expression.children[0].type == "typed declaration") {
-                    scopeDefiner(".typeof" + expression.children[1].canonicalString, { type: "typecheck", value: expression.children[0].canonicalString}) // this is safe since identifiers cannot start with .
+                    scopeDefiner(".typeof" + expression.children[1].canonicalString, { type: "typecheck", value: expression.children[0].declaredType}) // this is safe since identifiers cannot start with .
                 }
                 else {
                     scopeDefiner(".typeof" + expression.children[1].canonicalString, { type: "typecheck", value: "any"})
@@ -220,13 +220,13 @@ const evaluateExpression = (scc) => {
             // to prevent the language spec from getting too insane, we restrict variable declarations to straight identifiers
             // e.g. num k[1] = 1 is not allowed
             if (expression.children[0].type == "typed declaration") {
-                if (expRes.type !== typeMap[expression.children[0].canonicalString]) {
-                    throw "TypeError: expression type, " + expRes.type + " did not match declared type, " + typeMap[expression.children[0].canonicalString] + " for variable " + expression.children[1].canonicalString
+                if (expRes.type !== typeMap[expression.children[0].declaredType]) {
+                    throw "TypeError: expression type, " + expRes.type + " did not match declared type, " + typeMap[expression.children[0].declaredType] + " for variable " + expression.children[1].canonicalString
                 }
                 // we don't use unattr in scopeSetter/scopeDefiner to allow us to implement consts nicely
                 const res = scopeDefiner(expression.children[1].canonicalString, protected ? setpro(expRes): unattr(expRes)) // this is fine since scopeDefiner checks for protection and doesn't blindly return the second parameter
                 if (res.illegal !== true) {
-                    scopeDefiner(".typeof" + expression.children[1].canonicalString, { type: "typecheck", value: expression.children[0].canonicalString}) // this is safe since identifiers cannot start with .
+                    scopeDefiner(".typeof" + expression.children[1].canonicalString, { type: "typecheck", value: expression.children[0].declaredType}) // this is safe since identifiers cannot start with .
                 }
             }
             else {

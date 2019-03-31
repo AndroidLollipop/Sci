@@ -293,6 +293,14 @@ const composeMatch = (matchers) => (wrappedString) => { // i should have written
     return { status: "failure", next: wrappedString }
 }
 const matchTypeDec = composeMatch([matchDnu, matchStr, matchVar, matchDbo])
+const matchVarDec = (wrappedString) => {
+    var ret = matchTypeDec(wrappedString)
+    if (ret.status !== "success") {
+        return ret
+    } // this is necessary as accessing properties on undefined throws
+    ret.treeNode.declaredType = ret.treeNode.canonicalString
+    return ret
+}
 const matchConstDec = (wrappedString) => {
     var ret = matchCon(wrappedString)
     if (ret.status !== "success") {
@@ -309,9 +317,9 @@ const matchConstDec = (wrappedString) => {
     if (phi.status !== "success") {
         phi.next = ret.next
     }
-    return { status: "success", next: phi.next, treeNode: { type: phi.status == "success" ? phi.treeNode.type : "variable declaration", canonicalString: phi.status == "success" ? phi.treeNode.canonicalString : ret.treeNode.canonicalString, children: [{ type: "constant declaration", canonicalString: "const" }] } }
+    return { status: "success", next: phi.next, treeNode: { type: phi.status == "success" ? phi.treeNode.type : "variable declaration", declaredType: phi.status == "success" ? phi.treeNode.canonicalString : "any", canonicalString: phi.status == "success" ? ret.treeNode.canonicalString + " " + phi.treeNode.canonicalString : ret.treeNode.canonicalString, children: [{ type: "constant declaration", canonicalString: "const" }] } }
 }
-const matchDec = composeMatch([matchTypeDec, matchConstDec])
+const matchDec = composeMatch([matchVarDec, matchConstDec])
 const matchLit = composeMatch([matchNegatedLiteral, matchFloatLiteral, matchStringLiteral, matchArrayLiteral, matchBooleanLiteral])
 const matchDefine = (wrappedString) => {
     var ret = matchDec(wrappedString)
