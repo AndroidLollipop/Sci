@@ -314,15 +314,23 @@ const matchConstDec = (wrappedString) => {
         return { status: "failure", next: wrappedString }
     }
     var phi = matchTypeDec(tem.next)
-    if (phi.status !== "success") {
+    tem = matchWhitespace()(phi.next)
+    if (phi.status !== "success" || tem.status !== "success") {
         phi.next = ret.next
+        phi.status = "failure"
+    }
+    else {
+        var gam = matchIdentifier(tem.next)
+        if (gam.status !== "success") {
+            phi.next = ret.next
+            phi.status = "failure"
+        }
     }
     return { status: "success", next: phi.next, treeNode: { type: phi.status == "success" ? phi.treeNode.type : "variable declaration", declaredType: phi.status == "success" ? phi.treeNode.canonicalString : "any", canonicalString: phi.status == "success" ? ret.treeNode.canonicalString + " " + phi.treeNode.canonicalString : ret.treeNode.canonicalString, children: [{ type: "constant declaration", canonicalString: "const" }] } }
 }
-const matchDec = composeMatch([matchVarDec, matchConstDec])
 const matchLit = composeMatch([matchNegatedLiteral, matchFloatLiteral, matchStringLiteral, matchArrayLiteral, matchBooleanLiteral])
-const matchDefine = (wrappedString) => {
-    var ret = matchDec(wrappedString)
+const matchDefineP = (mDec) => (wrappedString) => {
+    var ret = mDec(wrappedString)
     if (ret.status !== "success") {
         return ret
     }
@@ -346,6 +354,7 @@ const matchDefine = (wrappedString) => {
     }
     return { status: "success", next: alp.next, treeNode: { type: "variable declaration", canonicalString: ret.treeNode.canonicalString + " " + phi.treeNode.canonicalString + " " + gam.treeNode.canonicalString + " " + alp.treeNode.canonicalString, children: [ret.treeNode, phi.treeNode, gam.treeNode, alp.treeNode] } } // types must be checked at runtime since parser doesn't check them
 }
+const matchDefine = composeMatch([matchDefineP(matchConstDec), matchDefineP(matchVarDec)])
 const matchSetvar = (wrappedString) => {
     var phi = matchExpr(MPR)(wrappedString)
     if (phi.status !== "success") {
@@ -411,8 +420,8 @@ const matchFunbod = (wrappedString) => {
     }
     return { status: "success", next: phi.next, treeNode: {type: "function body", canonicalString: "{" + ret.treeNode.canonicalString + "}", children: ret.treeNode.children}}
 }
-const matchFundef = (wrappedString) => {
-    var ret = matchDec(wrappedString)
+const matchFundefP = (mDec) => (wrappedString) => {
+    var ret = mDec(wrappedString)
     if (ret.status !== "success") {
         return ret
     }
@@ -436,6 +445,7 @@ const matchFundef = (wrappedString) => {
     }
     return { status: "success", next: alp.next, treeNode: { type: "function declaration", canonicalString: ret.treeNode.canonicalString + " " + phi.treeNode.canonicalString + " " + gam.treeNode.canonicalString + " " + alp.treeNode.canonicalString, children: [ret.treeNode, phi.treeNode, gam.treeNode, alp.treeNode] } } // types must be checked at runtime since parser doesn't check them
 }
+const matchFundef = composeMatch([matchFundefP(matchConstDec), matchFundefP(matchVarDec)])
 const matchBrac = (wrappedString) => {
     var ret = matchOpP()(wrappedString)
     if (ret.status !== "success") {
@@ -669,7 +679,7 @@ const matchProgram = (wrappedString) => {
         return ret
     }
     ret.treeNode.type = "function body"
-    return { status: "success", next: ret.next, treeNode: { type: "parenthesized expression", canonicalString: ret.canonicalString, children: [ret.treeNode]}}
+    return { status: "success", next: ret.next, treeNode: { type: "parenthesized expression", canonicalString: ret.treeNode.canonicalString, children: [ret.treeNode]}}
 }
 //formal definition of operators
 //expr -> (expr)
