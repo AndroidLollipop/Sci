@@ -277,16 +277,21 @@ const evaluateExpression = (scc) => {
             if (expression.children[0] == undefined) {
                 return { type: "void" }
             }
-            var acc = unwrap(sco(expression.children[0]))
             if (expression.associativity == asscLeft) {
+                var acc = unwrap(sco(expression.children[0]))
                 for (var i = 1; i < expression.children.length; i+=2) {
                     acc = operate(acc, expression.children[i], unwrap(sco(expression.children[i+1])))
                 }
+                return acc
             }
-            else if (expression.children.length > 1) {
-                throw "something terrible happened"
+            else if (expression.associativity == asscRight) {
+                var acc = unwrap(sco(expression.children[expression.children.length-1]))
+                for (var i = expression.children.length-3; i > -1; i-=2) {
+                    acc = operate(unwrap(sco(expression.children[i])), expression.children[i+1], acc)
+                }
+                return acc
             }
-            return acc
+            return unwrap(sco(expression.children[0]))
         }
         else if (expression.type == "negated literal") {
             if (expression.children[0] == undefined) {

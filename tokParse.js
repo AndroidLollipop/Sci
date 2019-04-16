@@ -525,12 +525,12 @@ const matchOperClass = (operatorClassMatcher) => (operatorClassName) => (precede
     }
     return { status: "success", next: ret.next, treeNode: { type: "expression", canonicalString: phi.treeNode.canonicalString + ret.treeNode.canonicalString , children: [phi.treeNode, ret.treeNode]}}
 }
-const MPR = 0
-const mperPre = 4
-const aperPre = 3
-const gsthPre = 2
-const eneqPre = 1
-const anorPre = 0
+const MPR = 1
+const mperPre = 5
+const aperPre = 4
+const gsthPre = 3
+const eneqPre = 2
+const anorPre = 1
 const asscLeft = 0
 const asscRight = 1 // i thought about leftAssoc and rightAssoc but they don't align nicely
 // for optimization purposes we want our precedence levels to be nonnegative integers
