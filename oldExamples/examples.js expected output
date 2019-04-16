@@ -57,6 +57,7 @@
                canonicalString: 'p1+p2+p3+skye+scotland',
                children:
                 [ { type: 'expression',
+                    associativity: 0,
                     canonicalString: 'p1+p2+p3+skye+scotland',
                     children:
                      [ { type: 'identifier', canonicalString: 'p1', children: [] },
@@ -129,6 +130,7 @@
                          canonicalString: 'p1+p2+p3+p4+p5',
                          children:
                           [ { type: 'expression',
+                              associativity: 0,
                               canonicalString: 'p1+p2+p3+p4+p5',
                               children:
                                [ { type: 'identifier', canonicalString: 'p1', children: [] },
@@ -194,6 +196,7 @@
                          canonicalString: 'skye+1',
                          children:
                           [ { type: 'expression',
+                              associativity: 0,
                               canonicalString: 'skye+1',
                               children:
                                [ { type: 'identifier', canonicalString: 'skye', children: [] },
@@ -206,6 +209,7 @@
                          canonicalString: 'skye*multiplier',
                          children:
                           [ { type: 'expression',
+                              associativity: 0,
                               canonicalString: 'skye*multiplier',
                               children:
                                [ { type: 'identifier', canonicalString: 'skye', children: [] },
@@ -226,12 +230,14 @@
                canonicalString: 'start/multiplier-1',
                children:
                 [ { type: 'expression',
+                    associativity: 0,
                     canonicalString: 'start/multiplier-1',
                     children:
                      [ { type: 'expression',
                          canonicalString: 'start/multiplier',
                          children:
                           [ { type: 'expression',
+                              associativity: 0,
                               canonicalString: 'start/multiplier',
                               children:
                                [ { type: 'identifier', canonicalString: 'start', children: [] },
@@ -283,6 +289,7 @@
                          canonicalString: 'skye+1',
                          children:
                           [ { type: 'expression',
+                              associativity: 0,
                               canonicalString: 'skye+1',
                               children:
                                [ { type: 'identifier', canonicalString: 'skye', children: [] },
@@ -295,6 +302,7 @@
                          canonicalString: 'skye*multiplier',
                          children:
                           [ { type: 'expression',
+                              associativity: 0,
                               canonicalString: 'skye*multiplier',
                               children:
                                [ { type: 'identifier', canonicalString: 'skye', children: [] },
@@ -315,12 +323,14 @@
                canonicalString: 'start/multiplier-1',
                children:
                 [ { type: 'expression',
+                    associativity: 0,
                     canonicalString: 'start/multiplier-1',
                     children:
                      [ { type: 'expression',
                          canonicalString: 'start/multiplier',
                          children:
                           [ { type: 'expression',
+                              associativity: 0,
                               canonicalString: 'start/multiplier',
                               children:
                                [ { type: 'identifier', canonicalString: 'start', children: [] },
@@ -353,6 +363,7 @@
                canonicalString: 'skye+1',
                children:
                 [ { type: 'expression',
+                    associativity: 0,
                     canonicalString: 'skye+1',
                     children:
                      [ { type: 'identifier', canonicalString: 'skye', children: [] },
@@ -365,6 +376,7 @@
                canonicalString: 'skye*multiplier',
                children:
                 [ { type: 'expression',
+                    associativity: 0,
                     canonicalString: 'skye*multiplier',
                     children:
                      [ { type: 'identifier', canonicalString: 'skye', children: [] },
@@ -391,6 +403,7 @@
                canonicalString: 'skye+1',
                children:
                 [ { type: 'expression',
+                    associativity: 0,
                     canonicalString: 'skye+1',
                     children:
                      [ { type: 'identifier', canonicalString: 'skye', children: [] },
@@ -403,6 +416,7 @@
                canonicalString: 'skye*multiplier',
                children:
                 [ { type: 'expression',
+                    associativity: 0,
                     canonicalString: 'skye*multiplier',
                     children:
                      [ { type: 'identifier', canonicalString: 'skye', children: [] },
@@ -435,6 +449,7 @@
                canonicalString: 'skye+1',
                children:
                 [ { type: 'expression',
+                    associativity: 0,
                     canonicalString: 'skye+1',
                     children:
                      [ { type: 'identifier', canonicalString: 'skye', children: [] },
@@ -447,6 +462,7 @@
                canonicalString: 'skye*multiplier',
                children:
                 [ { type: 'expression',
+                    associativity: 0,
                     canonicalString: 'skye*multiplier',
                     children:
                      [ { type: 'identifier', canonicalString: 'skye', children: [] },
@@ -476,6 +492,7 @@
                canonicalString: '(n<3)',
                children:
                 [ { type: 'expression',
+                    associativity: 0,
                     canonicalString: 'n<3',
                     children:
                      [ { type: 'identifier', canonicalString: 'n', children: [] },
@@ -495,6 +512,7 @@
                canonicalString: 'slowFibonacci(n-1)+slowFibonacci(n-2)',
                children:
                 [ { type: 'expression',
+                    associativity: 0,
                     canonicalString: 'slowFibonacci(n-1)+slowFibonacci(n-2)',
                     children:
                      [ { type: 'function call',
@@ -510,6 +528,7 @@
                                    canonicalString: 'n-1',
                                    children:
                                     [ { type: 'expression',
+                                        associativity: 0,
                                         canonicalString: 'n-1',
                                         children:
                                          [ { type: 'identifier', canonicalString: 'n', children: [] },
@@ -529,6 +548,7 @@
                                    canonicalString: 'n-2',
                                    children:
                                     [ { type: 'expression',
+                                        associativity: 0,
                                         canonicalString: 'n-2',
                                         children:
                                          [ { type: 'identifier', canonicalString: 'n', children: [] },
@@ -556,6 +576,7 @@
                canonicalString: '(n<3)',
                children:
                 [ { type: 'expression',
+                    associativity: 0,
                     canonicalString: 'n<3',
                     children:
                      [ { type: 'identifier', canonicalString: 'n', children: [] },
@@ -572,6 +593,7 @@
                     canonicalString: 's(n-1)+s(n-2)',
                     children:
                      [ { type: 'expression',
+                         associativity: 0,
                          canonicalString: 's(n-1)+s(n-2)',
                          children:
                           [ { type: 'function call',
@@ -585,6 +607,7 @@
                                         canonicalString: 'n-1',
                                         children:
                                          [ { type: 'expression',
+                                             associativity: 0,
                                              canonicalString: 'n-1',
                                              children:
                                               [ { type: 'identifier', canonicalString: 'n', children: [] },
@@ -602,6 +625,7 @@
                                         canonicalString: 'n-2',
                                         children:
                                          [ { type: 'expression',
+                                             associativity: 0,
                                              canonicalString: 'n-2',
                                              children:
                                               [ { type: 'identifier', canonicalString: 'n', children: [] },
@@ -659,6 +683,7 @@
                canonicalString: '(n>2)',
                children:
                 [ { type: 'expression',
+                    associativity: 0,
                     canonicalString: 'n>2',
                     children:
                      [ { type: 'identifier', canonicalString: 'n', children: [] },
@@ -676,6 +701,7 @@
                          canonicalString: 'a+b',
                          children:
                           [ { type: 'expression',
+                              associativity: 0,
                               canonicalString: 'a+b',
                               children:
                                [ { type: 'identifier', canonicalString: 'a', children: [] },
@@ -702,6 +728,7 @@
                          canonicalString: 'n-1',
                          children:
                           [ { type: 'expression',
+                              associativity: 0,
                               canonicalString: 'n-1',
                               children:
                                [ { type: 'identifier', canonicalString: 'n', children: [] },
@@ -740,6 +767,7 @@
                canonicalString: '(1==1)',
                children:
                 [ { type: 'expression',
+                    associativity: 0,
                     canonicalString: '1==1',
                     children:
                      [ { type: 'integral literal', canonicalString: '1', children: [] },
@@ -757,6 +785,7 @@
                          canonicalString: 'n+1',
                          children:
                           [ { type: 'expression',
+                              associativity: 0,
                               canonicalString: 'n+1',
                               children:
                                [ { type: 'identifier', canonicalString: 'n', children: [] },
@@ -769,6 +798,7 @@
                          canonicalString: '(n>5)',
                          children:
                           [ { type: 'expression',
+                              associativity: 0,
                               canonicalString: 'n>5',
                               children:
                                [ { type: 'identifier', canonicalString: 'n', children: [] },
@@ -816,6 +846,7 @@
                     canonicalString: '(1==1)',
                     children:
                      [ { type: 'expression',
+                         associativity: 0,
                          canonicalString: '1==1',
                          children:
                           [ { type: 'integral literal', canonicalString: '1', children: [] },
@@ -833,6 +864,7 @@
                               canonicalString: 'n+1',
                               children:
                                [ { type: 'expression',
+                                   associativity: 0,
                                    canonicalString: 'n+1',
                                    children:
                                     [ { type: 'identifier', canonicalString: 'n', children: [] },
@@ -845,6 +877,7 @@
                               canonicalString: '(n>5)',
                               children:
                                [ { type: 'expression',
+                                   associativity: 0,
                                    canonicalString: 'n>5',
                                    children:
                                     [ { type: 'identifier', canonicalString: 'n', children: [] },
@@ -886,6 +919,7 @@
           canonicalString: '1+while (1==1){n = n+1;if (n>5){return 1;};}',
           children:
            [ { type: 'expression',
+               associativity: 0,
                canonicalString: '1+while (1==1){n = n+1;if (n>5){return 1;};}',
                children:
                 [ { type: 'integral literal', canonicalString: '1', children: [] },
@@ -897,6 +931,7 @@
                          canonicalString: '(1==1)',
                          children:
                           [ { type: 'expression',
+                              associativity: 0,
                               canonicalString: '1==1',
                               children:
                                [ { type: 'integral literal', canonicalString: '1', children: [] },
@@ -914,6 +949,7 @@
                                    canonicalString: 'n+1',
                                    children:
                                     [ { type: 'expression',
+                                        associativity: 0,
                                         canonicalString: 'n+1',
                                         children:
                                          [ { type: 'identifier', canonicalString: 'n', children: [] },
@@ -926,6 +962,7 @@
                                    canonicalString: '(n>5)',
                                    children:
                                     [ { type: 'expression',
+                                        associativity: 0,
                                         canonicalString: 'n>5',
                                         children:
                                          [ { type: 'identifier', canonicalString: 'n', children: [] },
