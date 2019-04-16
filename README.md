@@ -66,19 +66,27 @@ output:
 { type: 'number', value: 399 }
 ## example output for tokparse (ast constructor)
 ### string declaration
-youClod(matchDefine(wrapString("str autism = 'you'"))) ->  
-{ status: 'success',  
-  next: \[ 18, 'str autism = \'you\'' \],  
-  treeNode:  
-   { type: 'variable declaration',  
-     canonicalString: 'str autism = \'you\'',  
-     children:  
-      \[ { type: 'string declaration', canonicalString: 'str', children: \[\] },  
-        { type: 'identifier', canonicalString: 'autism', children: \[\] },  
-        { type: 'equals', canonicalString: '=', children: \[\] },  
-        { type: 'string literal',  
-          canonicalString: '\'you\'',  
-          children: \[ { type: 'alphanumeric literal', canonicalString: 'you', children: \[\] } \] } \] } }
+`youClod(matchDefine(wrapString("str autism = 'you'")))` ->  
+```
+{ status: 'success',
+  next: [ 18, 'str autism = \'you\'' ],
+  treeNode:
+   { type: 'variable declaration',
+     canonicalString: 'str autism = \'you\'',
+     children:
+      [ { type: 'typed declaration',
+          canonicalString: 'str',
+          children: [],
+          declaredType: 'str' },
+        { type: 'identifier', canonicalString: 'autism', children: [] },
+        { type: 'equals', canonicalString: '=', children: [] },
+        { type: 'string literal',
+          canonicalString: '\'you\'',
+          children:
+           [ { type: 'alphanumeric literal',
+               canonicalString: 'you',
+               children: [] } ] } ] } }
+```
 ### expression
 youClod(matchExpr(wrapString("(123\*456)+(789\*012)"))) ->  
 { status: 'success',  
