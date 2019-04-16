@@ -77,7 +77,7 @@ const asscLeftOperate = (sco, scc) => (p1, op, p2) => {
 const asscRightOperate = (sco, scc) => (p1, op, p2) => {
     const [scopeGetter, scopeSetter, scopeDefiner] = scc
     if (op.canonicalString == "=") {
-        const expRes = p2
+        const expRes = p2 // for clarity (and to ensure that the comments make sense)
         if (p1.type == "array access") {
             const arrRes = sco(p1.children[0])
             if (arrRes.setter == undefined) {
