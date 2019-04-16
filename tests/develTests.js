@@ -134,6 +134,14 @@ const num z(x) { \
     print(x) \
 } \
 z(1) \
+num aa = 1 \
+num ab = 1 \
+aa = ab = 2 \
+print(aa) \
+print(ab) \
+aa = (ab = 1)+1 \
+print(aa) \
+print(ab) \
 print('no showstoppers occurred')")
 // operator precedence levels (you can find this in tokParse.js)
 // level 4: * /
