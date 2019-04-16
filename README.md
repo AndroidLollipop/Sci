@@ -10,8 +10,8 @@ cd to this repository in your shell and run "node exampleProgram.js"
 ### closures!
 var e = require("./simpleAndCleanInterfaceForRepl.js")  
 var repl = e.getRepl()  
-console.log(repl("num closure(){num add(){skye = skye + 1; return skye}; num skye = 1; return add}"))  
-console.log(repl("num clo = closure()"))  
+console.log(repl("var closure(){num add(){skye = skye + 1; return skye}; num skye = 1; return add}"))  
+console.log(repl("var clo = closure()"))  
 console.log(repl("clo()"))  
 console.log(repl("clo()"))  
 console.log(repl("clo()"))  
@@ -32,7 +32,7 @@ console.log(repl("slowFibonacci(10)"))
 output:  
 { type: 'number', value: 55 }
 ## important files
-see exampleProgram.js for an example program  
+see exampleProgram.js for an example program and tests/develTests.js for a feature demonstration  
 the parser is defined in tokParse.js  
 the ast evaluator is defined in astEval.js
 ## example output for repl (ok, more like a pseudo-repl)
