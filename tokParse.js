@@ -695,3 +695,4 @@ module.exports = {
 // fold over expression, force higher precedence level and consume operators (tree) operator expression(precedenceHigherThanOperator) -> ((tree) operator expression)
 // plan 2: continue using inelegant flat format
 // append over expression, force higher precedence level and consume operators (tree) operator expression(precedenceHigherThanOperator) -> (tree).append(operator).append(expression)
+// plan 2 implemented
