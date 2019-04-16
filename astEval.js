@@ -1,4 +1,6 @@
 // see tokparse.js for ast definition
+const asscLeft = 0
+const asscRight = 1 // maybe i should split these into a constants file
 const truthy = (v) => v&&!!v.value // we can easily modify/extend this
 const operate = (p1, op, p2) => {
     if (op.canonicalString == "+") {
@@ -276,8 +278,13 @@ const evaluateExpression = (scc) => {
                 return { type: "void" }
             }
             var acc = unwrap(sco(expression.children[0]))
-            for (var i = 1; i < expression.children.length; i+=2) {
-                acc = operate(acc, expression.children[i], unwrap(sco(expression.children[i+1])))
+            if (expression.associativity == asscLeft) {
+                for (var i = 1; i < expression.children.length; i+=2) {
+                    acc = operate(acc, expression.children[i], unwrap(sco(expression.children[i+1])))
+                }
+            }
+            else if (expression.children.length > 1) {
+                throw "something terrible happened"
             }
             return acc
         }
