@@ -73,6 +73,7 @@ const matchAs = matchTerminals("+-")
 const matchAo = matchTerminalStrings(["&&", "||"])
 const matchEn = matchTerminalStrings(["==", "!="])
 const matchGs = matchTerminalStrings([">", "<", ">=", "<="])
+const matchSe = matchTerminalStrings(["="])
 const matchOpB = matchTerminal("{")
 const matchClB = matchTerminal("}")
 const matchOpA = matchTerminal("[")
@@ -525,12 +526,13 @@ const matchOperClass = (operatorClassMatcher) => (operatorClassName) => (precede
     }
     return { status: "success", next: ret.next, treeNode: { type: "expression", canonicalString: phi.treeNode.canonicalString + ret.treeNode.canonicalString , children: [phi.treeNode, ret.treeNode]}}
 }
-const MPR = 1
+const MPR = 0
 const mperPre = 5
 const aperPre = 4
 const gsthPre = 3
 const eneqPre = 2
 const anorPre = 1
+const esetPre = 0
 const asscLeft = 0
 const asscRight = 1 // i thought about leftAssoc and rightAssoc but they don't align nicely
 // for optimization purposes we want our precedence levels to be nonnegative integers
@@ -539,12 +541,14 @@ const matchAper = matchOperClass(matchAs)("operator: as")(aperPre)
 const matchGsth = matchOperClass(matchGs)("operator: gs")(gsthPre)
 const matchEneq = matchOperClass(matchEn)("operator: en")(eneqPre)
 const matchAnor = matchOperClass(matchAo)("operator: ao")(anorPre)
+const matchEset = matchOperClass(matchSe)("operator: se")(esetPre)
 const operatorMatchers = [
     { matcher: matchMper, precedenceLevel: mperPre, associativity: asscLeft },
     { matcher: matchAper, precedenceLevel: aperPre, associativity: asscLeft },
     { matcher: matchGsth, precedenceLevel: gsthPre, associativity: asscLeft },
     { matcher: matchEneq, precedenceLevel: eneqPre, associativity: asscLeft },
-    { matcher: matchAnor, precedenceLevel: anorPre, associativity: asscLeft }
+    { matcher: matchAnor, precedenceLevel: anorPre, associativity: asscLeft },
+    { matcher: matchEset, precedenceLevel: esetPre, associativity: asscRight }
 ]
 const matchExpr = (minPrecedenceLevel) => (wrappedString) => {
     const failureWrappedString = wrappedString

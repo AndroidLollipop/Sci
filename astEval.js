@@ -2,7 +2,8 @@
 const asscLeft = 0
 const asscRight = 1 // maybe i should split these into a constants file
 const truthy = (v) => v&&!!v.value // we can easily modify/extend this
-const operate = (p1, op, p2) => {
+const asscLeftOperate = (sco, scc) => (p1, op, p2) => {
+    p2 = unwrap(sco(p2))
     if (op.canonicalString == "+") {
         if (p1.type == p2.type) {
             return { type: p1.type, value: p1.value + p2.value }
@@ -70,6 +71,32 @@ const operate = (p1, op, p2) => {
             return { type: "boolean", value: true }
         }
         return { type: "boolean", value: false }
+    }
+    return { type: "void" }
+}
+const asscRightOperate = (sco, scc) => (p1, op, p2) => {
+    const [scopeGetter, scopeSetter, scopeDefiner] = scc
+    if (op.canonicalString == "=") {
+        const expRes = p2
+        if (p1.type == "array access") {
+            const arrRes = sco(p1.children[0])
+            if (arrRes.setter == undefined) {
+                return { type: "void" }
+            }
+            arrRes.setter(sco(p1.children[1].children[0]), unattr(expRes))
+            return expRes // we need to return traited expRes
+        }
+        else if (p1.type == "identifier") {
+            const typecheck = scopeGetter(".typeof" + p1.canonicalString)
+            if (typecheck.type == "typecheck" && expRes.type !== typeMap[typecheck.value] && typecheck.value !== "any") {
+                throw "TypeError: expression type, " + expRes.type + " did not match declared type, " + typeMap[typecheck.value] + " for variable " + p1.canonicalString
+            }
+            scopeSetter(p1.canonicalString, unattr(expRes))
+            return expRes
+        }
+        return { type: "void" } // someone tried to do something like 1 = 2
+        // an interesting quirk is that 1 = print(1) would print something
+        // but this is edge case behaviour and doesn't really matter
     }
     return { type: "void" }
 }
@@ -231,35 +258,6 @@ const evaluateExpression = (scc) => {
             }
             return expRes
         }
-        else if (expression.type == "variable set") {
-            const expRes = sco(expression.children[2])
-            // the result is always computed first.
-            // this is unlike javascript, where the array index is computed first (i tested this)
-            // javascript test code:
-            // [][console.log("index computed")] = console.log("value computed")
-            // logs to console:
-            // index computed
-            // value computed
-            if (expression.children[0].type == "array access") {
-                const arrRes = sco(expression.children[0].children[0])
-                if (arrRes.setter == undefined) {
-                    return { type: "void" }
-                }
-                arrRes.setter(sco(expression.children[0].children[1].children[0]), unattr(expRes))
-                return expRes // we need to return traited expRes
-            }
-            else if (expression.children[0].type == "identifier") {
-                const typecheck = scopeGetter(".typeof" + expression.children[0].canonicalString)
-                if (typecheck.type == "typecheck" && expRes.type !== typeMap[typecheck.value] && typecheck.value !== "any") {
-                    throw "TypeError: expression type, " + expRes.type + " did not match declared type, " + typeMap[typecheck.value] + " for variable " + expression.children[0].canonicalString
-                }
-                scopeSetter(expression.children[0].canonicalString, unattr(expRes))
-                return expRes
-            }
-            return { type: "void" } // someone tried to do something like 1 = 2
-            // an interesting quirk is that 1 = print(1) would print something
-            // but this is edge case behaviour and doesn't really matter
-        }
         else if (expression.type == "array access") {
             const arrRes = sco(expression.children[0])
             if (arrRes.getter == undefined) {
@@ -280,14 +278,14 @@ const evaluateExpression = (scc) => {
             if (expression.associativity == asscLeft) {
                 var acc = unwrap(sco(expression.children[0]))
                 for (var i = 1; i < expression.children.length; i+=2) {
-                    acc = operate(acc, expression.children[i], unwrap(sco(expression.children[i+1])))
+                    acc = asscLeftOperate(sco, scc)(acc, expression.children[i], expression.children[i+1])
                 }
                 return acc
             }
             else if (expression.associativity == asscRight) {
                 var acc = unwrap(sco(expression.children[expression.children.length-1]))
                 for (var i = expression.children.length-3; i > -1; i-=2) {
-                    acc = operate(unwrap(sco(expression.children[i])), expression.children[i+1], acc)
+                    acc = asscRightOperate(sco, scc)(expression.children[i], expression.children[i+1], acc)
                 }
                 return acc
             }
