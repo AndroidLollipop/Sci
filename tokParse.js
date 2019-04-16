@@ -531,6 +531,8 @@ const aperPre = 3
 const gsthPre = 2
 const eneqPre = 1
 const anorPre = 0
+const asscLeft = 0
+const asscRight = 1 // i thought about leftAssoc and rightAssoc but they don't align nicely
 // for optimization purposes we want our precedence levels to be nonnegative integers
 const matchMper = matchOperClass(matchDm)("operator: dm")(mperPre)
 const matchAper = matchOperClass(matchAs)("operator: as")(aperPre)
@@ -538,11 +540,11 @@ const matchGsth = matchOperClass(matchGs)("operator: gs")(gsthPre)
 const matchEneq = matchOperClass(matchEn)("operator: en")(eneqPre)
 const matchAnor = matchOperClass(matchAo)("operator: ao")(anorPre)
 const operatorMatchers = [
-    { matcher: matchMper, precedenceLevel: mperPre },
-    { matcher: matchAper, precedenceLevel: aperPre },
-    { matcher: matchGsth, precedenceLevel: gsthPre },
-    { matcher: matchEneq, precedenceLevel: eneqPre },
-    { matcher: matchAnor, precedenceLevel: anorPre }
+    { matcher: matchMper, precedenceLevel: mperPre, associativity: asscLeft },
+    { matcher: matchAper, precedenceLevel: aperPre, associativity: asscLeft },
+    { matcher: matchGsth, precedenceLevel: gsthPre, associativity: asscLeft },
+    { matcher: matchEneq, precedenceLevel: eneqPre, associativity: asscLeft },
+    { matcher: matchAnor, precedenceLevel: anorPre, associativity: asscLeft }
 ]
 const matchExpr = (minPrecedenceLevel) => (wrappedString) => {
     const failureWrappedString = wrappedString
@@ -590,10 +592,10 @@ const matchExpr = (minPrecedenceLevel) => (wrappedString) => {
             tem = operatorMatchers[i].matcher(phi.next)
             if (tem.status == "success") {
                 if (minPrecedenceLevel == operatorMatchers[i].precedenceLevel) {
-                    return { status: "success", next: tem.next, treeNode: { type: "expression", canonicalString: phi.treeNode.canonicalString + tem.treeNode.canonicalString, children: [phi.treeNode].concat(tem.treeNode.children)}}
+                    return { status: "success", next: tem.next, treeNode: { type: "expression", associativity: operatorMatchers[i].associativity, canonicalString: phi.treeNode.canonicalString + tem.treeNode.canonicalString, children: [phi.treeNode].concat(tem.treeNode.children)}}
                 }
                 else {
-                    phi = { status: "success", next: tem.next, treeNode: { type: "expression", canonicalString: phi.treeNode.canonicalString + tem.treeNode.canonicalString, children: [{ type: "expression", canonicalString: phi.treeNode.canonicalString + tem.treeNode.canonicalString, children: [phi.treeNode].concat(tem.treeNode.children)}]}}
+                    phi = { status: "success", next: tem.next, treeNode: { type: "expression", canonicalString: phi.treeNode.canonicalString + tem.treeNode.canonicalString, children: [{ type: "expression", associativity: operatorMatchers[i].associativity, canonicalString: phi.treeNode.canonicalString + tem.treeNode.canonicalString, children: [phi.treeNode].concat(tem.treeNode.children)}]}}
                 }
             }
         }
