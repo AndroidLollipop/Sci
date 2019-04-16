@@ -350,23 +350,6 @@ const matchDefineP = (mDec) => (wrappedString) => {
     return { status: "success", next: alp.next, treeNode: { type: "variable declaration", canonicalString: ret.treeNode.canonicalString + " " + phi.treeNode.canonicalString + " " + gam.treeNode.canonicalString + " " + alp.treeNode.canonicalString, children: [ret.treeNode, phi.treeNode, gam.treeNode, alp.treeNode] } } // types must be checked at runtime since parser doesn't check them
 }
 const matchDefine = composeMatch([matchDefineP(matchConstDec), matchDefineP(matchVarDec)])
-const matchSetvar = (wrappedString) => {
-    var phi = matchExpr(MPR)(wrappedString)
-    if (phi.status !== "success") {
-        return phi
-    }
-    phi.next = matchWhitespace()(phi.next).next
-    var gam = matchDef("equals")(phi.next)
-    if (gam.status !== "success") { // yes, i am aware that maybe i should add an undefined checker to the start of every function to avoid doing this
-        return { status: "failure", next: wrappedString }
-    }
-    gam.next = matchWhitespace()(gam.next).next
-    var alp = matchExpr(MPR)(gam.next)
-    if (alp.status !== "success") {
-        return { status: "failure", next: wrappedString }
-    }
-    return { status: "success", next: alp.next, treeNode: { type: "variable set", canonicalString: phi.treeNode.canonicalString + " " + gam.treeNode.canonicalString + " " + alp.treeNode.canonicalString, children: [phi.treeNode, gam.treeNode, alp.treeNode] } } // types must be checked at runtime since parser doesn't check them
-}
 const matchParamd = (wrappedString) => {
     var ret = matchOpP()(wrappedString)
     if (ret.status !== "success") {
@@ -489,9 +472,6 @@ const matchBrae = (wrappedString) => {
         }
         if (tem.status !== "success") {
             tem = matchDefine(ret.next)
-        }
-        if (tem.status !== "success") {
-            tem = matchSetvar(ret.next)
         }
         if (tem.status !== "success") {
             tem = matchExpr(MPR)(ret.next)
