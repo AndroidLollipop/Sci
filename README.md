@@ -8,62 +8,74 @@ clone this repository
 cd to this repository in your shell and run "node exampleProgram.js"
 ## the most legit thing that this can do right now
 ### closures!
-var e = require("./simpleAndCleanInterfaceForRepl.js")  
-var repl = e.getRepl()  
-console.log(repl("var closure(){num add(){skye = skye + 1; return skye}; num skye = 1; return add}"))  
-console.log(repl("var clo = closure()"))  
-console.log(repl("clo()"))  
-console.log(repl("clo()"))  
-console.log(repl("clo()"))  
-//skye is trapped  
-console.log(repl("skye"))  
+```
+var e = require("./simpleAndCleanInterfaceForRepl.js")
+var repl = e.getRepl()
+console.log(repl("var closure(){num add(){skye = skye + 1; return skye}; num skye = 1; return add}"))
+console.log(repl("var clo = closure()"))
+console.log(repl("clo()"))
+console.log(repl("clo()"))
+console.log(repl("clo()"))
+//skye is trapped
+console.log(repl("skye"))
+```
   
 output:  
-{ type: 'number', value: 2 }  
-{ type: 'number', value: 3 }  
-{ type: 'number', value: 4 }  
+```
+{ type: 'number', value: 2 }
+{ type: 'number', value: 3 }
+{ type: 'number', value: 4 }
 { type: 'undefined' } <- this is expected! this shows that skye is not in the global scope
+```
 ### recursion!
-var e = require("./simpleAndCleanInterfaceForRepl.js")  
-var repl = e.getRepl()  
-console.log(repl("num slowFibonacci(n){if(n < 3){return 1};return slowFibonacci(n-1)+slowFibonacci(n-2)}"))  
-console.log(repl("slowFibonacci(10)"))  
+```
+var e = require("./simpleAndCleanInterfaceForRepl.js")
+var repl = e.getRepl()
+console.log(repl("num slowFibonacci(n){if(n < 3){return 1};return slowFibonacci(n-1)+slowFibonacci(n-2)}"))
+console.log(repl("slowFibonacci(10)"))
+```
   
 output:  
+```
 { type: 'number', value: 55 }
+```
 ## important files
 see exampleProgram.js for an example program and tests/develTests.js for a feature demonstration  
 the parser is defined in tokParse.js  
 the ast evaluator is defined in astEval.js
 ## example output for repl (ok, more like a pseudo-repl)
-var e = require("./simpleAndCleanInterfaceForRepl.js")  
-var repl = e.getRepl()  
-console.log(repl("(123\*456)+(789\*0.12)"))  
-console.log(repl("num camila = 5"))  
-console.log(repl("camila"))  
-console.log(repl("num young = 7+3\*6"))  
-console.log(repl("young"))  
-console.log(repl("num havana = camila + young"))  
-console.log(repl("havana"))  
-console.log(repl("str youAre = 'autistic'"))  
-console.log(repl("((1+2)\*(3+(4\*5)))+havana"))  
-console.log(repl("1+2-3+4-5"))  
-console.log(repl("7+3\*6\*7\*9"))  
-console.log(repl("7\*3+6\*7\*9"))  
+```
+var e = require("./simpleAndCleanInterfaceForRepl.js")
+var repl = e.getRepl()
+console.log(repl("(123*456)+(789*0.12)"))
+console.log(repl("num camila = 5"))
+console.log(repl("camila"))
+console.log(repl("num young = 7+3*6"))
+console.log(repl("young"))
+console.log(repl("num havana = camila + young"))
+console.log(repl("havana"))
+console.log(repl("str youAre = 'autistic'"))
+console.log(repl("((1+2)*(3+(4*5)))+havana"))
+console.log(repl("1+2-3+4-5"))
+console.log(repl("7+3*6*7*9"))
+console.log(repl("7*3+6*7*9"))
+```
   
 output:  
-{ type: 'number', value: 56182.68 }  
-{ type: 'number', value: 5 }  
-{ type: 'number', value: 5 }  
-{ type: 'number', value: 25 }  
-{ type: 'number', value: 25 }  
-{ type: 'number', value: 30 }  
-{ type: 'number', value: 30 }  
-{ type: 'string', value: 'autistic' }  
-{ type: 'number', value: 99 }  
-{ type: 'number', value: -1 }  
-{ type: 'number', value: 1141 }  
+```
+{ type: 'number', value: 56182.68 }
+{ type: 'number', value: 5 }
+{ type: 'number', value: 5 }
+{ type: 'number', value: 25 }
+{ type: 'number', value: 25 }
+{ type: 'number', value: 30 }
+{ type: 'number', value: 30 }
+{ type: 'string', value: 'autistic' }
+{ type: 'number', value: 99 }
+{ type: 'number', value: -1 }
+{ type: 'number', value: 1141 }
 { type: 'number', value: 399 }
+```
 ## example output for tokparse (ast constructor) using interface provided in oldExamples/miscExamples.js
 ### string declaration
 `youClod(t.matchDefine(wrapString("str autism = 'you'")))` ->  
