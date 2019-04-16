@@ -142,6 +142,10 @@ print(ab) \
 aa = (ab = 1)+1 \
 print(aa) \
 print(ab) \
+var aa = [0] \
+aa[0] = (ab = 0)+1 \
+print(aa) \
+print(ab) \
 print('no showstoppers occurred')")
 // operator precedence levels (you can find this in tokParse.js)
 // level 4: * /
