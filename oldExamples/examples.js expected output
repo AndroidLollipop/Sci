@@ -582,7 +582,7 @@
                canonicalString: '{1;}',
                children:
                 [ { type: 'integral literal', canonicalString: '1', children: [] } ] },
-             { type: 'function body',
+             { type: 'block body',
                canonicalString: '{s(n-1)+s(n-2);}',
                children:
                 [ { type: 'expression',
