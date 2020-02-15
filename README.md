@@ -42,7 +42,7 @@ output:
 See exampleProgram.js for an example program and tests/develTests.js for a feature demonstration  
 The parser is defined in tokParse.js  
 The ast evaluator is defined in astEval.js
-## Example output for repl (ok, more like a pseudo-repl)
+## Example output for repl
 ```
 var e = require("./simpleAndCleanInterfaceForRepl.js")
 var repl = e.getRepl()
