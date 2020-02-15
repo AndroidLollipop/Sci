@@ -133,9 +133,9 @@ catch(e) {
 try {
     repl("if (true) { \
     let const n = 2 \
-        if (true) { \
-            n = 3 \
-        } \
+    if (true) { \
+        n = 3 \
+    } \
 }") // this should fail since trait of n is const
     passed = 0
 }
