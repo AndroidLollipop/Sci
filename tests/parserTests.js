@@ -66,3 +66,14 @@ var inc(n) { \
 print('for church numerals, application is exponentiation') \
 print('church 5 applied to church 5 is church') \
 print(church(5)(church(5))(inc)(0))")
+c("let a = 1 \
+let const = 1 \
+let var = 1 \
+let num = 1 \
+let const a = 1 \
+let const var = 1 \
+let const num = 1 \
+let var a = 1 \
+let num a = 1 \
+let const var a = 1 \
+let const num a = 1")

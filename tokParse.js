@@ -89,6 +89,7 @@ const matchDnu = matchTerminalStrings(["num"])("typed declaration")
 const matchDbo = matchTerminalStrings(["bool"])("typed declaration")
 const matchStr = matchTerminalStrings(["str"])("typed declaration")
 const matchVar = matchTerminalStrings(["var"])("untyped declaration")
+const matchLet = matchTerminalStrings(["let"])("block declaration")
 const matchSep = matchTerminal(";")
 const matchCes = (wrappedString) => {
     var ret = matchEsc("escape literal")(wrappedString)
@@ -323,6 +324,32 @@ const matchConstDec = (wrappedString) => {
     }
     return { status: "success", next: phi.next, treeNode: { type: phi.status == "success" ? phi.treeNode.type : "variable declaration", declaredType: phi.status == "success" ? phi.treeNode.canonicalString : "any", canonicalString: phi.status == "success" ? ret.treeNode.canonicalString + " " + phi.treeNode.canonicalString : ret.treeNode.canonicalString, children: [{ type: "constant declaration", canonicalString: "const" }] } }
 }
+const matchLetDec = (wrappedString) => {
+    var ret = matchLet(wrappedString)
+    if (ret.status !== "success") {
+        return ret
+    }
+    var teo = matchWhitespace()(ret.next)
+    if (teo.status !== "success") {
+        return { status: "failure", next: wrappedString }
+    }
+    var phi = matchConstDec(teo.next)
+    var tem = matchWhitespace()(phi.next)
+    var gam = matchIdentifier(tem.next)
+    if (phi.status === "success" && tem.status === "success" && gam.status === "success") {
+        return { status: "success", next: phi.next, treeNode: { ...phi.treeNode, canonicalString: ret.treeNode.canonicalString + " " + phi.treeNode.canonicalString, children: [phi.treeNode.children[0], { type: "block declaration", canonicalString: "let" }] } }
+    }
+    phi = matchTypeDec(teo.next)
+    tem = matchWhitespace()(phi.next)
+    gam = matchIdentifier(tem.next)
+    if (phi.status !== "success" || tem.status !== "success" || gam.status !== "success") {
+        phi.next = ret.next
+        phi.status = "failure"
+    }
+    var arr = []
+    arr[1] = { type: "block declaration", canonicalString: "let" }
+    return { status: "success", next: phi.next, treeNode: { type: phi.status == "success" ? phi.treeNode.type : "variable declaration", declaredType: phi.status == "success" ? phi.treeNode.canonicalString : "any", canonicalString: phi.status == "success" ? ret.treeNode.canonicalString + " " + phi.treeNode.canonicalString : ret.treeNode.canonicalString, children: arr } }
+}
 const matchLit = composeMatch([matchNegatedLiteral, matchFloatLiteral, matchStringLiteral, matchArrayLiteral, matchBooleanLiteral])
 const matchDefineP = (mDec) => (wrappedString) => {
     var ret = mDec(wrappedString)
@@ -349,7 +376,7 @@ const matchDefineP = (mDec) => (wrappedString) => {
     }
     return { status: "success", next: alp.next, treeNode: { type: "variable declaration", canonicalString: ret.treeNode.canonicalString + " " + phi.treeNode.canonicalString + " " + gam.treeNode.canonicalString + " " + alp.treeNode.canonicalString, children: [ret.treeNode, phi.treeNode, gam.treeNode, alp.treeNode] } } // types must be checked at runtime since parser doesn't check them
 }
-const matchDefine = composeMatch([matchDefineP(matchConstDec), matchDefineP(matchVarDec)])
+const matchDefine = composeMatch([matchDefineP(matchLetDec), matchDefineP(matchConstDec), matchDefineP(matchVarDec)])
 const matchParamd = (wrappedString) => {
     var ret = matchOpP()(wrappedString)
     if (ret.status !== "success") {
@@ -423,7 +450,7 @@ const matchFundefP = (mDec) => (wrappedString) => {
     }
     return { status: "success", next: alp.next, treeNode: { type: "function declaration", canonicalString: ret.treeNode.canonicalString + " " + phi.treeNode.canonicalString + " " + gam.treeNode.canonicalString + " " + alp.treeNode.canonicalString, children: [ret.treeNode, phi.treeNode, gam.treeNode, alp.treeNode] } } // types must be checked at runtime since parser doesn't check them
 }
-const matchFundef = composeMatch([matchFundefP(matchConstDec), matchFundefP(matchVarDec)])
+const matchFundef = composeMatch([matchFundefP(matchLetDec), matchFundefP(matchConstDec), matchFundefP(matchVarDec)])
 const matchBrac = (wrappedString) => {
     var ret = matchOpP()(wrappedString)
     if (ret.status !== "success") {
