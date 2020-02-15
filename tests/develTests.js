@@ -146,6 +146,13 @@ var aa = [0] \
 aa[0] = (ab = 0)+1 \
 print(aa) \
 print(ab) \
+print('sep') \
+let a = 1 \
+if (true) { \
+    let a = 2 \
+    print(a) \
+} \
+print(a) \
 print('no showstoppers occurred')")
 // operator precedence levels (you can find this in tokParse.js)
 // level 4: * /

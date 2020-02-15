@@ -77,3 +77,4 @@ let var a = 1 \
 let num a = 1 \
 let const var a = 1 \
 let const num a = 1")
+c("if(true){}")

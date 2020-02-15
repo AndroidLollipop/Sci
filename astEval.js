@@ -118,9 +118,13 @@ const setpro = (typ) => {
 }
 const emptyScope = (predict) => { // i know, predict is a fitting name
     var scopeDict = predict !== undefined ? predict : {}
-    return ([(name) => scopeDict[name] !== undefined ? scopeDict[name] : { type: "undefined" }, (name, value) => scopeDict[name] == undefined || scopeDict[name].protected !== true ? scopeDict[name] = value : (()=>{throw "TypeError: attempted reassignment of constant " + name})(), (name, value) => scopeDict[name] == undefined || scopeDict[name].protected !== true ? scopeDict[name] = value : (()=>{throw "TypeError: attempted reassignment of constant " + name})()])
+    return ([(name) => scopeDict[name] !== undefined ? scopeDict[name] : { type: "undefined" }, (name, value) => scopeDict[name] == undefined || scopeDict[name].protected !== true ? scopeDict[name] = value : (()=>{throw "TypeError: attempted reassignment of constant " + name})(), (name, value) => scopeDict[name] == undefined || scopeDict[name].protected !== true ? scopeDict[name] = value : (()=>{throw "TypeError: attempted reassignment of constant " + name})(), (name, value) => scopeDict[name] == undefined || scopeDict[name].protected !== true ? scopeDict[name] = value : (()=>{throw "TypeError: attempted reassignment of constant " + name})()])
 }
-const adjoinScope = ([scopeGetter, scopeSetter, scopeDefiner]) => ([newScopeGetter, newScopeSetter, newScopeDefiner]) => {
+const emptyBlock = (predict) => {
+    var blockDict = predict !== undefined ? predict : {}
+    return ([(name) => blockDict[name] !== undefined ? blockDict[name] : { type: "undefined" }, (name, value) => blockDict[name] == undefined || blockDict[name].protected !== true ? blockDict[name] = value : (()=>{throw "TypeError: attempted reassignment of constant " + name})()])
+}
+const adjoinScope = ([scopeGetter, scopeSetter, scopeDefiner, blockSefiner]) => ([newScopeGetter, newScopeSetter, newScopeDefiner, newBlockSefiner]) => {
     return ([(name) => {
         if (newScopeGetter(name).type == "undefined") {
             return scopeGetter(name)
@@ -135,8 +139,25 @@ const adjoinScope = ([scopeGetter, scopeSetter, scopeDefiner]) => ([newScopeGett
             return scopeSetter(name, value)
         }
         return newScopeSetter(name, value)
-    }, newScopeDefiner])
+    }, newScopeDefiner, newBlockSefiner])
 } // i imagine this is how scope is implemented in javascript, and that explains why setting an undeclared variable makes it global
+const adjoinBlock = ([scopeGetter, scopeSetter, scopeDefiner, blockSefiner]) => ([newBlockGetter, newBlockSefiner]) => {
+    return ([(name) => {
+        if (newBlockGetter(name).type == "undefined") {
+            return scopeGetter(name)
+        }
+        return newBlockGetter(name)
+    }, (name, value) => {
+        var res = newBlockGetter(name)
+        if (res.protected == true) {
+            throw "TypeError: attempted reassignment of constant " + name
+        }
+        if (res.type == "undefined") {
+            return scopeSetter(name, value)
+        }
+        return newBlockSefiner(name, value)
+    }, scopeDefiner, newBlockSefiner])
+}
 const defineInScope = (sco) => (identifiers) => ([scopeGetter, scopeSetter, scopeDefiner]) => (expressions) => {
     for (var i = 0; i < identifiers.children.length; i++) {
         if (expressions.children[i] == undefined) {
@@ -156,19 +177,20 @@ const typeMap = {
     bool: "boolean"
 }
 const evaluateExpression = (scc) => {
-    const [scopeGetter, scopeSetter, scopeDefiner] = scc
+    const [scopeGetter, scopeSetter, scopeDefiner, blockSefiner] = scc
     const sco = (expression) => {
         if (expression.type == "function declaration") {
+            const definer = expression.children[0].children && expression.children[0].children[1] && expression.children[0].children[1].type == "block declaration" ? blockSefiner : scopeDefiner
             const expRes = { type: "function", parentScope: scc, parameters: expression.children.filter((x) => x.type == "parameter declaration")[0], body: expression.children.filter((x) => x.type == "function body")[0]}
             if (expression.children[0].children && expression.children[0].children[0] && expression.children[0].children[0].type == "constant declaration") {
                 expRes.protected = true
             }
-            scopeDefiner(expression.children[1].canonicalString, expRes)
+            definer(expression.children[1].canonicalString, expRes)
             if (expression.children[0].type == "typed declaration") {
-                scopeDefiner(".typeof" + expression.children[1].canonicalString, { type: "typecheck", value: expression.children[0].declaredType}) // this is safe since identifiers cannot start with .
+                definer(".typeof" + expression.children[1].canonicalString, { type: "typecheck", value: expression.children[0].declaredType}) // this is safe since identifiers cannot start with .
             }
             else {
-                scopeDefiner(".typeof" + expression.children[1].canonicalString, { type: "typecheck", value: "any"})
+                definer(".typeof" + expression.children[1].canonicalString, { type: "typecheck", value: "any"})
             }
             return scopeGetter(expression.children[1].canonicalString)
         }
@@ -227,8 +249,10 @@ const evaluateExpression = (scc) => {
         }
         else if (expression.type == "block body") {
             var expRes = { type: "void" }
+            const targetScope = adjoinBlock(scc)(emptyBlock())
+            const nco = evaluateExpression(targetScope)
             for (var i = 0; i < expression.children.length; i++) {
-                expRes = sco(expression.children[i])
+                expRes = nco(expression.children[i])
                 if (expRes.type == "!!!INTERNAL INTERPRETER CONTROL") {
                     return expRes
                 }
@@ -240,6 +264,7 @@ const evaluateExpression = (scc) => {
             return { type: "!!!INTERNAL INTERPRETER CONTROL", control: "return", value: expRes } // this could be a source of vulnerabilities, damn
         }
         else if (expression.type == "variable declaration") {
+            const definer = expression.children[0].children && expression.children[0].children[1] && expression.children[0].children[1].type == "block declaration" ? blockSefiner : scopeDefiner
             const expRes = sco(expression.children[3])
             const protected = expression.children[0].children && expression.children[0].children[0] && expression.children[0].children[0].type == "constant declaration"
             // to prevent the language spec from getting too insane, we restrict variable declarations to straight identifiers
@@ -249,12 +274,12 @@ const evaluateExpression = (scc) => {
                     throw "TypeError: expression type, " + expRes.type + " did not match declared type, " + typeMap[expression.children[0].declaredType] + " for variable " + expression.children[1].canonicalString
                 }
                 // we don't use unattr in scopeSetter/scopeDefiner to allow us to implement consts nicely
-                scopeDefiner(expression.children[1].canonicalString, protected ? setpro(expRes): unattr(expRes)) // this is fine since scopeDefiner checks for protection and doesn't blindly return the second parameter
-                scopeDefiner(".typeof" + expression.children[1].canonicalString, { type: "typecheck", value: expression.children[0].declaredType}) // this is safe since identifiers cannot start with .
+                definer(expression.children[1].canonicalString, protected ? setpro(expRes): unattr(expRes)) // this is fine since scopeDefiner checks for protection and doesn't blindly return the second parameter
+                definer(".typeof" + expression.children[1].canonicalString, { type: "typecheck", value: expression.children[0].declaredType}) // this is safe since identifiers cannot start with .
             }
             else {
-                scopeDefiner(expression.children[1].canonicalString, protected ? setpro(expRes): unattr(expRes))
-                scopeDefiner(".typeof" + expression.children[1].canonicalString, { type: "typecheck", value: "any"})
+                definer(expression.children[1].canonicalString, protected ? setpro(expRes): unattr(expRes))
+                definer(".typeof" + expression.children[1].canonicalString, { type: "typecheck", value: "any"})
             }
             return expRes
         }

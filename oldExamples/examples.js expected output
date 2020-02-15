@@ -17,7 +17,7 @@
 { type: 'number', value: -10 }
 { type: 'number', value: 12 }
 { type: 'function',
-  parentScope: [ [Function], [Function], [Function] ],
+  parentScope: [ [Function], [Function], [Function], [Function] ],
   parameters:
    { type: 'parameter declaration',
      canonicalString: '(p1, p2, p3)',
@@ -71,7 +71,7 @@
                        { type: 'identifier', canonicalString: 'scotland', children: [] } ] } ] } ] } ] } }
 { type: 'number', value: 9 }
 { type: 'function',
-  parentScope: [ [Function], [Function], [Function] ],
+  parentScope: [ [Function], [Function], [Function], [Function] ],
   parameters:
    { type: 'parameter declaration',
      canonicalString: '(p1, p2, p3)',
@@ -159,7 +159,7 @@
                        { type: 'identifier', canonicalString: 'scotland', children: [] } ] } ] } ] } ] } }
 { type: 'number', value: 9 }
 { type: 'function',
-  parentScope: [ [Function], [Function], [Function] ],
+  parentScope: [ [Function], [Function], [Function], [Function] ],
   parameters:
    { type: 'parameter declaration',
      canonicalString: '(multiplier, start)',
@@ -250,7 +250,7 @@
           children:
            [ { type: 'identifier', canonicalString: 'add', children: [] } ] } ] } }
 { type: 'function',
-  parentScope: [ [Function], [Function], [Function] ],
+  parentScope: [ [Function], [Function], [Function], [Function] ],
   parameters:
    { type: 'parameter declaration',
      canonicalString: '(multiplier, start)',
@@ -341,7 +341,7 @@
           children:
            [ { type: 'identifier', canonicalString: 'add', children: [] } ] } ] } }
 { type: 'function',
-  parentScope: [ [Function], [Function], [Function] ],
+  parentScope: [ [Function], [Function], [Function], [Function] ],
   parameters:
    { type: 'parameter declaration',
      canonicalString: '()',
@@ -379,7 +379,7 @@
                          canonicalString: 'multiplier',
                          children: [] } ] } ] } ] } ] } }
 { type: 'function',
-  parentScope: [ [Function], [Function], [Function] ],
+  parentScope: [ [Function], [Function], [Function], [Function] ],
   parameters:
    { type: 'parameter declaration',
      canonicalString: '()',
@@ -423,7 +423,7 @@
 { type: 'number', value: 12 }
 { type: 'number', value: 24 }
 { type: 'function',
-  parentScope: [ [Function], [Function], [Function] ],
+  parentScope: [ [Function], [Function], [Function], [Function] ],
   parameters:
    { type: 'parameter declaration',
      canonicalString: '()',
@@ -464,7 +464,7 @@
 { type: 'number', value: 38 }
 { type: 'undefined' }
 { type: 'function',
-  parentScope: [ [Function], [Function], [Function] ],
+  parentScope: [ [Function], [Function], [Function], [Function] ],
   parameters:
    { type: 'parameter declaration',
      canonicalString: '(n)',
@@ -482,12 +482,15 @@
                canonicalString: '(n<3)',
                children:
                 [ { type: 'expression',
-                    associativity: 0,
                     canonicalString: 'n<3',
                     children:
-                     [ { type: 'identifier', canonicalString: 'n', children: [] },
-                       { type: 'operator: gs', canonicalString: '<', children: [] },
-                       { type: 'integral literal', canonicalString: '3', children: [] } ] } ] },
+                     [ { type: 'expression',
+                         associativity: 0,
+                         canonicalString: 'n<3',
+                         children:
+                          [ { type: 'identifier', canonicalString: 'n', children: [] },
+                            { type: 'operator: gs', canonicalString: '<', children: [] },
+                            { type: 'integral literal', canonicalString: '3', children: [] } ] } ] } ] },
              { type: 'block body',
                canonicalString: '{return 1;}',
                children:
@@ -549,7 +552,7 @@
 { type: 'number', value: 1 }
 { type: 'number', value: 1 }
 { type: 'function',
-  parentScope: [ [Function], [Function], [Function] ],
+  parentScope: [ [Function], [Function], [Function], [Function] ],
   parameters:
    { type: 'parameter declaration',
      canonicalString: '(n)',
@@ -566,12 +569,15 @@
                canonicalString: '(n<3)',
                children:
                 [ { type: 'expression',
-                    associativity: 0,
                     canonicalString: 'n<3',
                     children:
-                     [ { type: 'identifier', canonicalString: 'n', children: [] },
-                       { type: 'operator: gs', canonicalString: '<', children: [] },
-                       { type: 'integral literal', canonicalString: '3', children: [] } ] } ] },
+                     [ { type: 'expression',
+                         associativity: 0,
+                         canonicalString: 'n<3',
+                         children:
+                          [ { type: 'identifier', canonicalString: 'n', children: [] },
+                            { type: 'operator: gs', canonicalString: '<', children: [] },
+                            { type: 'integral literal', canonicalString: '3', children: [] } ] } ] } ] },
              { type: 'block body',
                canonicalString: '{1;}',
                children:
@@ -625,7 +631,7 @@
 { type: 'number', value: 1 }
 { type: 'number', value: 2 }
 { type: 'function',
-  parentScope: [ [Function], [Function], [Function] ],
+  parentScope: [ [Function], [Function], [Function], [Function] ],
   parameters:
    { type: 'parameter declaration',
      canonicalString: '(n)',
@@ -673,12 +679,15 @@
                canonicalString: '(n>2)',
                children:
                 [ { type: 'expression',
-                    associativity: 0,
                     canonicalString: 'n>2',
                     children:
-                     [ { type: 'identifier', canonicalString: 'n', children: [] },
-                       { type: 'operator: gs', canonicalString: '>', children: [] },
-                       { type: 'integral literal', canonicalString: '2', children: [] } ] } ] },
+                     [ { type: 'expression',
+                         associativity: 0,
+                         canonicalString: 'n>2',
+                         children:
+                          [ { type: 'identifier', canonicalString: 'n', children: [] },
+                            { type: 'operator: gs', canonicalString: '>', children: [] },
+                            { type: 'integral literal', canonicalString: '2', children: [] } ] } ] } ] },
              { type: 'block body',
                canonicalString: '{c=a+b;a=b;b=c;n=n-1;}',
                children:
@@ -728,7 +737,7 @@
            [ { type: 'identifier', canonicalString: 'c', children: [] } ] } ] } }
 { type: 'number', value: 4.346655768693743e+208 }
 { type: 'function',
-  parentScope: [ [Function], [Function], [Function] ],
+  parentScope: [ [Function], [Function], [Function], [Function] ],
   parameters:
    { type: 'parameter declaration',
      canonicalString: '()',
@@ -755,12 +764,15 @@
                canonicalString: '(1==1)',
                children:
                 [ { type: 'expression',
-                    associativity: 0,
                     canonicalString: '1==1',
                     children:
-                     [ { type: 'integral literal', canonicalString: '1', children: [] },
-                       { type: 'operator: en', canonicalString: '==', children: [] },
-                       { type: 'integral literal', canonicalString: '1', children: [] } ] } ] },
+                     [ { type: 'expression',
+                         associativity: 0,
+                         canonicalString: '1==1',
+                         children:
+                          [ { type: 'integral literal', canonicalString: '1', children: [] },
+                            { type: 'operator: en', canonicalString: '==', children: [] },
+                            { type: 'integral literal', canonicalString: '1', children: [] } ] } ] } ] },
              { type: 'block body',
                canonicalString: '{n=n+1;if (n>5){return 1;};}',
                children:
@@ -784,12 +796,15 @@
                          canonicalString: '(n>5)',
                          children:
                           [ { type: 'expression',
-                              associativity: 0,
                               canonicalString: 'n>5',
                               children:
-                               [ { type: 'identifier', canonicalString: 'n', children: [] },
-                                 { type: 'operator: gs', canonicalString: '>', children: [] },
-                                 { type: 'integral literal', canonicalString: '5', children: [] } ] } ] },
+                               [ { type: 'expression',
+                                   associativity: 0,
+                                   canonicalString: 'n>5',
+                                   children:
+                                    [ { type: 'identifier', canonicalString: 'n', children: [] },
+                                      { type: 'operator: gs', canonicalString: '>', children: [] },
+                                      { type: 'integral literal', canonicalString: '5', children: [] } ] } ] } ] },
                        { type: 'block body',
                          canonicalString: '{return 1;}',
                          children:
@@ -802,7 +817,7 @@
           children:
            [ { type: 'identifier', canonicalString: 'n', children: [] } ] } ] } }
 { type: 'function',
-  parentScope: [ [Function], [Function], [Function] ],
+  parentScope: [ [Function], [Function], [Function], [Function] ],
   parameters:
    { type: 'parameter declaration',
      canonicalString: '()',
@@ -832,12 +847,15 @@
                     canonicalString: '(1==1)',
                     children:
                      [ { type: 'expression',
-                         associativity: 0,
                          canonicalString: '1==1',
                          children:
-                          [ { type: 'integral literal', canonicalString: '1', children: [] },
-                            { type: 'operator: en', canonicalString: '==', children: [] },
-                            { type: 'integral literal', canonicalString: '1', children: [] } ] } ] },
+                          [ { type: 'expression',
+                              associativity: 0,
+                              canonicalString: '1==1',
+                              children:
+                               [ { type: 'integral literal', canonicalString: '1', children: [] },
+                                 { type: 'operator: en', canonicalString: '==', children: [] },
+                                 { type: 'integral literal', canonicalString: '1', children: [] } ] } ] } ] },
                   { type: 'block body',
                     canonicalString: '{n=n+1;if (n>5){return 1;};}',
                     children:
@@ -861,12 +879,15 @@
                               canonicalString: '(n>5)',
                               children:
                                [ { type: 'expression',
-                                   associativity: 0,
                                    canonicalString: 'n>5',
                                    children:
-                                    [ { type: 'identifier', canonicalString: 'n', children: [] },
-                                      { type: 'operator: gs', canonicalString: '>', children: [] },
-                                      { type: 'integral literal', canonicalString: '5', children: [] } ] } ] },
+                                    [ { type: 'expression',
+                                        associativity: 0,
+                                        canonicalString: 'n>5',
+                                        children:
+                                         [ { type: 'identifier', canonicalString: 'n', children: [] },
+                                           { type: 'operator: gs', canonicalString: '>', children: [] },
+                                           { type: 'integral literal', canonicalString: '5', children: [] } ] } ] } ] },
                             { type: 'block body',
                               canonicalString: '{return 1;}',
                               children:
@@ -879,7 +900,7 @@
           children:
            [ { type: 'identifier', canonicalString: 'n', children: [] } ] } ] } }
 { type: 'function',
-  parentScope: [ [Function], [Function], [Function] ],
+  parentScope: [ [Function], [Function], [Function], [Function] ],
   parameters:
    { type: 'parameter declaration',
      canonicalString: '()',
@@ -915,12 +936,15 @@
                          canonicalString: '(1==1)',
                          children:
                           [ { type: 'expression',
-                              associativity: 0,
                               canonicalString: '1==1',
                               children:
-                               [ { type: 'integral literal', canonicalString: '1', children: [] },
-                                 { type: 'operator: en', canonicalString: '==', children: [] },
-                                 { type: 'integral literal', canonicalString: '1', children: [] } ] } ] },
+                               [ { type: 'expression',
+                                   associativity: 0,
+                                   canonicalString: '1==1',
+                                   children:
+                                    [ { type: 'integral literal', canonicalString: '1', children: [] },
+                                      { type: 'operator: en', canonicalString: '==', children: [] },
+                                      { type: 'integral literal', canonicalString: '1', children: [] } ] } ] } ] },
                        { type: 'block body',
                          canonicalString: '{n=n+1;if (n>5){return 1;};}',
                          children:
@@ -944,12 +968,15 @@
                                    canonicalString: '(n>5)',
                                    children:
                                     [ { type: 'expression',
-                                        associativity: 0,
                                         canonicalString: 'n>5',
                                         children:
-                                         [ { type: 'identifier', canonicalString: 'n', children: [] },
-                                           { type: 'operator: gs', canonicalString: '>', children: [] },
-                                           { type: 'integral literal', canonicalString: '5', children: [] } ] } ] },
+                                         [ { type: 'expression',
+                                             associativity: 0,
+                                             canonicalString: 'n>5',
+                                             children:
+                                              [ { type: 'identifier', canonicalString: 'n', children: [] },
+                                                { type: 'operator: gs', canonicalString: '>', children: [] },
+                                                { type: 'integral literal', canonicalString: '5', children: [] } ] } ] } ] },
                                  { type: 'block body',
                                    canonicalString: '{return 1;}',
                                    children:

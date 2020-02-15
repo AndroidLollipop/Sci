@@ -631,7 +631,7 @@ const matchConditionalExpression = (wrappedString) => {
     if (tem.status !== "success") {
         return { status: "failure", next: wrappedString }
     }
-    return { status: "success", next: tem.next, treeNode: { type: "expression", canonicalString: "(" + ret.treeNode.canonicalString + ")", children: ret.treeNode.children}}
+    return { status: "success", next: tem.next, treeNode: { type: "expression", canonicalString: "(" + ret.treeNode.canonicalString + ")", children: [ret.treeNode]}}
 }
 const matchIfExpression = (wrappedString) => {
     var ret = matchIf(wrappedString)
