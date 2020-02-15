@@ -1,13 +1,12 @@
-# sci - the sic compiler/interpreter
-'sic' stands for 'sci interpreter/compiler'  
-see how that kinda matches the structure of a recursive descent parser? (except that it's left recursive so it wouldn't work without conversion)  
-the name of this repository is outdated. this language is too dynamic, it'll never compile to performant native code without a ton of effort. i guess this is the scam/interpreter now.
-## how to use
-install node current from https://nodejs.org  
-clone this repository  
-cd to this repository in your shell and run "node exampleProgram.js"
-## the most legit thing that this can do right now
-### closures!
+# Sci - the Sic compiler/interpreter
+'Sic' stands for 'Sci interpreter/compiler'  
+Just an interpreter at the moment
+## How to use
+Install node current from https://nodejs.org  
+Clone this repository  
+Cd to this repository in your shell and run "node exampleProgram.js"
+## The most legit thing that this can do right now
+### Closures!
 ```
 var e = require("./simpleAndCleanInterfaceForRepl.js")
 var repl = e.getRepl()
@@ -27,7 +26,7 @@ output:
 { type: 'number', value: 4 }
 { type: 'undefined' } <- this is expected! this shows that skye is not in the global scope
 ```
-### recursion!
+### Recursion!
 ```
 var e = require("./simpleAndCleanInterfaceForRepl.js")
 var repl = e.getRepl()
@@ -39,11 +38,11 @@ output:
 ```
 { type: 'number', value: 55 }
 ```
-## important files
-see exampleProgram.js for an example program and tests/develTests.js for a feature demonstration  
-the parser is defined in tokParse.js  
-the ast evaluator is defined in astEval.js
-## example output for repl (ok, more like a pseudo-repl)
+## Important files
+See exampleProgram.js for an example program and tests/develTests.js for a feature demonstration  
+The parser is defined in tokParse.js  
+The ast evaluator is defined in astEval.js
+## Example output for repl (ok, more like a pseudo-repl)
 ```
 var e = require("./simpleAndCleanInterfaceForRepl.js")
 var repl = e.getRepl()
@@ -76,8 +75,8 @@ output:
 { type: 'number', value: 1141 }
 { type: 'number', value: 399 }
 ```
-## example output for tokparse (ast constructor) using interface provided in oldExamples/miscExamples.js
-### string declaration
+## Example output for tokparse (ast constructor) using interface provided in oldExamples/miscExamples.js
+### String declaration
 `youClod(t.matchDefine(wrapString("str autism = 'you'")))` ->  
 ```
 { status: 'success',
@@ -99,7 +98,7 @@ output:
                canonicalString: 'you',
                children: [] } ] } ] } }
 ```
-### expression
+### Expression
 `youClod(t.matchExprExtern(wrapString("123*456+789*012")))` ->  
 ```
 { status: 'success',
@@ -139,7 +138,7 @@ output:
                     canonicalString: '012',
                     children: [] } ] } ] } ] } }
 ```
-### function
+### Function
 `youClod(t.matchFundef(wrapString("num potato(p1, p2, p3){num skye = 1;num scotland = 2; return p1+p2+p3+skye+scotland}")))` ->  
 ```
 { status: 'success',
@@ -206,12 +205,12 @@ output:
                             { type: 'operator: as', canonicalString: '+', children: [] },
                             { type: 'identifier', canonicalString: 'scotland', children: [] } ] } ] } ] } ] } ] } }
 ```
-## refactoring considerations
+## Refactoring considerations
 tokparse.js really needs to be refactored.  
-specifically, all functions should return next even on failure. this will save about 50 lines of code.
-## this doesn't really do anything new...
-that's not the point. this is meant to be a learning experience.
-## important note on hacky code
-because i used an extremely hacky method to implement DMAS from BODMAS, you must remember to save and reset mulPrecedence before and restore it after the appropriate calls when editing the code
-## note on save restore calling conventions
-all parse functions take care of whitespace and global variable saving/restoring for their callees.
+Specifically, all functions should return next even on failure. this will save about 50 lines of code.
+## This doesn't really do anything new...
+That's not the point. this is meant to be a learning experience.
+## Important note on hacky code
+Because i used an extremely hacky method to implement DMAS from BODMAS, you must remember to save and reset mulPrecedence before and restore it after the appropriate calls when editing the code
+## Note on save restore calling conventions
+All parse functions take care of whitespace and global variable saving/restoring for their callees.
