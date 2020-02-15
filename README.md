@@ -5,7 +5,7 @@ Just an interpreter at the moment
 Install node current from https://nodejs.org  
 Clone this repository  
 Cd to this repository in your shell and run "node exampleProgram.js"
-## The most legit thing that this can do right now
+## Feature demonstrations (see tests/develTests.js for a completely up-to-date demo)
 ### Closures!
 ```
 var e = require("./simpleAndCleanInterfaceForRepl.js")
@@ -205,12 +205,3 @@ output:
                             { type: 'operator: as', canonicalString: '+', children: [] },
                             { type: 'identifier', canonicalString: 'scotland', children: [] } ] } ] } ] } ] } ] } }
 ```
-## Refactoring considerations
-tokparse.js really needs to be refactored.  
-Specifically, all functions should return next even on failure. this will save about 50 lines of code.
-## This doesn't really do anything new...
-That's not the point. this is meant to be a learning experience.
-## Important note on hacky code
-Because i used an extremely hacky method to implement DMAS from BODMAS, you must remember to save and reset mulPrecedence before and restore it after the appropriate calls when editing the code
-## Note on save restore calling conventions
-All parse functions take care of whitespace and global variable saving/restoring for their callees.
