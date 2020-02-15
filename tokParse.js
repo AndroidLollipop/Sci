@@ -659,6 +659,7 @@ const matchIfExpression = (wrappedString) => {
     if (rea.status !== "success") {
         return { status: "failure", next: wrappedString }
     }
+    rea.treeNode.type = "block body"
     return { status: "success", next: rea.next, treeNode: { type: "if else expression", canonicalString: "if " + ret.treeNode.canonicalString + phi.treeNode.canonicalString + " else " + rea.treeNode.canonicalString, children: [ret.treeNode, phi.treeNode, rea.treeNode]}}
 }
 const matchWhileExpression = (wrappedString) => {

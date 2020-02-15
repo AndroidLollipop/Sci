@@ -88,7 +88,7 @@ print(1==1||false==true) \
 print(true==1||false==true) \
 print(1==1&&true==true) \
 var t() { \
-    print('hello. this is not a bug, this is setTimeout in action. though, if you see this printed twice, there is a bug in the interpreter.') \
+    print('hello. this is not a bug, this is setTimeout in action. though, if you see this printed more than once, there is a bug in the interpreter.') \
 } \
 print(setTimeout(t, 100)) \
 clearTimeout(setTimeout(t, 200)) \
@@ -155,6 +155,13 @@ if (true) { \
 print(a) \
 const a = 1 \
 if (true) { \
+    let a = 2 \
+    print(a) \
+} \
+print(a) \
+if (false) { \
+} \
+else { \
     let a = 2 \
     print(a) \
 } \
