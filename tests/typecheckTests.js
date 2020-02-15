@@ -110,6 +110,38 @@ try {
 catch(e) {
     console.log(e)
 }
+try {
+    repl("let const l = 1 \
+if (true) { \
+    l = 2 \
+}") // this should fail since trait of l is const
+    passed = 0
+}
+catch(e) {
+    console.log(e)
+}
+try {
+    repl("if (true) { \
+    const m = 2 \
+} \
+m = 1") // this should fail since trait of m is const
+    passed = 0
+}
+catch(e) {
+    console.log(e)
+}
+try {
+    repl("if (true) { \
+    let const n = 2 \
+        if (true) { \
+            n = 3 \
+        } \
+}") // this should fail since trait of n is const
+    passed = 0
+}
+catch(e) {
+    console.log(e)
+}
 if (passed == 1) {
     console.log("typecheck test PASSED!")
 }
