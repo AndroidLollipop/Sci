@@ -243,7 +243,7 @@ const Prelude = {
     },
     evalEmptyScope: {
         type: "function",
-        parentScope: a.emptyScope,
+        parentScope: () => a.emptyScope(),
         parameters: { type: "parameter declaration", canonicalString: "(x)",
             children: [{ type: "identifier", canonicalString: "x", children: []}]
         },
@@ -267,7 +267,7 @@ const Prelude = {
     },
     evalCurrentScope: {
         type: "function",
-        parentScope: undefined,
+        parentScope: x => x,
         parameters: { type: "parameter declaration", canonicalString: "(x)",
             children: [{ type: "identifier", canonicalString: "x", children: []}]
         },
@@ -320,7 +320,7 @@ const Prelude = {
     },
     evalInScope: {
         type: "function",
-        parentScope: undefined,
+        parentScope: x => x,
         parameters: { type: "parameter declaration", canonicalString: "(x,y)",
             children: [{ type: "identifier", canonicalString: "x", children: []}, { type: "identifier", canonicalString: "y", children: []}]
         },
