@@ -226,9 +226,11 @@ const evaluateExpression = (scc) => {
             if (expression.children[0].type == "identifier") {
                 typecheck = scopeGetter(".typeof" + expression.children[0].canonicalString)
             }
-            const targetScope = adjoinScope(typeof target.parentScope === "function" ? target.parentScope(scc) : target.parentScope)(emptyScope())
-            defineInScope(sco)(target.parameters)(targetScope)(expression.children.filter((x) => x.type == "function call bindings")[0])
-            const expRes = evaluateExpression(targetScope)(target.body)
+            const isMacro = typeof target.parentScope === "function"
+            const targetScope = isMacro ? target.parentScope(scc) : adjoinScope(target.parentScope)(emptyScope())
+            const macroParams = isMacro ? emptyScope() : undefined
+            defineInScope(sco)(target.parameters)(isMacro ? macroParams : targetScope)(expression.children.filter((x) => x.type == "function call bindings")[0])
+            const expRes = evaluateExpression(targetScope)(isMacro ? target.body(macroParams) : target.body)
             if (expRes.type !== "!!!INTERNAL INTERPRETER CONTROL" || expRes.control !== "return") { // someone is trying to trick us
                 return { type: "void" }
             }

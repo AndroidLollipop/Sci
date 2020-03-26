@@ -166,6 +166,22 @@ else { \
     print(a) \
 } \
 print(a) \
+const scope = getEmptyScope() \
+print(evalInScope('const a = 1337', scope)) \
+print(evalInScope('a+40732', scope)) \
+const thisScope = getCurrentScope() \
+print(evalInScope('thisScope', thisScope)) \
+print(evalCurrentScope('a')) \
+print(evalEmptyScope('const a = 69420')) \
+print('evalEmptyScope: next line should say undefined') \
+print(evalEmptyScope('a')) \
+const scope1 = getEmptyScope() \
+const scope2 = getEmptyScope() \
+evalInScope('const a = 69', scope1) \
+evalInScope('const b = 420', scope2) \
+const scope3 = adjoinScope(scope1, scope2) \
+print(evalInScope('a', scope3)) \
+print(evalInScope('b', scope3)) \
 print('no showstoppers occurred')")
 // operator precedence levels (you can find this in tokParse.js)
 // level 4: * /

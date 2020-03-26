@@ -243,26 +243,15 @@ const Prelude = {
     },
     evalEmptyScope: {
         type: "function",
-        parentScope: () => a.emptyScope(),
+        parentScope: x => x,
         parameters: { type: "parameter declaration", canonicalString: "(x)",
             children: [{ type: "identifier", canonicalString: "x", children: []}]
         },
-        body: {
+        body: ([scopeGetter, scopeSetter, scopeDefiner]) => ({
             type: "function body",
-            canonicalString: "{return INTERPRET(x)}",
-            children: [{ type: "!!!BUILTIN", builtin: (scope) => {
-                const [scopeGetter, scopeSetter, scopeDefiner] = scope
-                const x = scopeGetter("x")
-                if (x !== undefined && x.type == "string") {
-                    const wrappedString = t.wrapString(x.value)
-                    const parse = t.matchProgram(wrappedString)
-                    if (parse.status === "success"){
-                        return a.evaluateExpression(scope)(parse)
-                    }
-                }
-                return { type: "void" }
-            }}]
-        },
+            canonicalString: "{evalInScope(x, getEmptyScope());}",
+            children: [{"type":"function call","canonicalString":"evalInScope(x, getEmptyScope())","children":[{"type":"identifier","canonicalString":"evalInScope","children":[]},{"type":"function call bindings","canonicalString":"(x, getEmptyScope())","children":[{ type: "!!!BUILTIN", builtin: () => scopeGetter("x")},{"type":"function call","canonicalString":"getEmptyScope()","children":[{"type":"identifier","canonicalString":"getEmptyScope","children":[]},{"type":"function call bindings","canonicalString":"()","children":[]}]}]}]}]
+        }),
         protected: true
     },
     evalCurrentScope: {
@@ -271,37 +260,26 @@ const Prelude = {
         parameters: { type: "parameter declaration", canonicalString: "(x)",
             children: [{ type: "identifier", canonicalString: "x", children: []}]
         },
-        body: {
+        body: ([scopeGetter, scopeSetter, scopeDefiner]) => ({
             type: "function body",
-            canonicalString: "{return INTERPRET(x)}",
-            children: [{ type: "!!!BUILTIN", builtin: (scope) => {
-                const [scopeGetter, scopeSetter, scopeDefiner] = scope
-                const x = scopeGetter("x")
-                if (x !== undefined && x.type == "string") {
-                    const wrappedString = t.wrapString(x.value)
-                    const parse = t.matchProgram(wrappedString)
-                    if (parse.status === "success"){
-                        return a.evaluateExpression(scope)(parse)
-                    }
-                }
-                return { type: "void" }
-            }}]
-        },
+            canonicalString: "{evalInScope(x, getCurrentScope());}",
+            children: [{"type":"function call","canonicalString":"evalInScope(x, getCurrentScope())","children":[{"type":"identifier","canonicalString":"evalInScope","children":[]},{"type":"function call bindings","canonicalString":"(x, getCurrentScope())","children":[{ type: "!!!BUILTIN", builtin: () => scopeGetter("x")},{"type":"function call","canonicalString":"getCurrentScope()","children":[{"type":"identifier","canonicalString":"getCurrentScope","children":[]},{"type":"function call bindings","canonicalString":"()","children":[]}]}]}]}]
+        }),
         protected: true
     },
     getCurrentScope: {
         type: "function",
-        parentScope: a.emptyScope(),
+        parentScope: x => x,
         parameters: { type: "parameter declaration", canonicalString: "()",
             children: []
         },
-        body: {
+        body: () => ({
             type: "function body",
             canonicalString: "{return GETCURRENTSCOPE()}",
             children: [{ type: "!!!BUILTIN", builtin: (scope) => {
-                return { type: "scope", value: scope }
+                return { type: "scope", scope: scope, value: "Scope" }
             }}]
-        },
+        }),
         protected: true
     },
     getEmptyScope: {
@@ -314,13 +292,14 @@ const Prelude = {
             type: "function body",
             canonicalString: "{return GETEMPTYSCOPE()}",
             children: [{ type: "!!!BUILTIN", builtin: (scope) => {
-                return { type: "scope", value: a.emptyScope() }
+                return { type: "scope", scope: a.emptyScope(), value: "Scope" }
             }}]
-        }
+        },
+        protected: true
     },
     evalInScope: {
         type: "function",
-        parentScope: x => x,
+        parentScope: a.emptyScope(),
         parameters: { type: "parameter declaration", canonicalString: "(x,y)",
             children: [{ type: "identifier", canonicalString: "x", children: []}, { type: "identifier", canonicalString: "y", children: []}]
         },
@@ -328,13 +307,15 @@ const Prelude = {
             type: "function body",
             canonicalString: "{return INTERPRET(x)}",
             children: [{ type: "!!!BUILTIN", builtin: (scope) => {
+                const [scopeGetter, scopeSetter, scopeDefiner] = scope
                 const x = scopeGetter("x")
+                const y = scopeGetter("y")
                 if (x !== undefined && x.type == "string") {
                     const wrappedString = t.wrapString(x.value)
                     const parse = t.matchProgram(wrappedString)
                     if (parse.status === "success"){
                         if (y !== undefined && y.type == "scope") {
-                            return a.evaluateExpression(y.scope)(parse)
+                            return a.evaluateExpression(y.scope)(parse.treeNode)
                         }
                     }
                 }
@@ -353,10 +334,11 @@ const Prelude = {
             type: "function body",
             canonicalString: "{return ADJIONSCOPE(x,y)}",
             children: [{ type: "!!!BUILTIN", builtin: (scope) => {
+                const [scopeGetter, scopeSetter, scopeDefiner] = scope
                 const x = scopeGetter("x")
                 const y = scopeGetter("y")
                 if (x !== undefined && x.type == "scope" && y !== undefined && y.type == "scope") {
-                    return { type: "scope", value: a.adjoinScope(x.value)(y.value) }
+                    return { type: "scope", scope: a.adjoinScope(x.scope)(y.scope), value: "Scope" }
                 }
             }}]
         },
