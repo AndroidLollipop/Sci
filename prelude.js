@@ -342,6 +342,25 @@ const Prelude = {
             }}]
         },
         protected: true
+    },
+    adjoinScope: {
+        type: "function",
+        parentScope: a.emptyScope(),
+        parameters: { type: "parameter declaration", canonicalString: "(x,y)",
+            children: [{ type: "identifier", canonicalString: "x", children: []}, { type: "identifier", canonicalString: "y", children: []}]
+        },
+        body: {
+            type: "function body",
+            canonicalString: "{return ADJIONSCOPE(x,y)}",
+            children: [{ type: "!!!BUILTIN", builtin: (scope) => {
+                const x = scopeGetter("x")
+                const y = scopeGetter("y")
+                if (x !== undefined && x.type == "scope" && y !== undefined && y.type == "scope") {
+                    return { type: "scope", value: a.adjoinScope(x.value)(y.value) }
+                }
+            }}]
+        },
+        protected: true
     }
 }
 module.exports = {
