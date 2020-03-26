@@ -226,7 +226,7 @@ const evaluateExpression = (scc) => {
             if (expression.children[0].type == "identifier") {
                 typecheck = scopeGetter(".typeof" + expression.children[0].canonicalString)
             }
-            const targetScope = adjoinScope(target.parentScope)(emptyScope())
+            const targetScope = adjoinScope(target.parentScope === undefined ? scc : typeof target.parentScope === "function" ? target.parentScope() : target.parentScope)(emptyScope())
             defineInScope(sco)(target.parameters)(targetScope)(expression.children.filter((x) => x.type == "function call bindings")[0])
             const expRes = evaluateExpression(targetScope)(target.body)
             if (expRes.type !== "!!!INTERNAL INTERPRETER CONTROL" || expRes.control !== "return") { // someone is trying to trick us

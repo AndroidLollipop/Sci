@@ -1,5 +1,6 @@
 // named after Prelude from Haskell
 const a = require("./astEval.js")
+const t = require("./tokParse.js")
 const setTimeoutArray = [] // mutating consts is fine, only assigning to them is forbidden
 const setTimeoutShim = (fn, timeout) => {
     return setTimeoutArray.push(setTimeout(fn, timeout))-1
@@ -233,6 +234,108 @@ const Prelude = {
                     var res = parseInt(x.value)
                     if (res !== NaN) {
                         return { type: "number", value: res }
+                    }
+                }
+                return { type: "void" }
+            }}]
+        },
+        protected: true
+    },
+    evalEmptyScope: {
+        type: "function",
+        parentScope: a.emptyScope,
+        parameters: { type: "parameter declaration", canonicalString: "(x)",
+            children: [{ type: "identifier", canonicalString: "x", children: []}]
+        },
+        body: {
+            type: "function body",
+            canonicalString: "{return INTERPRET(x)}",
+            children: [{ type: "!!!BUILTIN", builtin: (scope) => {
+                const [scopeGetter, scopeSetter, scopeDefiner] = scope
+                const x = scopeGetter("x")
+                if (x !== undefined && x.type == "string") {
+                    const wrappedString = t.wrapString(x.value)
+                    const parse = t.matchProgram(wrappedString)
+                    if (parse.status === "success"){
+                        return a.evaluateExpression(scope)(parse)
+                    }
+                }
+                return { type: "void" }
+            }}]
+        },
+        protected: true
+    },
+    evalCurrentScope: {
+        type: "function",
+        parentScope: undefined,
+        parameters: { type: "parameter declaration", canonicalString: "(x)",
+            children: [{ type: "identifier", canonicalString: "x", children: []}]
+        },
+        body: {
+            type: "function body",
+            canonicalString: "{return INTERPRET(x)}",
+            children: [{ type: "!!!BUILTIN", builtin: (scope) => {
+                const [scopeGetter, scopeSetter, scopeDefiner] = scope
+                const x = scopeGetter("x")
+                if (x !== undefined && x.type == "string") {
+                    const wrappedString = t.wrapString(x.value)
+                    const parse = t.matchProgram(wrappedString)
+                    if (parse.status === "success"){
+                        return a.evaluateExpression(scope)(parse)
+                    }
+                }
+                return { type: "void" }
+            }}]
+        },
+        protected: true
+    },
+    getCurrentScope: {
+        type: "function",
+        parentScope: a.emptyScope(),
+        parameters: { type: "parameter declaration", canonicalString: "()",
+            children: []
+        },
+        body: {
+            type: "function body",
+            canonicalString: "{return GETCURRENTSCOPE()}",
+            children: [{ type: "!!!BUILTIN", builtin: (scope) => {
+                return { type: "scope", value: scope }
+            }}]
+        },
+        protected: true
+    },
+    getEmptyScope: {
+        type: "function",
+        parentScope: a.emptyScope(),
+        parameters: { type: "parameter declaration", canonicalString: "()",
+            children: []
+        },
+        body: {
+            type: "function body",
+            canonicalString: "{return GETEMPTYSCOPE()}",
+            children: [{ type: "!!!BUILTIN", builtin: (scope) => {
+                return { type: "scope", value: a.emptyScope() }
+            }}]
+        }
+    },
+    evalInScope: {
+        type: "function",
+        parentScope: undefined,
+        parameters: { type: "parameter declaration", canonicalString: "(x,y)",
+            children: [{ type: "identifier", canonicalString: "x", children: []}, { type: "identifier", canonicalString: "y", children: []}]
+        },
+        body: {
+            type: "function body",
+            canonicalString: "{return INTERPRET(x)}",
+            children: [{ type: "!!!BUILTIN", builtin: (scope) => {
+                const x = scopeGetter("x")
+                if (x !== undefined && x.type == "string") {
+                    const wrappedString = t.wrapString(x.value)
+                    const parse = t.matchProgram(wrappedString)
+                    if (parse.status === "success"){
+                        if (y !== undefined && y.type == "scope") {
+                            return a.evaluateExpression(y.scope)(parse)
+                        }
                     }
                 }
                 return { type: "void" }
