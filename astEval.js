@@ -25,14 +25,14 @@ const asscLeftOperate = (sco, scc) => (p1, op, p2) => {
         }
     }
     else if (op.canonicalString === "==") {
-        if (p1.type === p2.type && p1.value != undefined) {
+        if (p1.type === p2.type && p1.value !== undefined) {
             return { type: "boolean", value: p1.value === p2.value }
         }
         return { type: "boolean", value: false }
     }
     else if (op.canonicalString === "!=") {
-        if (p1.type === p2.type && p1.value != undefined) {
-            return { type: "boolean", value: p1.value != p2.value }
+        if (p1.type === p2.type && p1.value !== undefined) {
+            return { type: "boolean", value: p1.value !== p2.value }
         }
         return { type: "boolean", value: true } // i decided against combining this with == for clarity
     }
