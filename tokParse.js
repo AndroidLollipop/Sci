@@ -16,7 +16,7 @@ const next = (wrappedString) => wrappedString[0] < wrappedString[1].length ? [wr
 const prev = (wrappedString) => wrappedString[0] > -1 ? [wrappedString[0] - 1, wrappedString[1]] : wrappedString
 // next and prev must not mutate their parameters
 const matchTerminal = (terminal) => (type) => (wrappedString) => {
-    if (peek(wrappedString) == terminal) {
+    if (peek(wrappedString) === terminal) {
         return { status: "success", next: next(wrappedString), treeNode: { type: type, canonicalString: terminal, children: [] } }
     }
     else {
@@ -97,7 +97,7 @@ const matchCes = (wrappedString) => {
         return ret
     }
     ret = matchSls("escape literal")(ret.next)
-    if (ret.status == "success") {
+    if (ret.status === "success") {
         ret.treeNode.canonicalString = "\\" + ret.treeNode.canonicalString
     }
     else {
@@ -106,11 +106,11 @@ const matchCes = (wrappedString) => {
     return ret
 }
 const matchIdentifier = (wrappedString) => {
-    if (matchNum()(wrappedString).status == "success") {
+    if (matchNum()(wrappedString).status === "success") {
         return { status: "failure", next: wrappedString } // identifiers cannot start with a numeric character
     }
     var ret = matchAln("identifier")(wrappedString)
-    if (ret.status == "success") {
+    if (ret.status === "success") {
         return ret
     }
     return { status: "failure", next: wrappedString }
@@ -173,12 +173,12 @@ const matchEscapedLiteral = (wrappedString) => { // only alphanumeric strings, f
     var day = ret.treeNode.canonicalString
     wrappedString = ret.next
     ret = matchCes(wrappedString)
-    if (ret.status == "success") {
+    if (ret.status === "success") {
         phi.push(ret.treeNode)
         day += ret.treeNode.canonicalString
         wrappedString = ret.next
         ret = matchEscapedLiteral(wrappedString)
-        if (ret.status == "success") {
+        if (ret.status === "success") {
             for (var i = 0; i < ret.treeNode.children.length; i++) { // this is quite pointless, but whatever
                 phi.push(ret.treeNode.children[i])
                 day += ret.treeNode.children[i].canonicalString
@@ -191,12 +191,12 @@ const matchEscapedLiteral = (wrappedString) => { // only alphanumeric strings, f
 const matchStringLiteral = (wrappedString) => {
     var phi
     var ret = matchDoC()(wrappedString)
-    if (ret.status == "success") {
+    if (ret.status === "success") {
         ret = matchEscapedLiteral(ret.next)
-        if (ret.status == "success") {
+        if (ret.status === "success") {
             phi = ret
             ret = matchDoC()(ret.next)
-            if (ret.status == "success") {
+            if (ret.status === "success") {
                 phi.next = ret.next
                 phi.treeNode.type = "string literal"
                 phi.treeNode.canonicalString = '"' + phi.treeNode.canonicalString + '"'
@@ -206,12 +206,12 @@ const matchStringLiteral = (wrappedString) => {
     }
     else {
         ret = matchSiC()(wrappedString)
-        if (ret.status == "success") {
+        if (ret.status === "success") {
             ret = matchEscapedLiteral(ret.next)
-            if (ret.status == "success") {
+            if (ret.status === "success") {
                 phi = ret
                 ret = matchSiC()(ret.next)
-                if (ret.status == "success") {
+                if (ret.status === "success") {
                     phi.next = ret.next
                     phi.treeNode.type = "string literal"
                     phi.treeNode.canonicalString = "'" + phi.treeNode.canonicalString + "'"
@@ -256,15 +256,15 @@ const matchArrayLiteral = (wrappedString) => {
 }
 const matchFloatLiteral = (wrappedString) => {
     var ret = matchNum("integral literal")(wrappedString)
-    if (ret.status == "success") {
+    if (ret.status === "success") {
         var phi = matchTerminal(".")()(ret.next)
-        if (phi.status == "success") {
+        if (phi.status === "success") {
             var gam = matchNum("fractional literal")(phi.next)
-            if (gam.status == "success") {
+            if (gam.status === "success") {
                 return { status: "success", next: gam.next, treeNode: { type: "float literal", canonicalString: ret.treeNode.canonicalString + phi.treeNode.canonicalString + gam.treeNode.canonicalString, children: [ret.treeNode, gam.treeNode] } }
             }
         } // yes, we intentionally fall through to fail if we get something like 123.
-        else if (ret.status == "success") {
+        else if (ret.status === "success") {
             return ret
         }
     }
@@ -288,7 +288,7 @@ const matchBooleanLiteral = matchTerminalStrings(["true", "false"])("boolean lit
 const composeMatch = (matchers) => (wrappedString) => { // i should have written this from the start, damn
     for (var i = 0; i < matchers.length; i++) {
         let ret = matchers[i](wrappedString)
-        if (ret.status == "success") {
+        if (ret.status === "success") {
             return ret
         }
     }
@@ -322,7 +322,7 @@ const matchConstDec = (wrappedString) => {
         phi.next = ret.next
         phi.status = "failure"
     }
-    return { status: "success", next: phi.next, treeNode: { type: phi.status == "success" ? phi.treeNode.type : "variable declaration", declaredType: phi.status == "success" ? phi.treeNode.canonicalString : "any", canonicalString: phi.status == "success" ? ret.treeNode.canonicalString + " " + phi.treeNode.canonicalString : ret.treeNode.canonicalString, children: [{ type: "constant declaration", canonicalString: "const" }] } }
+    return { status: "success", next: phi.next, treeNode: { type: phi.status === "success" ? phi.treeNode.type : "variable declaration", declaredType: phi.status === "success" ? phi.treeNode.canonicalString : "any", canonicalString: phi.status === "success" ? ret.treeNode.canonicalString + " " + phi.treeNode.canonicalString : ret.treeNode.canonicalString, children: [{ type: "constant declaration", canonicalString: "const" }] } }
 }
 const matchLetDec = (wrappedString) => {
     var ret = matchLet(wrappedString)
@@ -348,7 +348,7 @@ const matchLetDec = (wrappedString) => {
     }
     var arr = []
     arr[1] = { type: "block declaration", canonicalString: "let" }
-    return { status: "success", next: phi.next, treeNode: { type: phi.status == "success" ? phi.treeNode.type : "variable declaration", declaredType: phi.status == "success" ? phi.treeNode.canonicalString : "any", canonicalString: phi.status == "success" ? ret.treeNode.canonicalString + " " + phi.treeNode.canonicalString : ret.treeNode.canonicalString, children: arr } }
+    return { status: "success", next: phi.next, treeNode: { type: phi.status === "success" ? phi.treeNode.type : "variable declaration", declaredType: phi.status === "success" ? phi.treeNode.canonicalString : "any", canonicalString: phi.status === "success" ? ret.treeNode.canonicalString + " " + phi.treeNode.canonicalString : ret.treeNode.canonicalString, children: arr } }
 }
 const matchLit = composeMatch([matchNegatedLiteral, matchFloatLiteral, matchStringLiteral, matchArrayLiteral, matchBooleanLiteral])
 const matchDefineP = (mDec) => (wrappedString) => {
@@ -388,7 +388,7 @@ const matchParamd = (wrappedString) => {
     var iet = ret
     while (true) {
         ret = matchIdentifier(ret.next)
-        if (ret.status !== "success") { // i know ret.status == "failure" is shorter but it risks infinite looping for invalid ret.status
+        if (ret.status !== "success") { // i know ret.status === "failure" is shorter but it risks infinite looping for invalid ret.status
             break
         }
         ret.next = matchWhitespace()(ret.next).next
@@ -511,7 +511,7 @@ const matchBrae = (wrappedString) => {
         rst += tem.treeNode.canonicalString + ";"
         ret.next = matchWhitespace()(ret.next).next
         tem = matchSep()(ret.next)
-        if (tem.status == "success") {
+        if (tem.status === "success") {
             ret.next = tem.next
         } // we don't need to handle fail, since this will fail the next iteration anyway (which also removes any trailing whitespace)
     }
@@ -528,7 +528,7 @@ const matchOperClass = (operatorClassMatcher) => (operatorClassName) => (precede
     if (ret.status !== "success") {
         return { status: "failure", next: failureWrappedString }
     }
-    if (ret.treeNode.type == "expression") {
+    if (ret.treeNode.type === "expression") {
         return { status: "success", next: ret.next, treeNode: { type: "expression", canonicalString: phi.treeNode.canonicalString + ret.treeNode.canonicalString , children: [phi.treeNode].concat(ret.treeNode.children)}}    
     }
     return { status: "success", next: ret.next, treeNode: { type: "expression", canonicalString: phi.treeNode.canonicalString + ret.treeNode.canonicalString , children: [phi.treeNode, ret.treeNode]}}
@@ -564,32 +564,32 @@ const matchExpr = (minPrecedenceLevel) => (wrappedString) => {
     // the canonical way is to use else ifs
     // but that's as ugly as hell and this works too so to hell with it
     var ret = matchIfExpression(wrappedString)
-    if (ret.status == "success") {
+    if (ret.status === "success") {
         phi = ret
     }
     ret = matchWhileExpression(wrappedString)
-    if (ret.status == "success") {
+    if (ret.status === "success") {
         phi = ret
     }
     ret = matchIdentifier(wrappedString)
-    if (ret.status == "success" && phi.status !== "success") {
+    if (ret.status === "success" && phi.status !== "success") {
         phi = ret
     }
     ret = matchBrac(wrappedString)
-    if (ret.status == "success") {
+    if (ret.status === "success") {
         phi = ret
     }
     var tem
-    if (phi.status == "success") {
+    if (phi.status === "success") {
         while (true) {
             tem = matchWhitespace()(phi.next)
             ret = matchFuncallParams(tem.next)
-            if (ret.status == "success") {
+            if (ret.status === "success") {
                 phi = { status: "success", next: ret.next, treeNode: { type: "function call", canonicalString: phi.treeNode.canonicalString + ret.treeNode.canonicalString, children: [phi.treeNode, ret.treeNode]}}
             }
             else {
                 ret = matchArrayIndex(tem.next)
-                if (ret.status == "success") {
+                if (ret.status === "success") {
                     phi = { status: "success", next: ret.next, treeNode: { type: "array access", canonicalString: phi.treeNode.canonicalString + ret.treeNode.canonicalString, children: [phi.treeNode, ret.treeNode]}}
                 }
                 else {
@@ -599,10 +599,10 @@ const matchExpr = (minPrecedenceLevel) => (wrappedString) => {
         }
     }
     for (var i = 0; i < operatorMatchers.length; i++) { // improvement: just use array index as precedence level. i'll implement this tomorrow cos it's 3:43 am now.
-        if (phi.status == "success" && minPrecedenceLevel <= operatorMatchers[i].precedenceLevel) {
+        if (phi.status === "success" && minPrecedenceLevel <= operatorMatchers[i].precedenceLevel) {
             tem = operatorMatchers[i].matcher(phi.next)
-            if (tem.status == "success") {
-                if (minPrecedenceLevel == operatorMatchers[i].precedenceLevel) {
+            if (tem.status === "success") {
+                if (minPrecedenceLevel === operatorMatchers[i].precedenceLevel) {
                     return { status: "success", next: tem.next, treeNode: { type: "expression", associativity: operatorMatchers[i].associativity, canonicalString: phi.treeNode.canonicalString + tem.treeNode.canonicalString, children: [phi.treeNode].concat(tem.treeNode.children)}}
                 }
                 else {
