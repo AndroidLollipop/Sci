@@ -9,14 +9,14 @@ const clearTimeoutShim = (id) => setTimeoutArray[id] !== undefined ? clearTimeou
 const flattenArray = (array) => {
     var res = "["
     for (var i = 0; i < array.array.length; i++) {
-        if (array.array[i].type == "array") {
+        if (array.array[i].type === "array") {
             ret = flattenArray(array.array[i])
             res += ret
         }
-        else if (array.array[i].type == "function") {
+        else if (array.array[i].type === "function") {
             res += "Function"
         }
-        else if (array.array[i].type == "string") {
+        else if (array.array[i].type === "string") {
             res += '"' + array.array[i].value + '"'
         }
         else if (array.array[i].value !== undefined) {
@@ -47,10 +47,10 @@ const Prelude = {
                     if (x.value !== undefined) {
                         console.log(x.value)
                     }
-                    else if (x.type == "array") {
+                    else if (x.type === "array") {
                         console.log(flattenArray(x))
                     }
-                    else if (x.type == "function") {
+                    else if (x.type === "function") {
                         console.log("Function")
                     }
                     else {
@@ -91,7 +91,7 @@ const Prelude = {
             canonicalString: "{return EXTERNALTRIGSIN(x)}",
             children: [{ type: "!!!BUILTIN", builtin: ([scopeGetter, scopeSetter, scopeDefiner]) => {
                 var x = scopeGetter("x")
-                return x !== undefined && x.type == "number" ? { type: "number", value: Math.sin(x.value) } : { type: "void" }
+                return x !== undefined && x.type === "number" ? { type: "number", value: Math.sin(x.value) } : { type: "void" }
             }}]
         },
         protected: true
@@ -112,7 +112,7 @@ const Prelude = {
             canonicalString: "{return ARRAYLENGTH(x)}",
             children: [{ type: "!!!BUILTIN", builtin: ([scopeGetter, scopeSetter, scopeDefiner]) => {
                 var x = scopeGetter("x")
-                return x !== undefined && x.type == "array" ? { type: "number", value: x.array.length } : { type: "void" }
+                return x !== undefined && x.type === "array" ? { type: "number", value: x.array.length } : { type: "void" }
             }}]
         },
         protected: true
@@ -129,7 +129,7 @@ const Prelude = {
             children: [{ type: "!!!BUILTIN", builtin: ([scopeGetter, scopeSetter, scopeDefiner]) => {
                 var x = scopeGetter("x")
                 var y = scopeGetter("y")
-                return x !== undefined && x.type == "array" ? (x.array.push(y),y) : { type: "void" }
+                return x !== undefined && x.type === "array" ? (x.array.push(y),y) : { type: "void" }
             }}]
         },
         protected: true
@@ -146,7 +146,7 @@ const Prelude = {
             children: [{ type: "!!!BUILTIN", builtin: ([scopeGetter, scopeSetter, scopeDefiner]) => {
                 var x = scopeGetter("x")
                 var y = scopeGetter("y")
-                return x !== undefined && x.type == "function" && y !== undefined && y.type == "number" ? { type: "number", value: setTimeoutShim(() => a.evaluateExpression(x.parentScope)(x.body), y.value)} : { type: "void" }
+                return x !== undefined && x.type === "function" && y !== undefined && y.type === "number" ? { type: "number", value: setTimeoutShim(() => a.evaluateExpression(x.parentScope)(x.body), y.value)} : { type: "void" }
             }}]
         },
         protected: true
@@ -162,7 +162,7 @@ const Prelude = {
             canonicalString: "{return EXTERNALCLEARTIMEOUT(x)}",
             children: [{ type: "!!!BUILTIN", builtin: ([scopeGetter, scopeSetter, scopeDefiner]) => {
                 var x = scopeGetter("x")
-                return x !== undefined && x.type == "number" ? (clearTimeoutShim(x.value), { type: "void" }) : { type: "void" }
+                return x !== undefined && x.type === "number" ? (clearTimeoutShim(x.value), { type: "void" }) : { type: "void" }
             }}]
         },
         protected: true
@@ -182,10 +182,10 @@ const Prelude = {
                     if (x.value !== undefined) {
                         return { type: "string", value: x.value+"" }
                     }
-                    else if (x.type == "array") {
+                    else if (x.type === "array") {
                         return { type: "string", value: flattenArray(x) }
                     }
-                    else if (x.type == "function") {
+                    else if (x.type === "function") {
                         return { type: "string", value: "Function" }
                     }
                     else {
@@ -208,7 +208,7 @@ const Prelude = {
             canonicalString: "{return EXTERNALPARSEFLOAT(x)}",
             children: [{ type: "!!!BUILTIN", builtin: ([scopeGetter, scopeSetter, scopeDefiner]) => {
                 var x = scopeGetter("x")
-                if (x !== undefined && x.type == "string") {
+                if (x !== undefined && x.type === "string") {
                     var res = parseFloat(x.value)
                     if (res !== NaN) {
                         return { type: "number", value: res }
@@ -230,7 +230,7 @@ const Prelude = {
             canonicalString: "{return EXTERNALPARSEINT(x)}",
             children: [{ type: "!!!BUILTIN", builtin: ([scopeGetter, scopeSetter, scopeDefiner]) => {
                 var x = scopeGetter("x")
-                if (x !== undefined && x.type == "string") {
+                if (x !== undefined && x.type === "string") {
                     var res = parseInt(x.value)
                     if (res !== NaN) {
                         return { type: "number", value: res }
@@ -294,7 +294,7 @@ const Prelude = {
             children: [{ type: "!!!BUILTIN", builtin: (scope) => {
                 const [scopeGetter, scopeSetter, scopeDefiner] = scope
                 const x = scopeGetter("x")
-                const retScope = (x !== undefined && x.type == "import") ? a.emptyScope(x.getter()) : a.emptyScope()
+                const retScope = (x !== undefined && x.type === "import") ? a.emptyScope(x.getter()) : a.emptyScope()
                 return { type: "scope", scope: retScope, value: "Scope" }
             }}]
         },
@@ -319,11 +319,11 @@ const Prelude = {
                 const [scopeGetter, scopeSetter, scopeDefiner] = scope
                 const x = scopeGetter("x")
                 const y = scopeGetter("y")
-                if (x !== undefined && x.type == "string") {
+                if (x !== undefined && x.type === "string") {
                     const wrappedString = t.wrapString(x.value)
                     const parse = t.matchProgram(wrappedString)
                     if (parse.status === "success"){
-                        if (y !== undefined && y.type == "scope") {
+                        if (y !== undefined && y.type === "scope") {
                             return a.evaluateExpression(y.scope)(parse.treeNode)
                         }
                     }
@@ -346,7 +346,7 @@ const Prelude = {
                 const [scopeGetter, scopeSetter, scopeDefiner] = scope
                 const x = scopeGetter("x")
                 const y = scopeGetter("y")
-                if (x !== undefined && x.type == "scope" && y !== undefined && y.type == "scope") {
+                if (x !== undefined && x.type === "scope" && y !== undefined && y.type === "scope") {
                     return { type: "scope", scope: a.adjoinScope(x.scope)(y.scope), value: "Scope" }
                 }
             }}]
