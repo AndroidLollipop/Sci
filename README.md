@@ -5,7 +5,7 @@ Just an interpreter at the moment
 Install node current from https://nodejs.org  
 Clone this repository  
 Cd to this repository in your shell and run "node exampleProgram.js"
-## Feature demonstrations (see tests/develTests.js for a completely up-to-date demo)
+## Feature demonstrations (see featureDemo.js for a completely up-to-date demo)
 ### Closures!
 ```
 var e = require("./simpleAndCleanInterfaceForRepl.js")
@@ -39,7 +39,7 @@ output:
 { type: 'number', value: 55 }
 ```
 ## Important files
-See exampleProgram.js for an example program and tests/develTests.js for a feature demonstration  
+See exampleProgram.js for an example program and featureDemo.js for a feature demonstration  
 The parser is defined in tokParse.js  
 The ast evaluator is defined in astEval.js
 ## Example output for repl
