@@ -175,9 +175,9 @@ print(evalCurrentScope('a')) \
 print(evalEmptyScope('const a = 69420')) \
 print('evalEmptyScope: next line should say undefined') \
 print(evalEmptyScope('a')) \
-const scope1 = getEmptyScope() \
+const scope1 = getEmptyScope(prelude) \
 const scope2 = getEmptyScope() \
-evalInScope('const a = 69', scope1) \
+evalInScope('const a = 69; print(1269)', scope1) \
 evalInScope('const b = 420', scope2) \
 const scope3 = adjoinScope(scope1, scope2) \
 print(evalInScope('a', scope3)) \

@@ -285,16 +285,25 @@ const Prelude = {
     getEmptyScope: {
         type: "function",
         parentScope: a.emptyScope(),
-        parameters: { type: "parameter declaration", canonicalString: "()",
-            children: []
+        parameters: { type: "parameter declaration", canonicalString: "(x)",
+            children: [{ type: "identifier", canonicalString: "x", children: []}]
         },
         body: {
             type: "function body",
-            canonicalString: "{return GETEMPTYSCOPE()}",
+            canonicalString: "{return GETEMPTYSCOPE(x)}",
             children: [{ type: "!!!BUILTIN", builtin: (scope) => {
-                return { type: "scope", scope: a.emptyScope(), value: "Scope" }
+                const [scopeGetter, scopeSetter, scopeDefiner] = scope
+                const x = scopeGetter("x")
+                const retScope = (x !== undefined && x.type == "import") ? a.emptyScope(x.getter()) : a.emptyScope()
+                return { type: "scope", scope: retScope, value: "Scope" }
             }}]
         },
+        protected: true
+    },
+    prelude: {
+        type: "import",
+        getter: () => Prelude,
+        value: "Import",
         protected: true
     },
     evalInScope: {

@@ -117,11 +117,11 @@ const setpro = (typ) => {
     return res
 }
 const emptyScope = (predict) => { // i know, predict is a fitting name
-    var scopeDict = predict !== undefined ? predict : {}
+    var scopeDict = predict !== undefined ? { ...predict} : {}
     return ([(name) => scopeDict[name] !== undefined ? scopeDict[name] : { type: "undefined" }, (name, value) => scopeDict[name] == undefined || scopeDict[name].protected !== true ? scopeDict[name] = value : (()=>{throw "TypeError: attempted reassignment of constant " + name})(), (name, value) => scopeDict[name] == undefined || scopeDict[name].protected !== true ? scopeDict[name] = value : (()=>{throw "TypeError: attempted reassignment of constant " + name})(), (name, value) => scopeDict[name] == undefined || scopeDict[name].protected !== true ? scopeDict[name] = value : (()=>{throw "TypeError: attempted reassignment of constant " + name})()])
 }
 const emptyBlock = (predict) => {
-    var blockDict = predict !== undefined ? predict : {}
+    var blockDict = predict !== undefined ? { ...predict} : {}
     return ([(name) => blockDict[name] !== undefined ? blockDict[name] : { type: "undefined" }, (name, value) => blockDict[name] == undefined || blockDict[name].protected !== true ? blockDict[name] = value : (()=>{throw "TypeError: attempted reassignment of constant " + name})()])
 }
 const adjoinScope = ([scopeGetter, scopeSetter, scopeDefiner, blockSefiner]) => ([newScopeGetter, newScopeSetter, newScopeDefiner, newBlockSefiner]) => {
