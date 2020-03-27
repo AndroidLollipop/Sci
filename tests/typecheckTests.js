@@ -142,7 +142,7 @@ try {
 catch(e) {
     console.log(e)
 }
-if (passed == 1) {
+if (passed === 1) {
     console.log("typecheck test PASSED!")
 }
 else {
