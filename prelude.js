@@ -375,7 +375,7 @@ const Prelude = {
             canonicalString: "{return GETSYMBOL(x)}",
             children: [{ type: "!!!BUILTIN", builtin: ([scopeGetter, scopeSetter, scopeDefiner]) => {
                 const x = scopeGetter("x")
-                const printString = "Symbol(" + ((x !== undefined && x.type === "string") ? x.value : "") + ")"
+                const printString = 'Symbol("' + ((x !== undefined && x.type === "string") ? x.value : "") + '")'
                 const ret = { type: "symbol", printString, value: symbolID }
                 symbolID++
                 return ret

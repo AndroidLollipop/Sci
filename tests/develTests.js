@@ -182,6 +182,13 @@ evalInScope('const b = 420', scope2) \
 const scope3 = adjoinScope(scope1, scope2) \
 print(evalInScope('a', scope3)) \
 print(evalInScope('b', scope3)) \
+const mySymbol = Symbol('status') \
+const mySymbol2 = Symbol('status') \
+print('symbols are only equal to themselves and Symbol returns a unique one each time it is called') \
+print(mySymbol == mySymbol) \
+print(mySymbol == mySymbol2) \
+print(mySymbol) \
+print(mySymbol2) \
 print('no showstoppers occurred')")
 // operator precedence levels (you can find this in tokParse.js)
 // level 4: * /
