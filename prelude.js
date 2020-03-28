@@ -19,6 +19,9 @@ const flattenArray = (array) => {
         else if (array.array[i].type === "string") {
             res += '"' + array.array[i].value + '"'
         }
+        else if (array.array[i].printString !== undefined) {
+            res += array.array[i].printString
+        }
         else if (array.array[i].value !== undefined) {
             res += array.array[i].value
         }
@@ -31,6 +34,7 @@ const flattenArray = (array) => {
     }
     return res + "]"
 }
+var symbolID = 0
 const Prelude = {
     print: {
         type: "function",
@@ -44,7 +48,10 @@ const Prelude = {
             children: [{ type: "!!!BUILTIN", builtin: ([scopeGetter, scopeSetter, scopeDefiner]) => {
                 var x = scopeGetter("x")
                 if (x !== undefined) {
-                    if (x.value !== undefined) {
+                    if (x.printString !== undefined) {
+                        console.log(x.printString)
+                    }
+                    else if (x.value !== undefined) {
                         console.log(x.value)
                     }
                     else if (x.type === "array") {
@@ -179,7 +186,10 @@ const Prelude = {
             children: [{ type: "!!!BUILTIN", builtin: ([scopeGetter, scopeSetter, scopeDefiner]) => {
                 var x = scopeGetter("x")
                 if (x !== undefined) {
-                    if (x.value !== undefined) {
+                    if (x.printString !== undefined) {
+                        return { type: "string", value: x.printString+"" }
+                    }
+                    else if (x.value !== undefined) {
                         return { type: "string", value: x.value+"" }
                     }
                     else if (x.type === "array") {
@@ -314,7 +324,7 @@ const Prelude = {
         },
         body: {
             type: "function body",
-            canonicalString: "{return INTERPRET(x)}",
+            canonicalString: "{return INTERPRET(x,y)}",
             children: [{ type: "!!!BUILTIN", builtin: (scope) => {
                 const [scopeGetter, scopeSetter, scopeDefiner] = scope
                 const x = scopeGetter("x")
@@ -349,9 +359,28 @@ const Prelude = {
                 if (x !== undefined && x.type === "scope" && y !== undefined && y.type === "scope") {
                     return { type: "scope", scope: a.adjoinScope(x.scope)(y.scope), value: "Scope" }
                 }
+                return { type: "void" }
             }}]
         },
         protected: true
+    },
+    Symbol: {
+        type: "function",
+        parentScope: a.emptyScope(),
+        parameters: { type: "parameter declaration", canonicalString: "(x)",
+            children: [{ type: "identifier", canonicalString: "x", children: []}]
+        },
+        body: {
+            type: "function body",
+            canonicalString: "{return GETSYMBOL(x)}",
+            children: [{ type: "!!!BUILTIN", builtin: ([scopeGetter, scopeSetter, scopeDefiner]) => {
+                const x = scopeGetter("x")
+                const printString = "Symbol(" + ((x !== undefined && x.type === "string") ? x.value : "") + ")"
+                const ret = { type: "symbol", printString, value: symbolID }
+                symbolID++
+                return ret
+            }}]
+        }
     }
 }
 module.exports = {
