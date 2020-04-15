@@ -189,6 +189,18 @@ print(mySymbol == mySymbol) \
 print(mySymbol == mySymbol2) \
 print(mySymbol) \
 print(mySymbol2) \
+const obj = {a: '1', mySymbol, 1: 42069} \
+print(obj['1']) \
+print(obj['a']) \
+print(obj['mySymbol']) \
+obj['obj'] = obj \
+print(obj['obj']) \
+print(obj['obj']['a']) \
+print(obj.a) \
+print(obj.1) \
+print(obj.obj) \
+print(['a']) \
+print(['a'][0]) \
 print('no showstoppers occurred')")
 // operator precedence levels (you can find this in tokParse.js)
 // level 4: * /
