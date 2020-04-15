@@ -357,7 +357,7 @@ const evaluateExpression = (scc) => {
             var obj = {}
             for (var i = 0; i < expression.children.length; i++) {
                 const res = sco(expression.children[i].children[1])
-                obj["string!"+expression.children[i].children[0].canonicalString] = res
+                obj[typeMap.str+"!"+expression.children[i].children[0].canonicalString] = res
             }
             return { runtimeID: getRuntimeID(), type: "object", object: obj, getter: (x) => obj[x.type + "!" + x.value] === undefined ? { type: "void" } : obj[x.type + "!" + x.value], setter: (x, v) => obj[x.type + "!" + x.value] = v }
         }
