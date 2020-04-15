@@ -1,4 +1,4 @@
-const e = require("../simpleAndCleanInterfaceForRepl.js")
+const e = require("./simpleAndCleanInterfaceForRepl.js")
 const repl = e.getRepl() // sadly no support for += yet, it isn't hard to implement but isn't a priority right now
 repl("var slowFibonacci(n) { \
     if (n < 3) { \

@@ -6,33 +6,63 @@ const setTimeoutShim = (fn, timeout) => {
     return setTimeoutArray.push(setTimeout(fn, timeout))-1
 }
 const clearTimeoutShim = (id) => setTimeoutArray[id] !== undefined ? clearTimeout(setTimeoutArray[id]) : undefined
+const recurseDetectDictionary = {}
 const flattenArray = (array) => {
+    recurseDetectDictionary[array.runtimeID] = true
     var res = "["
     for (var i = 0; i < array.array.length; i++) {
-        if (array.array[i].type === "array") {
-            ret = flattenArray(array.array[i])
-            res += ret
-        }
-        else if (array.array[i].type === "function") {
-            res += "Function"
-        }
-        else if (array.array[i].type === "string") {
-            res += '"' + array.array[i].value + '"'
-        }
-        else if (array.array[i].printString !== undefined) {
-            res += array.array[i].printString
-        }
-        else if (array.array[i].value !== undefined) {
-            res += array.array[i].value
-        }
-        else {
-            res += array.array[i].type
-        }
+        res += stringify(array.array[i], true)
         if (i < (array.array.length - 1)) {
             res += ", "
         }
     }
+    recurseDetectDictionary[array.runtimeID] = undefined
     return res + "]"
+}
+const reconstituteObject = (object) => {
+    if (object.object === undefined) {
+        return "{OpaqueObject}"
+    }
+    recurseDetectDictionary[object.runtimeID] = true
+    var res = "{"
+    var keys = Object.keys(object.object)
+    for (var i = 0; i < keys.length; i++) {
+        res += keys[i]+": "+stringify(object.object[keys[i]], true)
+        if (i < (keys.length - 1)) {
+            res += ", "
+        }
+    }
+    recurseDetectDictionary[object.runtimeID] = undefined
+    return res + "}"
+}
+const stringify = (x, adornStrings = false) => {
+    if (!x) {
+        return "undefined"
+    }
+    else if (x.runtimeID !== undefined && recurseDetectDictionary[x.runtimeID] === true) {
+        return "Recursive"
+    }
+    else if (adornStrings === true && x.type === "string") {
+        return '"' + x.value + '"'
+    }
+    else if (x.printString !== undefined) {
+        return x.printString
+    }
+    else if (x.value !== undefined) {
+        return x.value+""
+    }
+    else if (x.type === "array") {
+        return flattenArray(x)
+    }
+    else if (x.type === "object") {
+        return reconstituteObject(x)
+    }
+    else if (x.type === "function") {
+        return "Function"
+    }
+    else {
+        return x.type+""
+    }
 }
 var symbolID = 0
 const Prelude = {
@@ -47,23 +77,7 @@ const Prelude = {
             canonicalString: "{return EXTERNALCONSOLELOG(x)}",
             children: [{ type: "!!!BUILTIN", builtin: ([scopeGetter, scopeSetter, scopeDefiner]) => {
                 var x = scopeGetter("x")
-                if (x !== undefined) {
-                    if (x.printString !== undefined) {
-                        console.log(x.printString)
-                    }
-                    else if (x.value !== undefined) {
-                        console.log(x.value)
-                    }
-                    else if (x.type === "array") {
-                        console.log(flattenArray(x))
-                    }
-                    else if (x.type === "function") {
-                        console.log("Function")
-                    }
-                    else {
-                        console.log(x.type)
-                    }
-                }
+                console.log(stringify(x))
                 return x
             }}]
         },
@@ -185,24 +199,7 @@ const Prelude = {
             canonicalString: "{return EXTERNALSTRINGIFY(x)}",
             children: [{ type: "!!!BUILTIN", builtin: ([scopeGetter, scopeSetter, scopeDefiner]) => {
                 var x = scopeGetter("x")
-                if (x !== undefined) {
-                    if (x.printString !== undefined) {
-                        return { type: "string", value: x.printString+"" }
-                    }
-                    else if (x.value !== undefined) {
-                        return { type: "string", value: x.value+"" }
-                    }
-                    else if (x.type === "array") {
-                        return { type: "string", value: flattenArray(x) }
-                    }
-                    else if (x.type === "function") {
-                        return { type: "string", value: "Function" }
-                    }
-                    else {
-                        return { type: "string", value: x.type }
-                    }
-                }
-                return { type: "string", value: "undefined" }
+                return { type: "string", value: stringify(x) }
             }}]
         },
         protected: true

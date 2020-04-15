@@ -1,5 +1,14 @@
 // why not use regex, i hear you ask
 // well, we're trying to build an AST here, it's not nice to use regex to do that
+const composeMatch = (matchers) => (wrappedString) => { // i should have written this from the start, damn
+    for (var i = 0; i < matchers.length; i++) {
+        let ret = matchers[i](wrappedString)
+        if (ret.status === "success") {
+            return ret
+        }
+    }
+    return { status: "failure", next: wrappedString }
+}
 const wrapString = (string) => {
     return [0, string]
 }
@@ -91,6 +100,8 @@ const matchStr = matchTerminalStrings(["str"])("typed declaration")
 const matchVar = matchTerminalStrings(["var"])("untyped declaration")
 const matchLet = matchTerminalStrings(["let"])("block declaration")
 const matchSep = matchTerminal(";")
+const matchCol = matchTerminal(":")
+const matchDot = matchTerminal(".")
 const matchCes = (wrappedString) => {
     var ret = matchEsc("escape literal")(wrappedString)
     if (ret.status !== "success") {
@@ -147,7 +158,7 @@ const matchFuncallParams = (wrappedString) => {
     }
     return { status: "success", next: ret.next, treeNode: { type: "function call bindings", canonicalString: "(" + rea + ")", children: reb}}
 }
-const matchArrayIndex = (wrappedString) => {
+const matchArrayIndexBrac = (wrappedString) => {
     var ret = matchOpA()(wrappedString)
     if (ret.status !== "success") {
         return ret
@@ -164,6 +175,15 @@ const matchArrayIndex = (wrappedString) => {
     }
     return { status: "success", next: tem.next, treeNode: { type: "array index", canonicalString: "[" + ret.treeNode.canonicalString + "]", children: [ret.treeNode]}}
 }
+const matchDotIndex = (wrappedString) => {
+    var ret = matchDot()(wrappedString)
+    if (ret.status !== "success") {
+        return ret
+    }
+    ret = matchAln("alphanumeric literal")(ret.next)
+    return { status: "success", next: ret.next, treeNode: { type: "array index", canonicalString: "." + ret.treeNode.canonicalString, children: [{ type: "string literal", canonicalString: ret.treeNode.canonicalString, children: [ret.treeNode]}]}}
+}
+const matchArrayIndex = composeMatch([matchArrayIndexBrac, matchDotIndex])
 const matchEscapedLiteral = (wrappedString) => { // only alphanumeric strings, for now... it's trivial to extend it anyway
     var ret = matchAls("alphanumeric literal")(wrappedString)
     if (ret.status !== "success") {
@@ -254,10 +274,55 @@ const matchArrayLiteral = (wrappedString) => {
     }
     return { status: "success", next: ret.next, treeNode: { type: "array literal", canonicalString: "[" + rea + "]", children: reb}}
 }
+const matchObjectLiteral = (wrappedString) => {
+    var ret = matchOpB()(wrappedString)
+    if (ret.status !== "success") {
+        return ret
+    }
+    ret.next = matchWhitespace()(ret.next).next
+    var rea = ""
+    var reb = []
+    var iet = ret
+    var pre
+    while (true) {
+        pre = matchAln("identifier")(ret.next)
+        if (pre.status !== "success") {
+            break
+        }
+        rea += pre.treeNode.canonicalString
+        pre.next = matchWhitespace()(pre.next).next
+        ret = matchCol()(pre.next)
+        if (ret.status !== "success") {
+            reb.push({ type: "object literal declaration", canonicalString: "", children: [pre.treeNode, pre.treeNode] })
+        }
+        else {
+            rea += ": "
+            ret = matchExpr(MPR)(ret.next)
+            if (ret.status !== "success") {
+                break
+            }
+            rea += ret.treeNode.canonicalString
+            reb.push({ type: "object literal declaration", canonicalString: "", children: [pre.treeNode, ret.treeNode] })
+        }
+        iet = ret
+        ret = matchCom()(matchWhitespace()(ret.next).next)
+        if (ret.status !== "success") {
+            break
+        }
+        ret.next = matchWhitespace()(ret.next).next
+        iet = ret
+        rea += ", "
+    }
+    ret = matchClB()(iet.next)
+    if (ret.status !== "success") {
+        return { status: "failure", next: wrappedString }
+    }
+    return { status: "success", next: ret.next, treeNode: { type: "object literal", canonicalString: "{" + rea + "}", children: reb}}
+}
 const matchFloatLiteral = (wrappedString) => {
     var ret = matchNum("integral literal")(wrappedString)
     if (ret.status === "success") {
-        var phi = matchTerminal(".")()(ret.next)
+        var phi = matchDot()(ret.next)
         if (phi.status === "success") {
             var gam = matchNum("fractional literal")(phi.next)
             if (gam.status === "success") {
@@ -285,15 +350,6 @@ const matchNegatedLiteral = (wrappedString) => {
     return { status: "success", next: phi.next, treeNode: { type: "negated literal", canonicalString: "-" + phi.treeNode.canonicalString, children: [phi.treeNode]}}
 }
 const matchBooleanLiteral = matchTerminalStrings(["true", "false"])("boolean literal")
-const composeMatch = (matchers) => (wrappedString) => { // i should have written this from the start, damn
-    for (var i = 0; i < matchers.length; i++) {
-        let ret = matchers[i](wrappedString)
-        if (ret.status === "success") {
-            return ret
-        }
-    }
-    return { status: "failure", next: wrappedString }
-}
 const matchTypeDec = composeMatch([matchDnu, matchStr, matchVar, matchDbo])
 const matchVarDec = (wrappedString) => {
     var ret = matchTypeDec(wrappedString)
@@ -350,7 +406,7 @@ const matchLetDec = (wrappedString) => {
     arr[1] = { type: "block declaration", canonicalString: "let" }
     return { status: "success", next: phi.next, treeNode: { type: phi.status === "success" ? phi.treeNode.type : "variable declaration", declaredType: phi.status === "success" ? phi.treeNode.canonicalString : "any", canonicalString: phi.status === "success" ? ret.treeNode.canonicalString + " " + phi.treeNode.canonicalString : ret.treeNode.canonicalString, children: arr } }
 }
-const matchLit = composeMatch([matchNegatedLiteral, matchFloatLiteral, matchStringLiteral, matchArrayLiteral, matchBooleanLiteral])
+const matchLit = composeMatch([matchNegatedLiteral, matchFloatLiteral, matchStringLiteral, matchArrayLiteral, matchObjectLiteral, matchBooleanLiteral])
 const matchDefineP = (mDec) => (wrappedString) => {
     var ret = mDec(wrappedString)
     if (ret.status !== "success") {

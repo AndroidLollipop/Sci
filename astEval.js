@@ -1,4 +1,12 @@
 // see tokparse.js for ast definition
+var runtimeID = 0
+const getRuntimeID = () => {
+    const send = runtimeID
+    runtimeID++
+    return send
+}
+const readRuntimeID = () => runtimeID
+const setRuntimeID = x => runtimeID = x
 const asscLeft = 0
 const asscRight = 1 // maybe i should split these into a constants file
 const truthy = (v) => v&&!!v.value // we can easily modify/extend this
@@ -342,8 +350,16 @@ const evaluateExpression = (scc) => {
             for (var i = 0; i < expression.children.length; i++) {
                 arr.push(sco(expression.children[i]))
             }
-            return { type: "array", array: arr, getter: (x) => arr[Math.round(Math.abs(x.value))] === undefined ? { type: "void" } : arr[Math.round(Math.abs(x.value))], setter: (x, v) => arr[Math.round(Math.abs(x.value))] = v }
+            return { runtimeID: getRuntimeID(), type: "array", array: arr, getter: (x) => arr[Math.round(Math.abs(x.value))] === undefined ? { type: "void" } : arr[Math.round(Math.abs(x.value))], setter: (x, v) => arr[Math.round(Math.abs(x.value))] = v }
             // void in place of undefined. we don't want to let people accidentally unset variables and leak into the parent scope
+        }
+        else if (expression.type === "object literal") {
+            var obj = {}
+            for (var i = 0; i < expression.children.length; i++) {
+                const res = sco(expression.children[i].children[1])
+                obj["string!"+expression.children[i].children[0].canonicalString] = res
+            }
+            return { runtimeID: getRuntimeID(), type: "object", object: obj, getter: (x) => obj[x.type + "!" + x.value] === undefined ? { type: "void" } : obj[x.type + "!" + x.value], setter: (x, v) => obj[x.type + "!" + x.value] = v }
         }
         else if (expression.type === "boolean literal") {
             if (expression.canonicalString === "true") {
@@ -361,5 +377,8 @@ const evaluateExpression = (scc) => {
 module.exports = {
     evaluateExpression: evaluateExpression,
     emptyScope: emptyScope,
-    adjoinScope: adjoinScope
+    adjoinScope: adjoinScope,
+    getRuntimeID: getRuntimeID,
+    readRuntimeID: readRuntimeID,
+    setRuntimeID: setRuntimeID
 }
